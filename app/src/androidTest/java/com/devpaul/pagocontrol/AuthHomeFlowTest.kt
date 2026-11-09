@@ -32,7 +32,7 @@ class AuthHomeFlowTest {
     }
 
     @Test fun loginThemeRecreationAndLogout() {
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_demo_fill)).performScrollTo().performClick()
+        compose.onNodeWithText("Acceso de demostración").assertDoesNotExist()
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
         compose.waitUntil(5_000) {
             compose.onAllNodes(androidx.compose.ui.test.hasText("BALANCE DISPONIBLE")).fetchSemanticsNodes().isNotEmpty()
@@ -48,7 +48,6 @@ class AuthHomeFlowTest {
         )
         compose.onNodeWithContentDescription("Cerrar sesión").performClick()
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_demo_fill)).performScrollTo().performClick()
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
         compose.waitUntil(5_000) {
             compose.onAllNodes(androidx.compose.ui.test.hasText("BALANCE DISPONIBLE")).fetchSemanticsNodes().isNotEmpty()

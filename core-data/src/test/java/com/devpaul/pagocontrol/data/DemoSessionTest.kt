@@ -12,17 +12,19 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DemoSessionTest {
-    @Test fun invalidCredentialsNeverCreateSession() = runTest {
+    @Test fun localAccessDoesNotRequireCredentials() = runTest {
         val auth = DemoAuthRepository()
-        assertEquals(SignInResult.InvalidCredentials, auth.signIn("demo@pagocontrol.pe", "incorrecta"))
-        assertNull(auth.session.value)
+        assertTrue(auth.isDemo)
+        assertEquals(SignInResult.Success, auth.signIn("", ""))
+        assertEquals("demo", auth.session.value?.id)
+        assertEquals("", auth.session.value?.email)
     }
 
     @Test fun dashboardRequiresSessionAndLogoutRevokesIt() = runTest {
         val auth = DemoAuthRepository()
         val home = DemoHomeRepository(auth)
         assertEquals(DashboardResult.SessionRequired, home.loadDashboard())
-        assertEquals(SignInResult.Success, auth.signIn(" DEMO@pagocontrol.pe ", "PagoControl123"))
+        assertEquals(SignInResult.Success, auth.signIn("", ""))
         assertTrue(home.loadDashboard() is DashboardResult.Success)
         auth.signOut()
         assertNull(auth.session.value)

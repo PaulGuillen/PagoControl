@@ -67,4 +67,49 @@ class LoginViewModelTest {
         assertFalse(viewModel.state.value.loading)
         assertEquals(LoginError.Network, viewModel.state.value.error)
     }
+    @Test fun localProviderAcceptsEmptyFields() = runTest(dispatcher) {
+        val repository = ImmediateSession(isDemo = true)
+        val viewModel = LoginViewModel(
+            repository = repository,
+            savedStateHandle = SavedStateHandle(),
+            reporter = SilentReporter,
+        )
+        viewModel.onIntent(LoginUiIntent.Submit)
+        advanceUntilIdle()
+        assertEquals(1, repository.requests)
+        assertFalse(viewModel.state.value.emailInvalid)
+        assertFalse(viewModel.state.value.passwordInvalid)
+    }
+
+    @Test fun realProviderStillRejectsEmptyFields() = runTest(dispatcher) {
+        val repository = ImmediateSession(isDemo = false)
+        val viewModel = LoginViewModel(
+            repository = repository,
+            savedStateHandle = SavedStateHandle(),
+            reporter = SilentReporter,
+        )
+        viewModel.onIntent(LoginUiIntent.Submit)
+        advanceUntilIdle()
+        assertEquals(0, repository.requests)
+        assertTrue(viewModel.state.value.emailInvalid)
+        assertTrue(viewModel.state.value.passwordInvalid)
+    }
+
+    private class ImmediateSession(override val isDemo: Boolean) : SessionRepository {
+        override val state = MutableStateFlow<SessionState>(SessionState.SignedOut)
+        var requests = 0
+        override suspend fun signIn(email: String, password: String): AppResult<Unit> {
+            requests++
+            return AppResult.Success(Unit)
+        }
+        override suspend fun register(email: String, password: String) = AppResult.Failure(AppFailure.UNAVAILABLE)
+        override suspend fun resetPassword(email: String) = AppResult.Failure(AppFailure.UNAVAILABLE)
+        override fun signOut() { state.value = SessionState.SignedOut }
+    }
+
+    private object SilentReporter : EventReporter {
+        override fun screen(name: String) = Unit
+        override fun action(name: String) = Unit
+        override fun error(operation: String) = Unit
+    }
 }

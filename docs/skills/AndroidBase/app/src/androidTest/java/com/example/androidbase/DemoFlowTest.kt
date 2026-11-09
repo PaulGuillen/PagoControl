@@ -34,7 +34,7 @@ class DemoFlowTest {
             if (compose.onNodeWithText(skip).isDisplayed()) compose.onNodeWithText(skip).performClick()
             compose.onNodeWithText(loginTitle).isDisplayed()
         }
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_demo_fill)).performScrollTo().performClick()
+        compose.onNodeWithText("Acceso de demostración").assertDoesNotExist()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
         val title = "Sample ${UUID.randomUUID()}"
         compose.onNodeWithText(activity.getString(HomeResources.string.home_item_title)).performTextInput(title)

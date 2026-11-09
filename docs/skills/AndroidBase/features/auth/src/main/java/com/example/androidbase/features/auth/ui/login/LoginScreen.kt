@@ -48,13 +48,6 @@ fun LoginScreen(
         TextButton(onClick = onRegister, enabled = !state.loading) {
             Text(stringResource(R.string.flow_register_link), color = MaterialTheme.colorScheme.onSurface)
         }
-        if (state.demo) {
-            Text(stringResource(R.string.flow_demo_title), style = MaterialTheme.typography.titleSmall)
-            Text(stringResource(R.string.flow_demo_description), style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = { onIntent(LoginUiIntent.FillDemo) }, enabled = !state.loading) {
-                Text(stringResource(R.string.flow_demo_fill), color = MaterialTheme.colorScheme.onSurface)
-            }
-        }
     }
     if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) { providerInfo = false }
 }

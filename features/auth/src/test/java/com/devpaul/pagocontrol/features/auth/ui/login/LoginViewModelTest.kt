@@ -41,7 +41,8 @@ class LoginViewModelTest {
         val repository = ControlledAuth()
         val handle = SavedStateHandle()
         val viewModel = LoginViewModel(repository, handle)
-        viewModel.onIntent(LoginUiIntent.FillDemo)
+        viewModel.onIntent(LoginUiIntent.EmailChanged("paul@example.com"))
+        viewModel.onIntent(LoginUiIntent.PasswordChanged("example-password"))
         viewModel.onIntent(LoginUiIntent.Submit)
         viewModel.onIntent(LoginUiIntent.Submit)
         runCurrent()
@@ -59,7 +60,22 @@ class LoginViewModelTest {
         assertFalse(handle.contains("password"))
     }
 
-    private class ControlledAuth : AuthRepository {
+    @Test fun localProviderAcceptsEmptyFieldsWithoutAutofill() = runTest {
+        val repository = ControlledAuth(isDemo = true)
+        repository.response.complete(SignInResult.Success)
+        val handle = SavedStateHandle()
+        val viewModel = LoginViewModel(repository, handle)
+        viewModel.onIntent(LoginUiIntent.Submit)
+        advanceUntilIdle()
+        assertEquals(1, repository.calls)
+        assertEquals("", viewModel.state.value.email)
+        assertEquals("", viewModel.state.value.password)
+        assertFalse(viewModel.state.value.emailInvalid)
+        assertFalse(viewModel.state.value.passwordInvalid)
+        assertFalse(handle.contains("password"))
+    }
+
+    private class ControlledAuth(override val isDemo: Boolean = false) : AuthRepository {
         override val session = MutableStateFlow<UserSession?>(null)
         var calls = 0
         var response = CompletableDeferred<SignInResult>()

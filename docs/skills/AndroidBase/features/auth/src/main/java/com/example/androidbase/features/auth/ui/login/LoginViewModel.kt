@@ -17,7 +17,7 @@ class LoginViewModel(
     private val repository: SessionRepository,
     private val savedStateHandle: SavedStateHandle,
     private val reporter: EventReporter,
-) : BaseViewModel<LoginUiState>(LoginUiState(email = savedStateHandle["email"] ?: "", demo = repository.isDemo)) {
+) : BaseViewModel<LoginUiState>(LoginUiState(email = savedStateHandle["email"] ?: "")) {
 
     fun onIntent(intent: LoginUiIntent) {
         if (state.value.loading) return
@@ -30,20 +30,14 @@ class LoginViewModel(
                 it.copy(password = intent.value, passwordInvalid = false, error = null)
             }
             LoginUiIntent.TogglePassword -> updateState { it.copy(passwordVisible = !it.passwordVisible) }
-            LoginUiIntent.FillDemo -> {
-                savedStateHandle["email"] = "demo@pagocontrol.pe"
-                updateState {
-                    it.copy(email = "demo@pagocontrol.pe", password = "PagoControl123", emailInvalid = false, passwordInvalid = false, error = null)
-                }
-            }
             LoginUiIntent.Submit -> submit()
         }
     }
 
     private fun submit() {
         val current = state.value
-        val emailInvalid = !LoginValidation.validEmail(current.email)
-        val passwordInvalid = current.password.length < 8
+        val emailInvalid = !repository.isDemo && !LoginValidation.validEmail(current.email)
+        val passwordInvalid = !repository.isDemo && current.password.length < 8
         if (emailInvalid || passwordInvalid) {
             updateState { it.copy(emailInvalid = emailInvalid, passwordInvalid = passwordInvalid) }
             return
