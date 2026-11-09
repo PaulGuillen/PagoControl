@@ -56,11 +56,11 @@ class HomeViewModelTest {
             override fun error(operation: String) = Unit
         }
         val viewModel = HomeViewModel(
-            "current-owner",
-            repository,
-            AddExampleUseCase(repository),
-            preferences,
-            reporter
+            ownerId = "current-owner",
+            repository = repository,
+            addExample = AddExampleUseCase(repository),
+            preferences = preferences,
+            reporter = reporter
         )
         runCurrent()
         assertFalse(viewModel.state.value.isLoading)

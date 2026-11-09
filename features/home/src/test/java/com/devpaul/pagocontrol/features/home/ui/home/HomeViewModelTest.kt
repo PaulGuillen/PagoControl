@@ -31,7 +31,7 @@ class HomeViewModelTest {
         val viewModel = HomeViewModel(repository, DemoSession())
         advanceUntilIdle()
         assertEquals(HomeContent.Error, viewModel.state.value.content)
-        repository.result = DashboardResult.Success(Dashboard(0, 0, 0, 0, 0, emptyList(), emptyList(), emptyList()))
+        repository.result = DashboardResult.Success(Dashboard(balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0, weeklyFlow = emptyList(), monthlyFlow = emptyList(), movements = emptyList()))
         viewModel.onIntent(HomeUiIntent.Retry)
         advanceUntilIdle()
         assertTrue(viewModel.state.value.content is HomeContent.Ready)
@@ -56,7 +56,7 @@ class HomeViewModelTest {
     }
 
     private class DemoSession : AuthRepository {
-        override val session = MutableStateFlow<UserSession?>(UserSession("demo", "Carlos", "demo@pagocontrol.pe"))
+        override val session = MutableStateFlow<UserSession?>(UserSession(id = "demo", name = "Carlos", email = "demo@pagocontrol.pe"))
         var signOutCount = 0
         override suspend fun signIn(email: String, password: String) = SignInResult.Success
         override suspend fun signOut() { signOutCount++; session.value = null }

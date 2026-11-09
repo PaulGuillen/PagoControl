@@ -70,14 +70,14 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { HomeDock { onIntent(HomeUiIntent.Upcoming) } },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+        Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
             LazyColumn(
-                Modifier.widthIn(max = 840.dp).fillMaxSize(),
+                modifier = Modifier.widthIn(max = 840.dp).fillMaxSize(),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         PagoBrand(stringResource(R.string.home_title), Modifier.weight(1f))
                         AppearanceMenu(themeIndex, onThemeSelected)
                         IconButton(onClick = { onIntent(HomeUiIntent.SignOut) }, enabled = !state.signingOut) {
@@ -88,12 +88,12 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(stringResource(R.string.home_greeting, name), style = MaterialTheme.typography.headlineMedium)
-                        Text(stringResource(R.string.home_demo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = stringResource(R.string.home_demo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 when (val content = state.content) {
                     HomeContent.Loading -> item {
-                        Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
                         }
                     }
@@ -108,15 +108,15 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                         item { BalanceCard(dashboard) }
                         item {
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                SummaryCard(true, dashboard.incomeCents, dashboard.incomeCount, Modifier.weight(1f))
-                                SummaryCard(false, dashboard.expenseCents, dashboard.expenseCount, Modifier.weight(1f))
+                                SummaryCard(income = true, amount = dashboard.incomeCents, count = dashboard.incomeCount, modifier = Modifier.weight(1f))
+                                SummaryCard(income = false, amount = dashboard.expenseCents, count = dashboard.expenseCount, modifier = Modifier.weight(1f))
                             }
                         }
-                        item { FlowCard(dashboard, state.monthly, state.selectedBar, onIntent) }
+                        item { FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent) }
                         item {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                QuickAction(stringResource(R.string.home_register), Modifier.weight(1f)) { onIntent(HomeUiIntent.Upcoming) }
-                                QuickAction(stringResource(R.string.home_services), Modifier.weight(1f)) { onIntent(HomeUiIntent.Upcoming) }
+                                QuickAction(label = stringResource(R.string.home_register), modifier = Modifier.weight(1f)) { onIntent(HomeUiIntent.Upcoming) }
+                                QuickAction(label = stringResource(R.string.home_services), modifier = Modifier.weight(1f)) { onIntent(HomeUiIntent.Upcoming) }
                             }
                         }
                         item {
@@ -137,7 +137,7 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                             Text(stringResource(R.string.home_recent), style = MaterialTheme.typography.headlineSmall)
                         }
                         if (dashboard.movements.isEmpty()) item { Text(stringResource(R.string.home_empty)) }
-                        items(dashboard.movements, key = { it.id }) { MovementRow(it) }
+                        items(items = dashboard.movements, key = { it.id }) { MovementRow(it) }
                         item { Spacer(Modifier.height(8.dp)) }
                     }
                 }
@@ -161,11 +161,11 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
 @Composable
 private fun BalanceCard(dashboard: Dashboard) {
     Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
-        Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(R.string.home_balance), style = MaterialTheme.typography.labelLarge)
             Text(formatSoles(dashboard.balanceCents), style = MaterialTheme.typography.displaySmall)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Outlined.CheckCircle, null, Modifier.size(18.dp))
+                Icon(imageVector = Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(stringResource(R.string.home_sources), style = MaterialTheme.typography.bodySmall)
             }
         }
@@ -176,10 +176,10 @@ private fun BalanceCard(dashboard: Dashboard) {
 private fun SummaryCard(income: Boolean, amount: Long, count: Int, modifier: Modifier) {
     val tint = if (income) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
     PagoCard(modifier) {
-        Icon(if (income) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward, null, tint = tint)
+        Icon(imageVector = if (income) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward, contentDescription = null, tint = tint)
         Text(stringResource(if (income) R.string.home_income else R.string.home_expense), style = MaterialTheme.typography.bodySmall)
-        Text(formatSoles(if (income) amount else -amount, signed = true), color = tint, style = MaterialTheme.typography.titleMedium)
-        Text(stringResource(if (income) R.string.home_income_count else R.string.home_expense_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = formatSoles(if (income) amount else -amount, signed = true), color = tint, style = MaterialTheme.typography.titleMedium)
+        Text(text = stringResource(if (income) R.string.home_income_count else R.string.home_expense_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -198,21 +198,21 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                     modifier = Modifier.semantics { this.selected = monthly == isMonthly }
                         .clickable(role = Role.Tab) { onIntent(HomeUiIntent.SelectPeriod(isMonthly)) },
                 ) {
-                    Text(stringResource(if (isMonthly) R.string.home_month else R.string.home_week), Modifier.padding(horizontal = 16.dp, vertical = 12.dp), style = MaterialTheme.typography.labelMedium)
+                    Text(text = stringResource(if (isMonthly) R.string.home_month else R.string.home_week), modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), style = MaterialTheme.typography.labelMedium)
                 }
             }
         }
         Text(
-            "${labels.getOrElse(selected) { "" }} · ${formatSoles(values.getOrElse(selected) { 0 }, signed = true)}",
+            text = "${labels.getOrElse(selected) { "" }} · ${formatSoles(values.getOrElse(selected) { 0 }, signed = true)}",
             style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary,
         )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
             val maximum = (values.maxOrNull() ?: 1L).coerceAtLeast(1L)
             values.forEachIndexed { index, amount ->
                 val label = labels.getOrElse(index) { "" }
                 val description = "$label: ${formatSoles(amount)}"
                 Column(
-                    Modifier.weight(1f).clip(MaterialTheme.shapes.small)
+                    modifier = Modifier.weight(1f).clip(MaterialTheme.shapes.small)
                         .clickable(role = Role.Button) { onIntent(HomeUiIntent.SelectBar(index)) }
                         .semantics(mergeDescendants = true) {
                             contentDescription = description
@@ -222,7 +222,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Box(Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.BottomCenter) {
+                    Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.BottomCenter) {
                         Box(
                             Modifier.fillMaxWidth(0.8f).height((24 + 96 * amount.toFloat() / maximum).dp)
                                 .clip(MaterialTheme.shapes.small)
@@ -239,7 +239,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
 @Composable
 private fun QuickAction(label: String, modifier: Modifier, onClick: () -> Unit) {
     Surface(modifier = modifier.clip(MaterialTheme.shapes.medium).clickable(onClick = onClick), color = MaterialTheme.colorScheme.surface) {
-        Text(label, Modifier.heightIn(min = 56.dp).padding(12.dp), style = MaterialTheme.typography.labelMedium)
+        Text(text = label, modifier = Modifier.heightIn(min = 56.dp).padding(12.dp), style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -248,17 +248,17 @@ private fun MovementRow(movement: Movement) {
     PagoCard(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             InstitutionAvatar(movement.source)
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(movement.title, style = MaterialTheme.typography.titleMedium)
-                Text(movement.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = movement.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 InstitutionBadge(movement.source)
             }
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.widthIn(max = 130.dp)) {
                 Text(
-                    formatSoles(movement.amountCents, signed = true), style = MaterialTheme.typography.titleMedium,
+                    text = formatSoles(movement.amountCents, signed = true), style = MaterialTheme.typography.titleMedium,
                     color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
                 )
-                if (movement.automatic) Text(stringResource(R.string.home_auto), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                if (movement.automatic) Text(text = stringResource(R.string.home_auto), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
             }
         }
     }
@@ -267,16 +267,16 @@ private fun MovementRow(movement: Movement) {
 @Composable
 private fun HomeDock(onUpcoming: () -> Unit) {
     Surface(color = MaterialTheme.colorScheme.surface) {
-        Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            DockItem(Icons.Outlined.Home, stringResource(R.string.home_title), Modifier.weight(1f), true) {}
-            DockItem(Icons.AutoMirrored.Outlined.ReceiptLong, stringResource(R.string.home_movements), Modifier.weight(1f), false, onUpcoming)
-            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+        Row(modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            DockItem(icon = Icons.Outlined.Home, label = stringResource(R.string.home_title), modifier = Modifier.weight(1f), selected = true) {}
+            DockItem(icon = Icons.AutoMirrored.Outlined.ReceiptLong, label = stringResource(R.string.home_movements), modifier = Modifier.weight(1f), selected = false, onClick = onUpcoming)
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 FilledIconButton(onClick = onUpcoming, modifier = Modifier.size(56.dp)) {
-                    Icon(Icons.Outlined.Add, stringResource(R.string.home_add), Modifier.size(28.dp))
+                    Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(R.string.home_add), modifier = Modifier.size(28.dp))
                 }
             }
-            DockItem(Icons.Outlined.Insights, stringResource(R.string.home_reports), Modifier.weight(1f), false, onUpcoming)
-            DockItem(Icons.Outlined.Person, stringResource(R.string.home_profile), Modifier.weight(1f), false, onUpcoming)
+            DockItem(icon = Icons.Outlined.Insights, label = stringResource(R.string.home_reports), modifier = Modifier.weight(1f), selected = false, onClick = onUpcoming)
+            DockItem(icon = Icons.Outlined.Person, label = stringResource(R.string.home_profile), modifier = Modifier.weight(1f), selected = false, onClick = onUpcoming)
         }
     }
 }
@@ -284,23 +284,23 @@ private fun HomeDock(onUpcoming: () -> Unit) {
 @Composable
 private fun DockItem(icon: ImageVector, label: String, modifier: Modifier, selected: Boolean, onClick: () -> Unit) {
     Column(
-        modifier.clip(MaterialTheme.shapes.small).semantics { this.selected = selected }
+        modifier = modifier.clip(MaterialTheme.shapes.small).semantics { this.selected = selected }
             .clickable(role = Role.Tab, onClick = onClick).heightIn(min = 56.dp).padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
-        Icon(icon, null, tint = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+        Icon(imageVector = icon, contentDescription = null, tint = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
     }
 }
 
 @Preview(name = "Home claro", showBackground = true)
 @Composable
-private fun HomeLightPreview() { PagoControlTheme(false) { HomeScreen(previewState(), "Carlos", {}, 1, {}) } }
+private fun HomeLightPreview() { PagoControlTheme(false) { HomeScreen(state = previewState(), name = "Carlos", onIntent = {}, themeIndex = 1, onThemeSelected = {}) } }
 
 @Preview(name = "Home oscuro", showBackground = true)
 @Composable
-private fun HomeDarkPreview() { PagoControlTheme(true) { HomeScreen(previewState(), "Carlos", {}, 2, {}) } }
+private fun HomeDarkPreview() { PagoControlTheme(true) { HomeScreen(state = previewState(), name = "Carlos", onIntent = {}, themeIndex = 2, onThemeSelected = {}) } }
 
 private fun previewState() = HomeUiState(content = HomeContent.Ready(
-    Dashboard(458050, 685000, 226950, 18, 34, listOf(21, 28, 17, 35, 24, 42, 14), listOf(14, 18, 16, 20), emptyList()),
+    Dashboard(balanceCents = 458050, incomeCents = 685000, expenseCents = 226950, incomeCount = 18, expenseCount = 34, weeklyFlow = listOf(21, 28, 17, 35, 24, 42, 14), monthlyFlow = listOf(14, 18, 16, 20), movements = emptyList()),
 ))

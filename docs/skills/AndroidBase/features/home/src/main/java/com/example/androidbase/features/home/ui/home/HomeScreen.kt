@@ -42,7 +42,7 @@ import org.koin.core.parameter.parametersOf
 fun HomeScreen(user: SessionUser, darkTheme: Boolean, onSignOut: () -> Unit) {
     val viewModel: HomeViewModel = koinViewModel(key = user.id, parameters = { parametersOf(user.id) })
     val state by viewModel.state.collectAsStateWithLifecycle()
-    HomeContent(state, user.isDemo, darkTheme, onSignOut, viewModel::accept)
+    HomeContent(state = state, isDemo = user.isDemo, darkTheme = darkTheme, onSignOut = onSignOut, onIntent = viewModel::accept)
 }
 
 @Composable
@@ -105,7 +105,7 @@ fun HomeContent(
             }
         }
         if (!state.isLoading && state.items.isEmpty()) item { Text(stringResource(R.string.home_empty)) }
-        items(state.items, key = { it.id }) { item ->
+        items(items = state.items, key = { it.id }) { item ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Text(item.title, modifier = Modifier.padding(16.dp))
             }
