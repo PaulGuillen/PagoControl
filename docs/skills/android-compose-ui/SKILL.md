@@ -35,3 +35,9 @@ Splash y los tres pasos del onboarding siguen las capturas oscuras y claras de S
 `AccountLink`, en core-designsystem, centra el texto de contexto y destaca solo la accion: amarillo y negrita en oscuro; texto oscuro, negrita y subrayado en claro. Se reutiliza en Login, Registro, recuperacion y el acceso desde Onboarding. Los textos completos siguen en los recursos de cada feature y el area tactil mantiene un minimo de 48 dp.
 
 El boton de Google conserva el simbolo multicolor como vector local sin tintado. La huella usa un simbolo verde sobre circulo menta en claro y verde profundo en oscuro; sus contenedores son claros de dia y oscuros con borde de noche. Estos cambios son visuales: no habilitan OAuth ni biometria real. Registro separa el checkbox y el texto de terminos con 12 dp y agrega espacio vertical. No se modifica el flujo de recuperacion ni se implementa OTP al adoptar sus referencias oscuras.
+
+## Pantalla completa de recuperacion
+
+Recuperacion usa las referencias claras y oscuras `recuperar_contrase_a` y `recuperar_contrase_a_modo_oscuro`, sin toolbar ni app bar superior: acceso circular de regreso, distintivo de seguridad, anillo dorado con candado y llave verde, correo con sobre y etiqueta externa, aviso con reloj, boton con flecha, tarjeta de proteccion con escudo y pie de regreso al acceso. Los elementos visuales propios se agrupan en `auth/ui/forgotpassword/components/RecoveryVisuals.kt` y usan superficies, bordes e iconos adaptados al tema.
+
+El campo de correo tiene etiqueta accesible, teclado de email y accion IME. La pantalla conserva scroll e insets; hereda la apariencia global y vuelve al Login para cambiarla. El titulo y el aviso corresponden a recuperacion por enlace, sin prometer codigos de seis digitos, caducidad de quince minutos ni compatibilidad bancaria no implementada. Firebase mantiene el envio de enlaces y el modo local conserva su aviso de operacion ilustrativa.
