@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.EntryColors
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.features.onboarding.R
+import com.devpaul.pagocontrol.designsystem.AccountLink
 import com.devpaul.pagocontrol.features.onboarding.ui.onboarding.components.PrivacyIllustration
 import com.devpaul.pagocontrol.features.onboarding.ui.onboarding.components.ControlIllustration
 
@@ -99,10 +100,12 @@ fun OnboardingScreen(state: OnboardingUiState, onIntent: (OnboardingUiIntent) ->
                         Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null, modifier = Modifier.padding(start = 12.dp))
                     }
                 }
-                TextButton(
+                AccountLink(
+                    text = stringResource(R.string.onboarding_login),
+                    action = stringResource(R.string.onboarding_login_action),
                     onClick = { onIntent(OnboardingUiIntent.Finish(OnboardingDestination.Login)) },
                     enabled = !state.saving,
-                ) { Text(stringResource(R.string.onboarding_login), color = MaterialTheme.colorScheme.onSurface) }
+                )
             }
         }
     }

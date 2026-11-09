@@ -41,4 +41,5 @@
     <string name="onboarding_demo_status">Ejemplo</string>
     <string name="onboarding_spent">Gastado S/ 2,280</string>
     <string name="onboarding_goal">Meta: &gt; 50%</string>
+    <string name="onboarding_login_action">Iniciar sesión</string>
 </resources>
