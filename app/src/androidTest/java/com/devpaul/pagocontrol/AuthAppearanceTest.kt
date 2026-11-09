@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.devpaul.pagocontrol.designsystem.EntryColors
@@ -68,6 +69,8 @@ class AuthAppearanceTest {
 
     private fun captureRecovery(dark: Boolean) {
         setContent(dark) { ForgotPasswordScreen(state = ForgotPasswordUiState(), onIntent = {}, onLogin = {}) }
+        compose.onNodeWithText("Recuperar contraseña").assertDoesNotExist()
+        saveImage("recovery-${if (dark) "dark" else "light"}-top")
         val footer = "Volver a iniciar sesión"
         compose.onNodeWithText(footer).performScrollTo()
         assertLinkStyle(text = footer, action = footer, dark = dark)
@@ -84,6 +87,11 @@ class AuthAppearanceTest {
         assertEquals(FontWeight.Bold, span.item.fontWeight)
         assertEquals(if (dark) TextDecoration.None else TextDecoration.Underline, span.item.textDecoration)
         if (dark) assertEquals(EntryColors.Gold, span.item.color)
+        val actionStart = text.lastIndexOf(action)
+        if (actionStart > 0) {
+            val separator = annotated.spanStyles.single { it.start == actionStart - 1 && it.end == actionStart }
+            assertEquals(6.sp, separator.item.letterSpacing)
+        }
     }
 
     private fun saveImage(name: String) {

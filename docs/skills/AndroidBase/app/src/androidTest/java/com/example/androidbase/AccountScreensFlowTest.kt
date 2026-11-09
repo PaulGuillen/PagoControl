@@ -1,6 +1,7 @@
 package com.example.androidbase
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDisplayed
@@ -43,7 +44,7 @@ class AccountScreensFlowTest {
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_forgot_link)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_email_invalid)).performScrollTo().assertIsDisplayed()
-        compose.onNode(hasText(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput("demo@test.pe")
+        compose.onNode(hasContentDescription(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput("demo@test.pe")
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions)).performScrollTo().performClick()
         val recoveryDemo = activity.getString(AuthResources.string.flow_forgot_demo)
         compose.waitUntil(10_000) { compose.onNodeWithText(recoveryDemo).isDisplayed() }
