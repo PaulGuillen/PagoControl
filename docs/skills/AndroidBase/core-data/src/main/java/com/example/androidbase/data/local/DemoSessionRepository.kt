@@ -14,7 +14,7 @@ class DemoSessionRepository : SessionRepository {
     override val isDemo = true
 
     override suspend fun signIn(email: String, password: String): AppResult<Unit> {
-        mutableState.value = SessionState.SignedIn(SessionUser("demo", null, true))
+        mutableState.value = SessionState.SignedIn(SessionUser(id = "demo", email = null, isDemo = true))
         return AppResult.Success(Unit)
     }
 

@@ -16,7 +16,7 @@ class FirebaseSessionRepository(private val auth: FirebaseAuth) : SessionReposit
     override val isDemo = false
     private val listener = FirebaseAuth.AuthStateListener { provider ->
         mutableState.value = provider.currentUser?.let {
-            SessionState.SignedIn(SessionUser(it.uid, it.email, false))
+            SessionState.SignedIn(SessionUser(id = it.uid, email = it.email, isDemo = false))
         } ?: SessionState.SignedOut
     }
 

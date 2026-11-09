@@ -16,7 +16,7 @@ class DemoAuthRepository : AuthRepository {
         if (!email.trim().equals("demo@pagocontrol.pe", ignoreCase = true) || password != "PagoControl123") {
             return SignInResult.InvalidCredentials
         }
-        mutableSession.value = UserSession("demo", "Carlos", "demo@pagocontrol.pe")
+        mutableSession.value = UserSession(id = "demo", name = "Carlos", email = "demo@pagocontrol.pe")
         return SignInResult.Success
     }
 

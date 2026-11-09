@@ -1,5 +1,8 @@
 package com.example.androidbase.data
 
+import com.example.androidbase.domain.StartupPreferences
+import com.example.androidbase.data.local.DataStoreStartupPreferences
+import com.example.androidbase.session.AccountRepository
 import android.content.Context
 import com.example.androidbase.data.local.DataStorePreferences
 import com.example.androidbase.data.local.DemoSessionRepository
@@ -22,6 +25,12 @@ import org.koin.core.annotation.Single
 @Module
 @ComponentScan
 class CoreDataModule {
+    @Single
+    fun startupPreferences(context: Context): StartupPreferences = DataStoreStartupPreferences(context)
+
+    @Single
+    fun accountRepository(session: com.example.androidbase.session.SessionRepository): AccountRepository = SessionAccountRepository(session)
+
     @Single
     fun preferences(context: Context): AppPreferences = DataStorePreferences(context)
 
