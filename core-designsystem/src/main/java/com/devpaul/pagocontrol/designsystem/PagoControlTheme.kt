@@ -51,7 +51,7 @@ private val DarkColors = darkColorScheme(
 
 @OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
 private fun manropeFont(weight: FontWeight) = Font(
-    R.font.manrope, weight = weight,
+    resId = R.font.manrope, weight = weight,
     variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight)),
 )
 
@@ -66,17 +66,17 @@ private fun type(size: Int, height: Int, weight: FontWeight = FontWeight.Normal)
 )
 
 private val PagoTypography = Typography(
-    displaySmall = type(38, 44, FontWeight.ExtraBold),
-    headlineLarge = type(28, 36, FontWeight.Bold),
-    headlineMedium = type(22, 28, FontWeight.Bold),
-    headlineSmall = type(18, 24, FontWeight.SemiBold),
-    titleLarge = type(22, 28, FontWeight.Bold),
-    titleMedium = type(16, 22, FontWeight.SemiBold),
-    titleSmall = type(14, 20, FontWeight.SemiBold),
+    displaySmall = type(size = 38, height = 44, weight = FontWeight.ExtraBold),
+    headlineLarge = type(size = 28, height = 36, weight = FontWeight.Bold),
+    headlineMedium = type(size = 22, height = 28, weight = FontWeight.Bold),
+    headlineSmall = type(size = 18, height = 24, weight = FontWeight.SemiBold),
+    titleLarge = type(size = 22, height = 28, weight = FontWeight.Bold),
+    titleMedium = type(size = 16, height = 22, weight = FontWeight.SemiBold),
+    titleSmall = type(size = 14, height = 20, weight = FontWeight.SemiBold),
     bodyLarge = type(16, 24), bodyMedium = type(14, 20), bodySmall = type(12, 16),
-    labelLarge = type(14, 20, FontWeight.SemiBold),
-    labelMedium = type(12, 16, FontWeight.SemiBold),
-    labelSmall = type(10, 14, FontWeight.Bold),
+    labelLarge = type(size = 14, height = 20, weight = FontWeight.SemiBold),
+    labelMedium = type(size = 12, height = 16, weight = FontWeight.SemiBold),
+    labelSmall = type(size = 10, height = 14, weight = FontWeight.Bold),
 )
 
 object PagoSpacing {

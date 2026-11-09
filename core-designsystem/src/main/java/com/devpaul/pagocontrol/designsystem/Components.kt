@@ -42,22 +42,22 @@ fun PagoCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() 
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(Modifier.padding(PagoSpacing.medium), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
+        Column(modifier = Modifier.padding(PagoSpacing.medium), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
     }
 }
 
 @Composable
 fun PagoBrand(subtitle: String, modifier: Modifier = Modifier) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.primary) {
             Icon(
-                Icons.Outlined.AccountBalanceWallet, contentDescription = null,
+                imageVector = Icons.Outlined.AccountBalanceWallet, contentDescription = null,
                 modifier = Modifier.padding(10.dp).size(24.dp), tint = MaterialTheme.colorScheme.onPrimary,
             )
         }
         Column {
             Text(stringResource(R.string.brand_name), style = MaterialTheme.typography.titleMedium)
-            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -105,9 +105,9 @@ fun InstitutionAvatar(source: String) {
         shape = CircleShape,
         color = brandColor?.copy(alpha = 0.12f) ?: MaterialTheme.colorScheme.surfaceVariant,
     ) {
-        Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.size(44.dp), contentAlignment = Alignment.Center) {
             Text(
-                if (source == "BCP") source else source.take(1),
+                text = if (source == "BCP") source else source.take(1),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleSmall,
             )
@@ -127,6 +127,6 @@ fun InstitutionBadge(source: String) {
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
     ) {
-        Text(source, Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall)
+        Text(text = source, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall)
     }
 }
