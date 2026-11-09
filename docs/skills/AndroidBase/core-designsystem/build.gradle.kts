@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.compose.icons)
     implementation(platform(libs.compose.bom))
     api(libs.compose.material3)
     implementation(libs.compose.ui)
