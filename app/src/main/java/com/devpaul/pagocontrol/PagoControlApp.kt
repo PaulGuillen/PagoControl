@@ -33,7 +33,7 @@ fun PagoControlApp(viewModel: AppViewModel = koinViewModel()) {
     }
     PagoControlTheme(darkTheme) {
         val view = LocalView.current
-        DisposableEffect(view, darkTheme) {
+        DisposableEffect(key1 = view, key2 = darkTheme) {
             val window = (view.context as? android.app.Activity)?.window
             window?.let {
                 WindowCompat.getInsetsController(it, view).apply {
@@ -48,7 +48,7 @@ fun PagoControlApp(viewModel: AppViewModel = koinViewModel()) {
                 Box(contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             }
         } else {
-            MainGraph(session, theme?.ordinal ?: 0, viewModel::selectTheme)
+            MainGraph(session = session, themeIndex = theme?.ordinal ?: 0, onThemeSelected = viewModel::selectTheme)
         }
         if (themeError) {
             AlertDialog(

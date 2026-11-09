@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AndroidBase"
 include(":app", ":core-domain", ":core-data", ":core-platform", ":core-designsystem")
-include(":session", ":navigation", ":features:auth", ":features:home")
+include(":session", ":navigation", ":features:auth", ":features:home", ":features:splash", ":features:onboarding")

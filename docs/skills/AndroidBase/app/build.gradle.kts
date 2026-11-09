@@ -62,6 +62,8 @@ dependencies {
     implementation(project(":navigation"))
     implementation(project(":features:auth"))
     implementation(project(":features:home"))
+    implementation(project(":features:splash"))
+    implementation(project(":features:onboarding"))
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)

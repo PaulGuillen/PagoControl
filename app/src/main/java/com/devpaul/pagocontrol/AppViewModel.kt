@@ -16,7 +16,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class AppViewModel(auth: AuthRepository, private val appearance: AppearanceRepository) : ViewModel() {
     val session = auth.session
-    val theme = appearance.themeMode.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    val theme = appearance.themeMode.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5_000), initialValue = null)
     private val mutableThemeError = MutableStateFlow(false)
     val themeError = mutableThemeError.asStateFlow()
 

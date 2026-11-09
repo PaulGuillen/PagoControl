@@ -30,6 +30,8 @@ dependencies {
     implementation(project(":navigation"))
     implementation(project(":features:auth"))
     implementation(project(":features:home"))
+    implementation(project(":features:splash"))
+    implementation(project(":features:onboarding"))
     implementation(libs.koin.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
