@@ -42,4 +42,9 @@
     <string name="flow_network_error">Revisa tu conexión e intenta nuevamente.</string>
     <string name="flow_unavailable">No pudimos completar la operación. Intenta nuevamente.</string>
     <string name="flow_register_action">Regístrate aquí</string>
+    <string name="flow_recovery_email_label">CORREO ELECTRÓNICO</string>
+    <string name="flow_recovery_email_hint">ejemplo@correo.com</string>
+    <string name="flow_recovery_delivery_hint">Recibirás un enlace de recuperación por correo</string>
+    <string name="flow_recovery_protection">Protección PagoControl</string>
+    <string name="flow_recovery_remembered">¿Recordaste tu contraseña?</string>
 </resources>

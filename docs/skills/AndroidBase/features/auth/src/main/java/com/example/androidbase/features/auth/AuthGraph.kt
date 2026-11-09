@@ -50,8 +50,6 @@ fun NavGraphBuilder.authGraph(
                 state = state,
                 onIntent = viewModel::onIntent,
                 onLogin = onLogin,
-                themeIndex = themeIndex,
-                onThemeSelected = onThemeSelected,
             )
         }
     }
