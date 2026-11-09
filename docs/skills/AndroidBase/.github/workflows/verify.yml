@@ -20,7 +20,7 @@ jobs:
       - run: sdkmanager 'platforms;android-37.0'
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew :core-domain:test :core-data:testDebugUnitTest :features:auth:testDebugUnitTest :features:home:testDebugUnitTest :app:lintDevDebug :app:assembleDevDebug :app:compileDevDebugAndroidTestKotlin --console=plain
+      - run: ./gradlew :core-domain:test :core-data:testDebugUnitTest :features:auth:testDebugUnitTest :features:home:testDebugUnitTest :features:splash:testDebugUnitTest :features:onboarding:testDebugUnitTest :app:lintDevDebug :app:assembleDevDebug :app:compileDevDebugAndroidTestKotlin --console=plain
       - uses: actions/upload-artifact@v4
         if: always()
         with:
