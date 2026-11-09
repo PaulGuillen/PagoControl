@@ -14,6 +14,6 @@ Abrir en Android Studio, configurar Android SDK 37 y JDK 21 y ejecutar `app`, o 
 .\gradlew.bat :app:assembleDebug
 ```
 
-En la primera apertura puedes avanzar u omitir la introducción. En acceso, pulsa **Completar acceso de demostración** y luego **Iniciar sesión**. No se conecta un proveedor real ni cuentas bancarias.
+En la primera apertura puedes avanzar u omitir la introducción. En acceso, pulsa **Iniciar sesión** para abrir Home directamente, sin completar correo ni contraseña. No se conecta un proveedor real ni cuentas bancarias.
 
 Consulta [la arquitectura y validaciones](docs/ARCHITECTURE.md) y [las skills de referencia](docs/skills/README.md).

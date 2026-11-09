@@ -4,7 +4,7 @@
 
 Cuatro features: `splash`, `onboarding`, `auth` y `home`. Splash, los tres pasos del onboarding y Login/Registro/recuperación siguen las referencias de `docs/stitch_pagocontrol_android_app_ui`, adaptadas a los temas claro y oscuro. El acceso y el dashboard de PagoControl siguen siendo de demostración: no hay Firebase, servidor, lectura de SMS, permisos bancarios ni sincronización real.
 
-Cuenta demo: `demo@pagocontrol.pe` / `PagoControl123`. El formulario permite completar estos datos con un botón. No usar credenciales personales. La contraseña no se guarda en disco ni en `SavedStateHandle`. La sesión sobrevive a recreaciones de Activity, pero termina al morir el proceso.
+El botón Iniciar sesión abre Home directamente con una sesión local de ejemplo, sin completar correo ni contraseña. No hay autocompletado ni tarjeta demo bajo el formulario. No usar credenciales personales: este acceso local no autentica una cuenta real. La contraseña no se guarda en disco ni en `SavedStateHandle`. La sesión sobrevive a recreaciones de Activity, pero termina al morir el proceso.
 
 ## Módulos y dependencias
 
@@ -82,7 +82,7 @@ No hay dependencias entre features. La UI depende de contratos; las implementaci
 
 `ViewModel` es el propietario del estado de cada pantalla (MVVM). Las acciones entran exclusivamente por `onIntent`, que produce un `StateFlow<UiState>` inmutable para renderizar (MVI). Las pantallas reciben estado y callbacks; las entradas de grafo resuelven ViewModels mediante Koin y observan con `collectAsStateWithLifecycle`.
 
-- Auth valida correo y longitud de contraseña; evita envíos duplicados, conserva el correo y permite reintentar. Una cuenta demo incorrecta nunca crea sesión.
+- Auth permite acceso directo en el proveedor local; los proveedores reales conservan validación de correo/contraseña. Evita envíos duplicados, conserva el correo y permite reintentar.
 - Home distingue carga, contenido, vacío y error; admite reintento, selección de periodo y barra, confirmación ilustrativa y logout.
 - Las operaciones pertenecen a `viewModelScope`; cancelación se propaga y nunca se convierte en error de negocio.
 - `core-platform/BaseViewModel` centraliza el StateFlow y su actualización atómica, siguiendo AndroidBase. Las intenciones, cargas, reintentos y políticas de concurrencia siguen siendo responsabilidad de cada feature.
@@ -144,7 +144,7 @@ Requiere JDK 21, Android SDK 37 y `local.properties` con `sdk.dir` local. No con
 .\gradlew.bat :app:connectedDebugAndroidTest
 ```
 
-Las pruebas locales cubren validación, sesión inválida, dashboard protegido, logout, doble envío, reintento y selección de periodo. La prueba instrumentada recorre acceso, Home, cambio a oscuro, recreación y dos sesiones consecutivas. Las pruebas usan implementaciones controladas; no acreditan un proveedor de autenticación real.
+Las pruebas locales cubren validación de proveedores reales, acceso local sin credenciales, dashboard protegido, logout, doble envío, reintento y selección de periodo. La prueba instrumentada recorre acceso, Home, cambio a oscuro, recreación y dos sesiones consecutivas. Las pruebas usan implementaciones controladas; no acreditan un proveedor de autenticación real.
 
 Validación inicial ejecutada el 8 de noviembre de 2026: APK debug generado; ocho pruebas unitarias aprobadas; dos pruebas instrumentadas aprobadas en Pixel 7, Android 16 (incluida la prueba de plantilla existente).
 
@@ -201,3 +201,9 @@ Al terminar los tres pasos se guarda la preferencia y se abre Login, nunca Regis
 ## Referencias oscuras de onboarding 2 y 3
 
 Los pasos 2 y 3 incorporan `onboarding_2_privacidad_y_seguridad_modo_oscuro` y `onboarding_3_control_y_alertas_modo_oscuro` de Stitch. El segundo usa orbitas discontinuas, candado central, distintivos de fuentes de colores y tarjetas de privacidad. El tercero presenta saldo, Netflix, Luz del Sur y una tarjeta de ahorro con progreso. `PrivacyIllustration` y `ControlIllustration` estan en `ui/onboarding/components/`; ambos tienen previews claros y oscuros. Se conservan las etiquetas de ejemplo y no se afirman cifrado Keystore, funcionamiento offline o lectura SMS que aun no esten implementados. El ultimo boton sigue abriendo Login.
+
+## Estilo de enlaces y proveedores de Auth
+
+`AccountLink`, en core-designsystem, centra el texto de contexto y destaca solo la accion: amarillo y negrita en oscuro; texto oscuro, negrita y subrayado en claro. Se reutiliza en Login, Registro, recuperacion y el acceso desde Onboarding. Los textos completos siguen en los recursos de cada feature y el area tactil mantiene un minimo de 48 dp.
+
+El boton de Google conserva el simbolo multicolor como vector local sin tintado. La huella usa un simbolo verde sobre circulo menta en claro y verde profundo en oscuro; sus contenedores son claros de dia y oscuros con borde de noche. Estos cambios son visuales: no habilitan OAuth ni biometria real. Registro separa el checkbox y el texto de terminos con 12 dp y agrega espacio vertical. No se modifica el flujo de recuperacion ni se implementa OTP al adoptar sus referencias oscuras.

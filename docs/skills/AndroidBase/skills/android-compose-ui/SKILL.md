@@ -29,3 +29,9 @@ Las llamadas Kotlin con tres o mas argumentos suministrados usan nombres explici
 ## Referencias de entrada y contraste
 
 Splash y los tres pasos del onboarding siguen las capturas oscuras y claras de Stitch en docs. El paso 2 muestra el candado con orbitas y fuentes de colores; el paso 3 muestra saldo, dos pagos de ejemplo (Netflix y Luz del Sur), tasa de ahorro y barra de progreso. Sus ilustraciones viven en `ui/onboarding/components/` y los previews cubren ambos temas. Los iconos de proveedor conservan morado y celeste en ambos temas con simbolos y etiquetas blancos; usa los colores accesibles de `EntryColors` (contraste de etiquetas blancas >= 4.5:1). Los textos generales usan `onSurface`/`onBackground`: no pongas blanco sobre un fondo claro. Un contenedor con color propio declara explicitamente su color de contenido. Los ejemplos visuales no afirman una sincronizacion real ni cifrado pendiente de implementar.
+
+## Estilo de enlaces y proveedores de Auth
+
+`AccountLink`, en core-designsystem, centra el texto de contexto y destaca solo la accion: amarillo y negrita en oscuro; texto oscuro, negrita y subrayado en claro. Se reutiliza en Login, Registro, recuperacion y el acceso desde Onboarding. Los textos completos siguen en los recursos de cada feature y el area tactil mantiene un minimo de 48 dp.
+
+El boton de Google conserva el simbolo multicolor como vector local sin tintado. La huella usa un simbolo verde sobre circulo menta en claro y verde profundo en oscuro; sus contenedores son claros de dia y oscuros con borde de noche. Estos cambios son visuales: no habilitan OAuth ni biometria real. Registro separa el checkbox y el texto de terminos con 12 dp y agrega espacio vertical. No se modifica el flujo de recuperacion ni se implementa OTP al adoptar sus referencias oscuras.

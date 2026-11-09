@@ -8,7 +8,7 @@ Proyecto inicial extraído de los patrones de CvFree, con **cuatro features de e
 2. Selecciona JDK 21 como Gradle JDK e instala el SDK indicado en `buildSrc/src/main/kotlin/Config.kt` (compileSdk 37).
 3. Sincroniza Gradle. Android Studio crea tu `local.properties`; no contiene rutas de la computadora donde se generó la base.
 4. Selecciona la variante **devDebug** y ejecuta `app`.
-5. Avanza u omite la introducción; pulsa **Completar acceso de demostración** y **Iniciar sesión**, guarda ejemplos, cambia el tema y cierra sesión. Puedes empezar a sustituir las features sin configurar un backend.
+5. Avanza u omite la introducción; pulsa **Iniciar sesión** para entrar directamente en modo local, sin credenciales, guarda ejemplos, cambia el tema y cierra sesión. Puedes empezar a sustituir las features sin configurar un backend.
 
 ```powershell
 .\gradlew.bat :app:assembleDevDebug
@@ -138,7 +138,7 @@ Splash carga `StartupPreferences` y muestra la marca durante 650 ms sin bloquear
 
 La preferencia de introducción usa DataStore `startup` y `onboarding_completed=false` por defecto. Se guarda antes de salir de Onboarding y no se elimina con logout. Cada paso puede avanzar o volver; omitir, el enlace de acceso y el último botón llevan a Login. Registro se abre únicamente desde Login.
 
-Los formularios tienen contratos independientes y validación de campos; nunca persisten contraseñas. `AccountRepository` y `SessionAccountRepository` conectan registro/recuperación con el proveedor. En demo muestran expresamente que no se crean cuentas ni se envían mensajes. En Firebase usan el contrato real de sesión; recuperación utiliza un enlace por correo, sin prometer un OTP de seis dígitos. La captura de nombre aún no crea un perfil remoto.
+Los formularios tienen contratos independientes y nunca persisten contraseñas. En modo local, Iniciar sesión abre Home sin completar campos; Firebase mantiene validación y autenticación real. `AccountRepository` y `SessionAccountRepository` conectan registro/recuperación con el proveedor. En demo muestran expresamente que no se crean cuentas ni se envían mensajes. En Firebase usan el contrato real de sesión; recuperación utiliza un enlace por correo, sin prometer un OTP de seis dígitos. La captura de nombre aún no crea un perfil remoto.
 
 Google, biometría, términos de servicio y políticas definitivas siguen pendientes de integración. Las tarjetas del onboarding son ilustrativas y no acreditan sincronización bancaria ni cifrado local implementados.
 
@@ -258,3 +258,9 @@ Al terminar los tres pasos se guarda la preferencia y se abre Login, nunca Regis
 ## Referencias oscuras de onboarding 2 y 3
 
 Los pasos 2 y 3 incorporan `onboarding_2_privacidad_y_seguridad_modo_oscuro` y `onboarding_3_control_y_alertas_modo_oscuro` de Stitch. El segundo usa orbitas discontinuas, candado central, distintivos de fuentes de colores y tarjetas de privacidad. El tercero presenta saldo, Netflix, Luz del Sur y una tarjeta de ahorro con progreso. `PrivacyIllustration` y `ControlIllustration` estan en `ui/onboarding/components/`; ambos tienen previews claros y oscuros. Se conservan las etiquetas de ejemplo y no se afirman cifrado Keystore, funcionamiento offline o lectura SMS que aun no esten implementados. El ultimo boton sigue abriendo Login.
+
+## Estilo de enlaces y proveedores de Auth
+
+`AccountLink`, en core-designsystem, centra el texto de contexto y destaca solo la accion: amarillo y negrita en oscuro; texto oscuro, negrita y subrayado en claro. Se reutiliza en Login, Registro, recuperacion y el acceso desde Onboarding. Los textos completos siguen en los recursos de cada feature y el area tactil mantiene un minimo de 48 dp.
+
+El boton de Google conserva el simbolo multicolor como vector local sin tintado. La huella usa un simbolo verde sobre circulo menta en claro y verde profundo en oscuro; sus contenedores son claros de dia y oscuros con borde de noche. Estos cambios son visuales: no habilitan OAuth ni biometria real. Registro separa el checkbox y el texto de terminos con 12 dp y agrega espacio vertical. No se modifica el flujo de recuperacion ni se implementa OTP al adoptar sus referencias oscuras.
