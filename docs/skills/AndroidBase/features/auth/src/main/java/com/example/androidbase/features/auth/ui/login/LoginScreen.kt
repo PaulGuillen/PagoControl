@@ -12,6 +12,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.androidbase.designsystem.BaseTheme
+import com.example.androidbase.designsystem.AccountLink
+import com.example.androidbase.designsystem.EntryColors
+import androidx.compose.ui.text.font.FontWeight
 import com.example.androidbase.features.auth.R
 import com.example.androidbase.features.auth.ui.components.*
 
@@ -36,18 +39,23 @@ fun LoginScreen(
             onToggleVisibility = { onIntent(LoginUiIntent.TogglePassword) }, onSubmit = { onIntent(LoginUiIntent.Submit) },
         )
         TextButton(onClick = onForgotPassword, enabled = !state.loading) {
-            Text(stringResource(R.string.flow_forgot_link), color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.flow_forgot_link),
+                color = if (EntryColors.isDark) EntryColors.Gold else MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
         state.error?.let {
             Text(stringResource(if (it == LoginError.InvalidCredentials) R.string.flow_credentials_error else R.string.flow_unavailable), color = MaterialTheme.colorScheme.error)
         }
         AuthPrimaryButton(text = stringResource(R.string.flow_login_button), loading = state.loading) { onIntent(LoginUiIntent.Submit) }
-        TextButton(onClick = { providerInfo = true }, enabled = !state.loading) {
-            Text(stringResource(R.string.flow_fingerprint), color = MaterialTheme.colorScheme.onSurface)
-        }
-        TextButton(onClick = onRegister, enabled = !state.loading) {
-            Text(stringResource(R.string.flow_register_link), color = MaterialTheme.colorScheme.onSurface)
-        }
+        AuthFingerprintButton(onClick = { providerInfo = true }, enabled = !state.loading)
+        AccountLink(
+            text = stringResource(R.string.flow_register_link),
+            action = stringResource(R.string.flow_register_action),
+            onClick = onRegister,
+            enabled = !state.loading,
+        )
     }
     if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) { providerInfo = false }
 }

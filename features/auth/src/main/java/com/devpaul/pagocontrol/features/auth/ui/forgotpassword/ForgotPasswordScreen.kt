@@ -10,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.features.auth.R
+import com.devpaul.pagocontrol.designsystem.AccountLink
 import com.devpaul.pagocontrol.features.auth.ui.components.*
 
 @Composable
@@ -52,7 +52,12 @@ fun ForgotPasswordScreen(
                 Text(stringResource(R.string.flow_security_description), style = MaterialTheme.typography.bodySmall)
             }
         }
-        TextButton(onClick = onLogin, enabled = !state.loading) { Text(stringResource(R.string.flow_back_login), color = MaterialTheme.colorScheme.onSurface) }
+        AccountLink(
+            text = stringResource(R.string.flow_back_login),
+            action = stringResource(R.string.flow_back_login),
+            onClick = onLogin,
+            enabled = !state.loading,
+        )
     }
 }
 

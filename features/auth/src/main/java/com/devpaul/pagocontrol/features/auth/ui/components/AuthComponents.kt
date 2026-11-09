@@ -1,5 +1,6 @@
 package com.devpaul.pagocontrol.features.auth.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockReset
@@ -44,8 +46,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.AppearanceMenu
 import com.devpaul.pagocontrol.designsystem.BrandMark
+import com.devpaul.pagocontrol.designsystem.EntryColors
 import com.devpaul.pagocontrol.features.auth.R
 
 @Composable
@@ -152,13 +157,68 @@ fun AuthPrimaryButton(text: String, loading: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun AuthProviderButton(onClick: () -> Unit) {
+    val dark = EntryColors.isDark
     OutlinedButton(
-        onClick = onClick, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-        shape = MaterialTheme.shapes.medium, border = null,
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface,
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).shadow(
+            elevation = if (dark) 0.dp else 2.dp,
+            shape = MaterialTheme.shapes.medium,
         ),
-    ) { Text(stringResource(R.string.flow_google)) }
+        shape = MaterialTheme.shapes.medium,
+        border = if (dark) BorderStroke(1.dp, EntryColors.border) else null,
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = if (dark) EntryColors.card else Color.White,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_google_sign_in),
+                contentDescription = null,
+                modifier = Modifier.size(22.dp),
+                tint = Color.Unspecified,
+            )
+            Text(stringResource(R.string.flow_google))
+        }
+    }
+}
+
+@Composable
+fun AuthFingerprintButton(onClick: () -> Unit, enabled: Boolean = true) {
+    val dark = EntryColors.isDark
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
+        enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
+        border = if (dark) BorderStroke(1.dp, EntryColors.border) else null,
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = if (dark) EntryColors.card else Color(0xFFF3F4ED),
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = if (dark) Color(0xFF123E30) else Color(0xFF94F6C4),
+                border = if (dark) BorderStroke(1.dp, Color(0xFF2A7055)) else null,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Fingerprint,
+                    contentDescription = null,
+                    modifier = Modifier.padding(10.dp).size(26.dp),
+                    tint = if (dark) EntryColors.Mint else EntryColors.Green,
+                )
+            }
+            Text(stringResource(R.string.flow_fingerprint))
+        }
+    }
 }
 
 @Composable

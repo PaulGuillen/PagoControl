@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.features.auth.R
+import com.devpaul.pagocontrol.designsystem.AccountLink
 import com.devpaul.pagocontrol.features.auth.ui.components.*
 
 @Composable
@@ -68,11 +70,21 @@ fun RegisterScreen(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth().toggleable(value = state.termsAccepted, enabled = !state.loading, role = Role.Checkbox) { onIntent(RegisterUiIntent.TermsChanged(it)) },
+                modifier = Modifier.fillMaxWidth().toggleable(
+                    value = state.termsAccepted,
+                    enabled = !state.loading,
+                    role = Role.Checkbox,
+                    onValueChange = { onIntent(RegisterUiIntent.TermsChanged(it)) },
+                ).padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(checked = state.termsAccepted, onCheckedChange = null, enabled = !state.loading)
-                Text(stringResource(R.string.flow_accept_terms), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = stringResource(R.string.flow_accept_terms),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
             TextButton(onClick = { legalInfo = true }) { Text(stringResource(R.string.flow_terms_link), color = MaterialTheme.colorScheme.onSurface) }
             state.error?.let { error ->
@@ -84,7 +96,12 @@ fun RegisterScreen(
                 }), color = MaterialTheme.colorScheme.error)
             }
             AuthPrimaryButton(text = stringResource(R.string.flow_create_account), loading = state.loading) { onIntent(RegisterUiIntent.Submit) }
-            TextButton(onClick = onLogin, enabled = !state.loading) { Text(stringResource(R.string.flow_already_account), color = MaterialTheme.colorScheme.onSurface) }
+            AccountLink(
+                text = stringResource(R.string.flow_already_account),
+                action = stringResource(R.string.flow_login_button),
+                onClick = onLogin,
+                enabled = !state.loading,
+            )
         }
     }
     if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) { providerInfo = false }
