@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-tint": "#765b00", "tertiary-fixed": "#ffdad7", "secondary-container": "#94f6c4", "surface-dim": "#d9dbd4", "surface": "#f9faf3", "secondary": "#006c48", "on-primary-container": "#6b5200", "on-primary": "#ffffff", "on-tertiary-container": "#9f292a", "on-secondary-container": "#00734d", "outline-variant": "#d1c5ae", "surface-container": "#edefe8", "tertiary": "#ac3231", "error": "#ba1a1a", "on-error": "#ffffff", "on-secondary": "#ffffff", "surface-container-highest": "#e1e3dc", "secondary-fixed": "#94f6c4", "on-tertiary": "#ffffff", "primary-container": "#f4c542", "surface-container-low": "#f3f4ed", "on-primary-fixed-variant": "#594400", "surface-container-high": "#e7e9e2", "outline": "#807662", "inverse-surface": "#2e312d", "on-secondary-fixed": "#002113", "background": "#f9faf3", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#efc13e", "primary-fixed": "#ffdf94", "surface-variant": "#e1e3dc", "on-tertiary-fixed-variant": "#8b191d", "on-background": "#191c18", "on-tertiary-fixed": "#410004", "primary": "#765b00", "on-secondary-fixed-variant": "#005236", "on-error-container": "#93000a", "on-surface-variant": "#4e4634", "secondary-fixed-dim": "#78d9aa", "surface-bright": "#f9faf3", "tertiary-fixed-dim": "#ffb3ae", "inverse-on-surface": "#f0f1ea", "on-primary-fixed": "#241a00", "on-surface": "#191c18", "error-container": "#ffdad6", "inverse-primary": "#efc13e", "tertiary-container": "#ffbab5" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-tablet": "1.5rem", "gutter": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "gutter-sm": "0.75rem", "margin": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Manrope"], "body-md": ["Manrope"], "headline-lg": ["Manrope"], "display-currency": ["Manrope"], "headline-md": ["Manrope"], "label-lg": ["Manrope"], "display-currency-mobile": ["Manrope"], "headline-sm": ["Manrope"], "label-md": ["Manrope"], "label-sm": ["Manrope"], "title-md": ["Manrope"], "body-sm": ["Manrope"], "currency-tabular": ["Manrope"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "headline-lg": ["28px", { lineHeight: "36px", fontWeight: "700" }], "display-currency": ["38px", { lineHeight: "44px", fontWeight: "800" }], "headline-md": ["22px", { lineHeight: "28px", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }], "display-currency-mobile": ["30px", { lineHeight: "36px", fontWeight: "800" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "label-sm": ["10px", { lineHeight: "14px", fontWeight: "700" }], "title-md": ["16px", { lineHeight: "22px", fontWeight: "600" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "currency-tabular": ["16px", { lineHeight: "22px", fontWeight: "700" }] } } } }</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100%;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-[#0d0f12] text-white font-body-md text-body-md flex flex-col min-h-screen"><main class="flex flex-col flex-1 relative w-full bg-[#0d0f12] pt-safe pb-safe"><div class="flex flex-col w-full px-margin pb-space-lg select-none">
+<!-- Top Navigation & Progress Bar -->
+<div class="flex items-center justify-between py-space-sm"><div class="flex items-center gap-space-xs">
+<div class="w-8 h-2 rounded-full bg-[#F4C542] transition-all duration-300"></div>
+<div class="w-2 h-2 rounded-full bg-[#374151] transition-all duration-300"></div>
+<div class="w-2 h-2 rounded-full bg-[#374151] transition-all duration-300"></div>
+</div>
+<button class="py-1 px-3 text-[#9CA3AF] hover:text-white font-label-md text-label-md rounded-full hover:bg-white/10 transition-colors" type="button">
+      Omitir
+</button></div>
+<!-- Interactive Dynamic Visual Canvas -->
+<div class="relative w-full my-space-md py-space-sm flex flex-col items-center justify-center overflow-hidden">
+<!-- Ambient Backdrop Aura -->
+<div class="absolute w-64 h-64 bg-primary-container/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute -right-6 top-8 w-44 h-44 bg-secondary-container/25 rounded-full blur-2xl pointer-events-none -z-10"></div>
+<!-- Center Floating Mockup Stack -->
+<div class="w-full max-w-sm flex flex-col gap-3 relative">
+<!-- Notification Card: Yape Incoming -->
+<div class="w-full bg-[#1a1f29] border border-white/10 rounded-xl p-3 shadow-md flex items-center justify-between transform transition-all duration-700 ease-out translate-y-0" id="card-yape">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-[#742384] text-white flex items-center justify-center font-headline-sm text-headline-sm shrink-0 shadow-sm shadow-[#742384]/40">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="bg-[#742384]/30 text-[#e98dfa] font-label-sm text-label-sm px-2 py-0.5 rounded-full">Yape</span>
+<span class="text-[#9CA3AF] font-body-sm text-body-sm">hace 1 min</span>
+</div>
+<p class="font-title-md text-title-md text-white truncate">Carlos M.</p>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-currency-tabular text-currency-tabular text-[#10B981] block font-bold">+ S/ 45.00</span>
+<span class="font-label-sm text-label-sm text-[#10B981] bg-[#10B981]/15 px-1.5 py-0.5 rounded border border-[#10B981]/20">Auto-leído</span>
+</div>
+</div>
+<!-- Sync Bridge Badge Indicator -->
+<div class="flex items-center justify-center my-[-4px] z-10"><div class="inline-flex items-center gap-1.5 bg-[#161b26]/90 border border-white/10 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[15px] text-[#F4C542] animate-spin" style="animation-duration: 4s;">sync</span>
+<span class="font-label-sm text-label-sm text-[#D1D5DB]">Sincronización en vivo</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+</div></div>
+<!-- Notification Card: Plin Incoming -->
+<div class="w-full bg-[#1a1f29] border border-white/10 rounded-xl p-3 shadow-md flex items-center justify-between transform transition-all duration-700 ease-out translate-y-0" id="card-plin">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-[#00A9E0] text-white flex items-center justify-center font-headline-sm text-headline-sm shrink-0 shadow-sm shadow-[#00A9E0]/40">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send_money</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="bg-[#00A9E0]/25 text-[#38bdf8] font-label-sm text-label-sm px-2 py-0.5 rounded-full">Plin</span>
+<span class="text-[#9CA3AF] font-body-sm text-body-sm">Ahora</span>
+</div>
+<p class="font-title-md text-title-md text-white truncate">Transferencia recibida</p>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-currency-tabular text-currency-tabular text-[#10B981] block font-bold">+ S/ 120.00</span>
+<span class="font-label-sm text-label-sm text-[#10B981] bg-[#10B981]/15 px-1.5 py-0.5 rounded border border-[#10B981]/20">Detectado</span>
+</div>
+</div>
+<!-- Result Card: Consolidated Smart Balance Widget -->
+<div class="w-full bg-[#161b26] border border-white/10 rounded-2xl p-3.5 mt-1 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#F4C542]"></div>
+<span class="font-label-sm text-label-sm text-[#9CA3AF] uppercase tracking-wider">Caja del Día (Auto)</span>
+</div>
+<span class="font-label-sm text-label-sm text-[#D1D5DB] bg-white/10 px-2 py-0.5 rounded-full border border-white/5">2 cobros</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-title-md text-title-md text-[#9CA3AF] font-bold">S/</span>
+<span class="font-display-currency-mobile text-display-currency-mobile text-white tracking-tight">165.00</span>
+</div>
+<div class="flex items-center gap-1 text-[#10B981] bg-[#10B981]/15 border border-[#10B981]/25 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[14px]">insights</span>
+<span class="font-label-sm text-label-sm font-bold">100% clasificado</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Narrative Text Section -->
+<div class="w-full flex flex-col text-center px-space-xs mt-space-sm mb-space-lg"><h1 class="font-headline-lg text-headline-lg text-white tracking-tight leading-tight">
+      Tus cobros registrados al instante
+    </h1>
+<p class="font-body-md text-body-md text-[#9CA3AF] mt-2 max-w-xs mx-auto">
+      PagoControl detecta tus ingresos y ventas de Yape, Plin y bancos en segundo plano.
+    </p></div>
+<!-- Call To Action & Footer Link -->
+<div class="w-full flex flex-col items-center gap-space-md"><button class="w-full h-[52px] bg-[#F4C542] text-[#191c18] font-bold hover:bg-[#efc13e] active:scale-[0.98] transition-all rounded-[14px] flex items-center justify-center gap-2 shadow-md shadow-[#F4C542]/20" id="btn-next" type="button">
+<span class="font-label-lg text-label-lg font-bold">Siguiente</span>
+<span class="material-symbols-outlined text-[20px] font-bold">arrow_forward</span>
+</button>
+<a class="font-label-md text-label-md text-[#9CA3AF] hover:text-white transition-colors py-1" href="#">
+      ¿Ya tienes cuenta? <span class="font-bold text-white underline">Iniciar Sesión</span>
+</a></div>
+</div>
+<script>
+  (() => {
+    // Subtle pulse micro-interaction for notification discovery
+    const yapeCard = document.getElementById('card-yape');
+    const plinCard = document.getElementById('card-plin');
+    const nextBtn = document.getElementById('btn-next');
+
+    let toggle = false;
+    setInterval(() => {
+      toggle = !toggle;
+      if (toggle) {
+        yapeCard.classList.add('-translate-y-0.5');
+        plinCard.classList.remove('-translate-y-0.5');
+      } else {
+        yapeCard.classList.remove('-translate-y-0.5');
+        plinCard.classList.add('-translate-y-0.5');
+      }
+    }, 2400);
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        nextBtn.classList.add('scale-95');
+        setTimeout(() => nextBtn.classList.remove('scale-95'), 180);
+      });
+    }
+  })();
+</script></main></body></html>
