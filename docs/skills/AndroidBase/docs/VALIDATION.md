@@ -62,6 +62,21 @@ Resultado: APK devDebug generado, cuatro pruebas unitarias aprobadas y recorrido
 
 La integración cloud, el cierre del listener con Firebase real, release y backend no se ejecutaron en esta actualización. Los resultados iniciales de esas áreas son históricos.
 
+## Flujo Splash, Onboarding y Auth
+
+Se añadieron los módulos `features:splash` y `features:onboarding`, con sus grafos, módulos Koin, paquetes por pantalla y contratos en archivos independientes. Auth ahora separa `ui/login`, `ui/register` y `ui/forgotpassword`. La apariencia sigue las referencias de Stitch de PagoControl, con modo claro/oscuro y Manrope local.
+
+El arranque usa la preferencia `startup/onboarding_completed`, espera la sesión y limpia rutas al cambiar de identidad. Registro y recuperación usan `AccountRepository`: en demo no crean cuentas ni envían correos, y en cloud delegan al proveedor existente. La recuperación real es por enlace de correo; no se implementa el OTP del mockup. Google, biometría y perfil remoto de nombre siguen pendientes.
+
+Comprobaciones ejecutadas en esta actualización:
+
+```powershell
+.\gradlew.bat :app:assembleDevDebug :features:auth:testDebugUnitTest :features:splash:testDebugUnitTest :features:onboarding:testDebugUnitTest :app:lintDevDebug
+.\gradlew.bat :app:connectedDevDebugAndroidTest
+```
+
+Resultado: build correcto, cinco pruebas de los ViewModels modificados aprobadas y dos recorridos instrumentados aprobados en Pixel 7 / Android 16 (demo a Home y navegación de Registro/recuperación). Lint termina sin errores. La versión de PagoControl también compila, pasa seis pruebas de los ViewModels afectados y tres instrumentadas. No se ejecutó integración con Firebase real ni publicación.
+
 ## Repetir las comprobaciones
 
 Desde PowerShell, con JDK/SDK y Node configurados:

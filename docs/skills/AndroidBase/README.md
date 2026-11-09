@@ -1,6 +1,6 @@
 # Android Base
 
-Proyecto inicial extraído de los patrones de CvFree, con **exactamente dos features de ejemplo: `auth` y `home`**. La base ejecutable conserva Kotlin, Compose, Material 3, arquitectura por capas, módulos Gradle, Koin Annotations/KSP, rutas tipadas, coroutines, DataStore e infraestructura Firebase/HTTP.
+Proyecto inicial extraído de los patrones de CvFree, con **cuatro features de ejemplo: `splash`, `onboarding`, `auth` y `home`**. La base ejecutable conserva Kotlin, Compose, Material 3, arquitectura por capas, módulos Gradle, Koin Annotations/KSP, rutas tipadas, coroutines, DataStore e infraestructura Firebase/HTTP.
 
 ## Empezar en cinco pasos
 
@@ -8,7 +8,7 @@ Proyecto inicial extraído de los patrones de CvFree, con **exactamente dos feat
 2. Selecciona JDK 21 como Gradle JDK e instala el SDK indicado en `buildSrc/src/main/kotlin/Config.kt` (compileSdk 37).
 3. Sincroniza Gradle. Android Studio crea tu `local.properties`; no contiene rutas de la computadora donde se generó la base.
 4. Selecciona la variante **devDebug** y ejecuta `app`.
-5. Pulsa **Explorar demo**, guarda ejemplos, cambia el tema y cierra sesión. Puedes empezar a sustituir las features sin configurar un backend.
+5. Avanza u omite la introducción; pulsa **Completar acceso de demostración** y **Iniciar sesión**, guarda ejemplos, cambia el tema y cierra sesión. Puedes empezar a sustituir las features sin configurar un backend.
 
 ```powershell
 .\gradlew.bat :app:assembleDevDebug
@@ -21,7 +21,8 @@ En macOS/Linux: `chmod +x gradlew` y usa `./gradlew`. Necesitas acceso a reposit
 
 | Capacidad | Estado |
 | --- | --- |
-| Auth demo | Entrada explícita sin cuenta ni credenciales; sesión temporal en memoria |
+| Splash y onboarding | Marca, lectura de preferencias y tres pasos; finalización persistida en DataStore |
+| Auth demo | Login, Registro y recuperación en carpetas propias; sesión temporal y formularios sin correos/cuentas reales |
 | Home demo | Lista y guardado local con DataStore; datos conservados al reiniciar |
 | Apariencia | Tema claro/oscuro persistente y compartido por toda la app |
 | Idiomas | Español por defecto e inglés según idioma del dispositivo |
@@ -39,14 +40,16 @@ En modo demo no se inicializa Firebase y no hay telemetría remota. La sesión d
 
 ```text
 app                      Composición, Application, Activity y MainGraph
-features/auth            Entrada demo; login, registro y recuperación Firebase
+features/splash          Arranque y preferencias iniciales
+features/onboarding      Introducción persistente de tres pasos
+features/auth            ui/login, ui/register y ui/forgotpassword
 features/home            Lista, creación de ejemplos y preferencia de tema
 core-domain              Entidades, resultados, contratos y AddExampleUseCase
 session                  Contrato de identidad y estados de sesión, Kotlin puro
 core-data                DataStore, Firebase, adaptadores y configuración Retrofit
 core-platform            BaseViewModel y contrato de observabilidad
 core-designsystem        Tema Material 3, colores y tipografía
-navigation               AuthRoute y HomeRoute serializables, Kotlin puro
+navigation               Contratos sellados por feature en route/, Kotlin/JVM
 buildSrc                 Convenciones de app, librería Android/Kotlin y feature
 firebase                 Functions, reglas completas y pruebas de reglas
 skills                   Las skills de guía para extender el proyecto
@@ -54,7 +57,7 @@ skills                   Las skills de guía para extender el proyecto
 
 ```mermaid
 flowchart TD
-    App[app] --> Features[features/auth + features/home]
+    App[app] --> Features[splash + onboarding + auth + home]
     App --> Data[core-data]
     Features --> Domain[core-domain]
     Features --> Session[session]
@@ -66,21 +69,21 @@ flowchart TD
     Session --> Domain
 ```
 
-Las features no dependen de `core-data` ni entre sí. El dominio y los contratos de sesión no importan Android/Firebase/Koin. La capa de datos convierte excepciones en resultados y propaga cancelación. El flujo protegido obtiene el UID desde la sesión real; no desde un argumento externo. Las reglas del servidor siguen siendo la autoridad de acceso.
+Las features no dependen de `core-data` ni entre sí. El dominio y los contratos de sesión no importan Android/Firebase; solo SessionModule incorpora anotaciones Koin para la composición. La capa de datos convierte excepciones en resultados y propaga cancelación. El flujo protegido obtiene el UID desde la sesión real; no desde un argumento externo. Las reglas del servidor siguen siendo la autoridad de acceso.
 
 ## Inicializacion de Koin
 
 `AndroidApplication.onCreate` prepara Timber/Firebase segun la configuracion y llama a `koinInitializer()`. El arranque registra contexto Android, logger y la propiedad `firebase.enabled`, y carga exclusivamente `AppModule().module`.
 
-`AppModule` usa `@Module(includes = [CoreDataModule::class, NetworkModule::class, AuthModule::class, HomeModule::class])` y `@ComponentScan`. Los modulos de cada feature mantienen esas anotaciones; los ViewModels usan `@KoinViewModel`, y los proveedores compartidos `@Single`. Los plugins de app, datos y features aplican `plugin.koin` para generar sus definiciones con KSP.
+`AppModule` usa `@Module(includes = [CoreDataModule::class, NavigationModule::class, SessionModule::class, NetworkModule::class, AuthModule::class, HomeModule::class, SplashModule::class, OnboardingModule::class])` y `@ComponentScan`. Los modulos de cada feature mantienen esas anotaciones; los ViewModels usan `@KoinViewModel`, y los proveedores compartidos `@Single`. App, datos, navigation, session y las features aplican `plugin.koin` para generar sus definiciones con KSP.
 
 El modo demo no resuelve los proveedores Firebase: son dependencias diferidas y protegidas por la configuracion. `SessionLifecycle` conserva la limpieza del listener Auth al cerrar Koin, mediante una extension registrada despues del arranque. Esta base no modifica archivos generados ni combina registros DSL con los de anotaciones.
 
 El registro de esa extension queda aislado en `koinInitializer` con `@OptIn(KoinInternalApi::class)`, requerido por el ExtensionManager de Koin 4.2.2. Al cambiar esa version debe revisarse este punto de lifecycle; no se elimina el cierre del listener para adaptar la sintaxis de DI.
 
-## Sustituir las dos features
+## Extender las features
 
-Para la primera iteración puedes conservar los nombres `auth` y `home` y cambiar sus pantallas, estado y reglas.
+Conserva los límites por responsabilidad: Splash prepara el arranque; Onboarding explica la aplicación; Auth agrupa las pantallas de cuenta; Home contiene el flujo principal.
 
 1. Define modelos, contratos y reglas en `core-domain`; implementa proveedores en `core-data`.
 2. Cambia `LoginUiState/LoginUiIntent/LoginError/LoginViewModel` en `auth/ui/login/` o `HomeUiState/HomeUiIntent/HomeViewModel` en `home/ui/home/` según el flujo. Cada tipo de nivel superior tiene su propio archivo; el ViewModel contiene únicamente su lógica. Conserva el aislamiento de SDKs.
@@ -103,6 +106,18 @@ features/auth/.../features/auth/
     LoginUiState.kt
     LoginUiIntent.kt
     LoginError.kt
+  ui/register/
+    RegisterScreen.kt
+    RegisterViewModel.kt
+    RegisterUiState.kt
+    RegisterUiIntent.kt
+    RegisterError.kt
+  ui/forgotpassword/
+    ForgotPasswordScreen.kt
+    ForgotPasswordViewModel.kt
+    ForgotPasswordUiState.kt
+    ForgotPasswordUiIntent.kt
+    ForgotPasswordError.kt
 features/home/.../features/home/
   HomeGraph.kt
   HomeModule.kt
@@ -114,6 +129,18 @@ features/home/.../features/home/
 ```
 
 Los nombres de clase coinciden con los archivos y usan el prefijo de su pantalla. `LoginError` traduce los fallos de dominio para la UI de acceso. Las intenciones conservan sus variantes anidadas dentro del contrato sealed. Las pruebas siguen los paquetes `ui/login` y `ui/home`. La base Home conserva su ejemplo de lista; no necesita el contrato `HomeContent` del dashboard de PagoControl.
+
+## Flujo inicial y referencias visuales
+
+La UI se inspira en los diseños de Stitch presentes en `docs/stitch_pagocontrol_android_app_ui` de PagoControl: Splash, tres páginas de introducción y los tres formularios de Auth. La plantilla utiliza marca AndroidBase, la paleta amarilla compartida y Manrope local con su licencia. Los previews cubren claro y oscuro.
+
+Splash carga `StartupPreferences` y muestra la marca durante 650 ms sin bloquear el hilo principal. Si no hay sesión y es la primera apertura, entra en Onboarding; en aperturas posteriores va a Login. Una sesión válida lleva a Home. El arranque espera que el proveedor de sesión deje de estar en Loading. Registro y recuperación pertenecen al grafo Auth; el cambio de identidad limpia el historial protegido.
+
+La preferencia de introducción usa DataStore `startup` y `onboarding_completed=false` por defecto. Se guarda antes de salir de Onboarding y no se elimina con logout. Cada paso puede avanzar o volver; omitir, el enlace de acceso y el último botón llevan a Login. Registro se abre únicamente desde Login.
+
+Los formularios tienen contratos independientes y validación de campos; nunca persisten contraseñas. `AccountRepository` y `SessionAccountRepository` conectan registro/recuperación con el proveedor. En demo muestran expresamente que no se crean cuentas ni se envían mensajes. En Firebase usan el contrato real de sesión; recuperación utiliza un enlace por correo, sin prometer un OTP de seis dígitos. La captura de nombre aún no crea un perfil remoto.
+
+Google, biometría, términos de servicio y políticas definitivas siguen pendientes de integración. Las tarjetas del onboarding son ilustrativas y no acreditan sincronización bancaria ni cifrado local implementados.
 
 ## Identidad y versiones del nuevo producto
 
@@ -155,7 +182,7 @@ Las librerías no duplican sabores que no usan. Se retira la dimensión Free/Pre
 ## Pruebas y CI
 
 ```powershell
-.\gradlew.bat :core-domain:test :core-data:testDebugUnitTest :features:auth:testDebugUnitTest :features:home:testDebugUnitTest
+.\gradlew.bat :core-domain:test :core-data:testDebugUnitTest :features:auth:testDebugUnitTest :features:home:testDebugUnitTest :features:splash:testDebugUnitTest :features:onboarding:testDebugUnitTest
 .\gradlew.bat :app:lintDevDebug :app:assembleDevDebug :app:compileDevDebugAndroidTestKotlin
 .\gradlew.bat :app:connectedDevDebugAndroidTest
 npm --prefix firebase/functions ci
@@ -180,10 +207,54 @@ Generar el AAB no lo publica. Configura Google Play Console, firma y políticas 
 
 ## Capacidades opcionales del proyecto original
 
-PDF/OCR, IA, Billing y push tienen skills específicas incluidas, pero no se activan como funcionalidades de estas dos features genéricas. Integra cada una cuando su contrato de producto esté definido; copiar IDs de suscripción, cupos o prompts de CvFree introduciría reglas ajenas al nuevo negocio. Los adaptadores de infraestructura incluidos están descritos con su estado real en la tabla inicial.
+PDF/OCR, IA, Billing y push tienen skills específicas incluidas, pero no se activan como funcionalidades de estas features de ejemplo. Integra cada una cuando su contrato de producto esté definido; copiar IDs de suscripción, cupos o prompts de CvFree introduciría reglas ajenas al nuevo negocio. Los adaptadores de infraestructura incluidos están descritos con su estado real en la tabla inicial.
 
 ## Referencias de compatibilidad
 
 - [Kotlin integrado en AGP](https://developer.android.com/build/migrate-to-built-in-kotlin).
 - [Firebase BOM y módulos Kotlin](https://firebase.google.com/docs/android/learn-more).
 - [Koin Annotations](https://insert-koin.io/docs/reference/koin-annotations/start/).
+
+## Contratos de navegacion por feature
+
+`navigation/route/` contiene los contratos de nivel superior `AppRoute`, `GraphRoute : AppRoute` y `DestinationRoute : AppRoute`, en ese orden y juntos en `AppRoute.kt`. `AuthRoute`, `HomeRoute`, `SplashRoute` y `OnboardingRoute` son interfaces selladas con objetos serializables anidados:
+
+- `AuthRoute.Graph`: `Login`, `Register`, `ForgotPassword`.
+- `HomeRoute.Graph`: `Home`.
+- `SplashRoute.Graph`: `Splash`.
+- `OnboardingRoute.Graph`: `Welcome` (tres pasos).
+
+Cada feature usa su contrato en `navigation<FeatureRoute.Graph>` y `composable<FeatureRoute.Destino>`. `MainGraph` conecta estos grafos y conserva las reglas de sesion, restauracion y limpieza del historial. No hay rutas planas paralelas ni dependencias entre features.
+
+`NavigationModule` y `SessionModule` se declaran con `@Module` y `@ComponentScan` y se incluyen explicitamente en `AppModule`. Son puntos de composicion de contratos compartidos; no registran rutas, modelos ni interfaces sin implementacion como singletons. Los repositorios concretos de sesion siguen registrados una sola vez en `CoreDataModule`. Los contratos, estados y modelos de sesion tienen archivos independientes.
+
+Los flujos de Splash, Onboarding, Login, Registro y recuperacion se presentan en espanol, incluidos errores y apariencia, tambien cuando el sistema esta en ingles. Los recursos predeterminados `values/` son la fuente de estos textos; no hay traducciones inglesas activas para estos flujos. Splash utiliza un degradado adaptable al tamano con halo dorado superior/inferior y acento verde lateral, manteniendo contraste en ambos temas.
+
+## Argumentos con nombre
+
+En llamadas Kotlin con tres o mas argumentos suministrados, usa nombres explicitos para todos los argumentos dentro de los parentesis: `state = state`, `onIntent = viewModel::onIntent`, etc. Aplica tambien a constructores, inicializacion de propiedades/variables, previews, pruebas, grafos, pantallas y componentes compartidos. No cambia los nombres de los parametros declarados ni el comportamiento de la funcion.
+
+Conserva la lambda final fuera de los parentesis cuando sea idiomatico en Compose; cuenta como argumento al decidir el umbral. En llamadas largas, especialmente pantallas desde los grafos, coloca un argumento por linea. Con uno o dos argumentos, los nombres son opcionales.
+
+No fuerces nombres donde Kotlin no los admite (APIs Java o llamadas a valores de tipo funcion). Mantén los elementos `vararg` posicionales, como `listOf`, `arrayOf`, `FontFamily` o claves multiples de `LaunchedEffect`; no conviertas listas en arrays ni agregues adaptadores solo para cumplir la regla.
+
+```kotlin
+LoginScreen(
+    state = state,
+    onIntent = viewModel::onIntent,
+    themeIndex = themeIndex,
+    onThemeSelected = onThemeSelected,
+    onRegister = onRegister,
+    onForgotPassword = onForgotPassword,
+)
+```
+
+## Ajuste visual de entrada
+
+Splash sigue `splash_screen_pagocontrol_modo_oscuro`: fondo carbon con halos dorados y verde lateral, emblema de cartera dorado, distintivo PE, fuentes en capsulas y pie de privacidad sin prometer cifrado no implementado. El primer onboarding sigue `onboarding_1_detecci_n_autom_tica_modo_oscuro`, con tarjetas de ejemplo, iconos de proveedor morado/celeste y simbolos/etiquetas blancos en ambos temas. `EntryColors` centraliza esta paleta; los colores de proveedor admiten texto blanco con contraste >= 4.5:1, mientras el texto general se adapta al tema. Las tarjetas y etiquetas pueden envolver contenido y mantienen scroll.
+
+Al terminar los tres pasos se guarda la preferencia y se abre Login, nunca Registro. Las pruebas verifican ese destino y el bloqueo de envios repetidos; Registro sigue disponible desde el acceso.
+
+## Referencias oscuras de onboarding 2 y 3
+
+Los pasos 2 y 3 incorporan `onboarding_2_privacidad_y_seguridad_modo_oscuro` y `onboarding_3_control_y_alertas_modo_oscuro` de Stitch. El segundo usa orbitas discontinuas, candado central, distintivos de fuentes de colores y tarjetas de privacidad. El tercero presenta saldo, Netflix, Luz del Sur y una tarjeta de ahorro con progreso. `PrivacyIllustration` y `ControlIllustration` estan en `ui/onboarding/components/`; ambos tienen previews claros y oscuros. Se conservan las etiquetas de ejemplo y no se afirman cifrado Keystore, funcionamiento offline o lectura SMS que aun no esten implementados. El ultimo boton sigue abriendo Login.

@@ -27,3 +27,7 @@ Si la plantilla selecciona demo/Firebase por configuracion de build, conserva es
 ## Comprobar y entregar
 
 Compila el código generado y resuelve los puntos de entrada reales. Verifica el grafo mediante APIs compatibles con la versión instalada y pruebas con implementaciones controladas. Comprueba que logout cierre recursos asociados a sesión.
+
+## Modulos compartidos de esta base
+
+`AppModule` incluye tambien `NavigationModule` y `SessionModule`, clases `@Module`/`@ComponentScan` en la raiz de sus respectivos paquetes. Ambos modulos conservan Kotlin/JVM y aplican `plugin.koin`, con dependencia explicita de `koin-core` para el codigo generado. Son puntos de composicion solicitados de los contratos compartidos; no inventes servicios ni registros `@Single` para rellenarlos. Las rutas y modelos no son dependencias inyectables. Las implementaciones de repositorios de sesion siguen perteneciendo a `CoreDataModule`, donde se registran una sola vez.

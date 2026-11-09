@@ -21,3 +21,11 @@ Coloca cada pantalla en `ui/<pantalla>/`, con archivo y composable `<Pantalla>Sc
 ## Comprobar y entregar
 
 Verifica rotación, back, teclado, recomposición y recuperación de errores. La pantalla debe poder renderizarse y probarse con estado/callbacks sin iniciar servicios reales.
+
+## Argumentos de llamadas
+
+Las llamadas Kotlin con tres o mas argumentos suministrados usan nombres explicitos en todos los argumentos entre parentesis, incluidos constructores y callbacks de pantallas: `LoginScreen(state = state, onIntent = viewModel::onIntent, ...)`. Las llamadas largas de pantallas se distribuyen con un argumento por linea. La lambda final idiomatica de Compose puede quedar fuera de los parentesis y cuenta para el umbral. Conserva varargs posicionales y no fuerces argumentos con nombre en APIs Java o valores de tipo funcion.
+
+## Referencias de entrada y contraste
+
+Splash y los tres pasos del onboarding siguen las capturas oscuras y claras de Stitch en docs. El paso 2 muestra el candado con orbitas y fuentes de colores; el paso 3 muestra saldo, dos pagos de ejemplo (Netflix y Luz del Sur), tasa de ahorro y barra de progreso. Sus ilustraciones viven en `ui/onboarding/components/` y los previews cubren ambos temas. Los iconos de proveedor conservan morado y celeste en ambos temas con simbolos y etiquetas blancos; usa los colores accesibles de `EntryColors` (contraste de etiquetas blancas >= 4.5:1). Los textos generales usan `onSurface`/`onBackground`: no pongas blanco sobre un fondo claro. Un contenedor con color propio declara explicitamente su color de contenido. Los ejemplos visuales no afirman una sincronizacion real ni cifrado pendiente de implementar.
