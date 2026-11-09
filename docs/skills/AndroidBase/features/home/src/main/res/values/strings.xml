@@ -1,0 +1,13 @@
+<resources>
+    <string name="home_title">Construye tu siguiente idea</string>
+    <string name="home_demo">Ejemplo con datos locales persistentes y una sesión demo temporal.</string>
+    <string name="home_cloud">Sesión Firebase activa. Tus ejemplos se guardan en Firestore.</string>
+    <string name="home_dark_theme">Tema oscuro</string>
+    <string name="home_item_title">Título del ejemplo</string>
+    <string name="home_add">Guardar ejemplo</string>
+    <string name="home_invalid">Escribe entre 1 y 120 caracteres.</string>
+    <string name="home_error">No se pudo leer o guardar. Comprueba conexión, permisos y configuración.</string>
+    <string name="home_retry">Reintentar lectura</string>
+    <string name="home_empty">Todavía no hay ejemplos. Guarda el primero.</string>
+    <string name="home_sign_out">Cerrar sesión</string>
+</resources>

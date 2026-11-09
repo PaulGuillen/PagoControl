@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-primary-fixed": "#241a00", "on-primary-fixed-variant": "#594400", "inverse-primary": "#efc13e", "surface-container-high": "#e7e9e2", "surface-container-lowest": "#ffffff", "on-secondary-fixed": "#002113", "surface-bright": "#f9faf3", "surface-container-low": "#f3f4ed", "primary": "#765b00", "on-surface-variant": "#4e4634", "on-tertiary-fixed-variant": "#8b191d", "on-tertiary-fixed": "#410004", "primary-container": "#f4c542", "error-container": "#ffdad6", "primary-fixed-dim": "#efc13e", "tertiary-fixed-dim": "#ffb3ae", "surface-tint": "#765b00", "error": "#ba1a1a", "tertiary-fixed": "#ffdad7", "surface-dim": "#d9dbd4", "on-tertiary-container": "#9f292a", "surface": "#f9faf3", "on-primary-container": "#6b5200", "tertiary": "#ac3231", "on-error": "#ffffff", "secondary-fixed": "#94f6c4", "on-secondary": "#ffffff", "surface-container-highest": "#e1e3dc", "on-tertiary": "#ffffff", "outline-variant": "#d1c5ae", "secondary": "#006c48", "surface-container": "#edefe8", "on-secondary-container": "#00734d", "secondary-fixed-dim": "#78d9aa", "outline": "#807662", "background": "#f9faf3", "inverse-surface": "#2e312d", "inverse-on-surface": "#f0f1ea", "on-secondary-fixed-variant": "#005236", "primary-fixed": "#ffdf94", "on-background": "#191c18", "on-error-container": "#93000a", "secondary-container": "#94f6c4", "on-primary": "#ffffff", "tertiary-container": "#ffbab5", "surface-variant": "#e1e3dc", "on-surface": "#191c18" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "space-lg": "1.5rem", "margin-tablet": "1.5rem", "gutter": "1rem", "gutter-sm": "0.75rem", "space-md": "1rem", "space-xs": "0.25rem", "margin": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Manrope"], "display-currency": ["Manrope"], "body-md": ["Manrope"], "headline-md": ["Manrope"], "headline-sm": ["Manrope"], "body-sm": ["Manrope"], "display-currency-mobile": ["Manrope"], "headline-lg": ["Manrope"], "label-lg": ["Manrope"], "label-sm": ["Manrope"], "currency-tabular": ["Manrope"], "title-md": ["Manrope"], "label-md": ["Manrope"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "display-currency": ["38px", { lineHeight: "44px", fontWeight: "800" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "headline-md": ["22px", { lineHeight: "28px", fontWeight: "700" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "display-currency-mobile": ["30px", { lineHeight: "36px", fontWeight: "800" }], "headline-lg": ["28px", { lineHeight: "36px", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }], "label-sm": ["10px", { lineHeight: "14px", fontWeight: "700" }], "currency-tabular": ["16px", { lineHeight: "22px", fontWeight: "700" }], "title-md": ["16px", { lineHeight: "22px", fontWeight: "600" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;background-color:#f9faf3;color:#191c18;font-family:'Manrope',sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="pt-safe px-margin flex items-center justify-between h-6 text-on-surface select-none"><span class="font-label-sm text-label-sm font-bold tracking-tight">9:41</span><div class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-[15px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[15px] leading-none">wifi</span><span class="material-symbols-outlined text-[16px] leading-none">battery_full</span></div></div><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="PagoControl Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrDjRkJiYvf81AfshL4jSlkZeMQt2Hp2QGvHXwwFif3lhyLb57-O7PS4t7iVZGjQKUBat3GMv4xWx2Th1lz53ZA1Lc0j1wQw__eXdSn3v8rNf8yFf8r3YotBWMukGTYLodK6DPXpQkKDkpPGx1-hBAUKkaE0VLOxvgbv-HkzReUnb9jnSQ76Fadm6GRo_yE7EhKXggBJrOytp0S6fm8GcX0g2RrGmuWwH1BHg5mRJP51"/><div class="flex flex-col justify-center"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-surface leading-tight">PagoControl</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-none">Inicio</span></div></div><div class="flex items-center gap-space-xs"><button aria-label="Notificaciones" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container active:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><button aria-label="Perfil" class="w-11 h-11 flex items-center justify-center rounded-full"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiH8DZUFW4s6b2EUPiTH4oYcx6MCHwgWWmGSEaPNq2xq-l-dPUeGLq_DuEgYQZiwqDj0rTIdX5Abr0g2-TMCjwyrtZqOVKK4hYr3-Jw5OOtDp6sLCsphxpL60QNo3crNZ8_Eiz8eYG__-O7ovwBkSTCb9UjBTAEdn59h7AkKJM272elCqZZzZJKkT1-BZ2gb05a8xdlmmotshXzQh5cJVSeD8rbF5gApoY3tIaob4"/></button></div></div></header><main class="flex-1 w-full bg-surface pt-22 pb-24 px-margin"><div class="flex flex-col w-full text-inverse-on-surface">
+<!-- Interactive Top Action Header -->
+<div class="flex items-center justify-between py-space-sm">
+<div class="flex flex-col min-w-0">
+<h1 class="font-headline-md text-headline-md font-bold tracking-tight text-inverse-on-surface truncate">Movimientos</h1>
+<p class="font-body-sm text-body-sm text-outline-variant font-medium mt-0.5">48 operaciones en Noviembre</p>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button aria-label="Abrir barra de búsqueda" class="w-10 h-10 rounded-full bg-inverse-surface flex items-center justify-center text-inverse-on-surface active:bg-surface-variant transition-colors shadow-sm" id="search-toggle-btn">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+<button aria-label="Exportar movimientos a Excel o PDF" class="h-10 px-3 rounded-full bg-inverse-surface flex items-center gap-1.5 text-inverse-on-surface text-label-md font-label-md active:bg-surface-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary-container">file_download</span>
+<span class="hidden sm:inline">Exportar</span>
+</button>
+</div>
+</div>
+<!-- Search Input Bar -->
+<div class="mt-space-sm">
+<div class="relative flex items-center w-full bg-inverse-surface rounded-xl px-3 py-2 shadow-sm transition-all focus-within:bg-surface-variant">
+<span class="material-symbols-outlined text-outline-variant text-[20px] shrink-0 mr-2">search</span>
+<input class="w-full bg-transparent font-body-md text-body-md text-inverse-on-surface placeholder:text-outline focus:outline-none" id="tx-search-input" placeholder="Buscar por comercio, remitente o monto..." type="text"/>
+<button class="hidden text-outline-variant hover:text-inverse-on-surface p-1" id="clear-search">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<!-- Filter Category Tabs (Horizontal Scrollable) -->
+<div class="mt-space-md -mx-margin px-margin overflow-x-auto no-scrollbar flex items-center gap-2 py-0.5" id="category-tabs">
+<button class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-primary-container text-on-primary-fixed font-bold shadow-sm transition-all scale-100 active:scale-95" data-filter="all">
+      Todos (48)
+    </button>
+<button class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-inverse-surface text-outline-variant font-medium active:scale-95 transition-all" data-filter="income">
+      Ingresos (18)
+    </button>
+<button class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-inverse-surface text-outline-variant font-medium active:scale-95 transition-all" data-filter="expense">
+      Egresos (26)
+    </button>
+<button class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-inverse-surface text-outline-variant font-medium active:scale-95 transition-all" data-filter="transfer">
+      Transferencias (4)
+    </button>
+<button class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-inverse-surface text-outline-variant font-medium active:scale-95 transition-all" data-filter="pending">
+      Pendientes (2)
+    </button>
+</div>
+<!-- Micro Dropdown Filter Chips Row -->
+<div class="mt-3 -mx-margin px-margin overflow-x-auto no-scrollbar flex items-center gap-2 pb-1">
+<button class="flex items-center gap-1.5 bg-inverse-surface/80 rounded-lg px-2.5 py-1 text-label-sm font-label-sm text-inverse-on-surface shadow-xs active:bg-surface-variant transition-colors shrink-0">
+<span class="material-symbols-outlined text-[15px] text-primary-container">calendar_month</span>
+<span>Noviembre 2023</span>
+<span class="material-symbols-outlined text-[14px] text-outline">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-1.5 bg-inverse-surface/80 rounded-lg px-2.5 py-1 text-label-sm font-label-sm text-inverse-on-surface shadow-xs active:bg-surface-variant transition-colors shrink-0">
+<span class="material-symbols-outlined text-[15px] text-secondary">account_balance_wallet</span>
+<span>Fuente: Todas</span>
+<span class="material-symbols-outlined text-[14px] text-outline">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-1.5 bg-inverse-surface/80 rounded-lg px-2.5 py-1 text-label-sm font-label-sm text-inverse-on-surface shadow-xs active:bg-surface-variant transition-colors shrink-0">
+<span class="material-symbols-outlined text-[15px] text-primary-container">tune</span>
+<span>Estado: Todos</span>
+<span class="material-symbols-outlined text-[14px] text-outline">arrow_drop_down</span>
+</button>
+<button aria-label="Más filtros" class="w-7 h-7 rounded-lg bg-inverse-surface/80 flex items-center justify-center text-outline-variant shrink-0 active:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_alt</span>
+</button>
+</div>
+<!-- Condensed Monthly Metric Summary Card -->
+<div class="mt-space-md w-full rounded-2xl bg-inverse-surface p-space-md shadow-md relative overflow-hidden">
+<div class="flex items-center justify-between mb-3">
+<span class="font-label-sm text-label-sm text-outline-variant font-bold tracking-wider uppercase">Resumen del Período</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary-fixed font-bold bg-secondary/30 px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed animate-ping"></span>
+        Al día
+      </span>
+</div>
+<!-- 3-Column Stats Flow -->
+<div class="grid grid-cols-3 gap-2 text-center py-1">
+<div class="flex flex-col items-start text-left">
+<span class="font-label-sm text-label-sm text-outline-variant">Ingresos</span>
+<span class="font-currency-tabular text-currency-tabular text-secondary-fixed font-extrabold tracking-tight mt-0.5">+S/ 6,850.00</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-outline-variant">Egresos</span>
+<span class="font-currency-tabular text-currency-tabular text-tertiary-fixed font-extrabold tracking-tight mt-0.5">-S/ 2,269.50</span>
+</div>
+<div class="flex flex-col items-end text-right">
+<span class="font-label-sm text-label-sm text-outline-variant">Neto Estimado</span>
+<span class="font-currency-tabular text-currency-tabular text-primary-container font-extrabold tracking-tight mt-0.5">+S/ 4,580.50</span>
+</div>
+</div>
+<!-- Proportion Gradient Progress Indicator -->
+<div class="w-full mt-3">
+<div class="h-2 w-full bg-surface-dim/40 rounded-full overflow-hidden flex">
+<div class="h-full bg-secondary-fixed rounded-l-full" style="width: 75.1%;"></div>
+<div class="h-full bg-tertiary-fixed rounded-r-full" style="width: 24.9%;"></div>
+</div>
+<div class="flex justify-between items-center mt-1.5 font-label-sm text-label-sm text-outline-variant">
+<span>75% ingresos retenidos</span>
+<span class="text-primary-container font-semibold">Tasa de ahorro saludable</span>
+</div>
+</div>
+</div>
+<!-- Transaction Groups Timeline -->
+<div class="mt-space-lg flex flex-col gap-space-lg" id="transaction-feed">
+<!-- Group 1: HOY -->
+<section class="flex flex-col">
+<div class="flex items-center justify-between mb-2.5 px-0.5">
+<h2 class="font-label-sm text-label-sm font-bold text-outline-variant tracking-wider uppercase">HOY, 28 DE NOVIEMBRE</h2>
+<span class="font-label-sm text-label-sm text-outline">3 operaciones</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Item 1: María Rodríguez - Yape -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-variant transition-colors cursor-pointer" onclick="this.classList.toggle('bg-surface-variant')">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-[#732282]/20 flex items-center justify-center text-inverse-on-surface">
+<span class="font-headline-sm text-headline-sm font-bold text-[#E58BF8]">M</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#732282] text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">arrow_downward</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">María Rodríguez</span>
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-primary-container/20 text-primary-container">
+<span class="material-symbols-outlined text-[10px]">auto_awesome</span> Auto-detectado
+                </span>
+</div>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Ventas del Día • 10:42 AM • Yape</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-secondary-fixed">+S/ 85.00</span>
+<span class="font-label-sm text-label-sm text-secondary-fixed/90 bg-secondary/20 px-1.5 py-0.5 rounded mt-0.5">Confirmado</span>
+</div>
+</article>
+<!-- Item 2: Almuerzo La Lucha Sanguchería - Plin -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-[#00A9E0]/20 flex items-center justify-center text-[#00A9E0]">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-tertiary text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">arrow_upward</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">La Lucha Sanguchería</span>
+<span class="px-1.5 py-0.2 rounded font-label-sm text-label-sm bg-[#00A9E0]/20 text-[#6fe3ff]">Plin BBVA</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Alimentación • 02:15 PM</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-tertiary-fixed">-S/ 32.50</span>
+<span class="font-label-sm text-label-sm text-outline-variant mt-0.5">Consolidado</span>
+</div>
+</article>
+<!-- Item 3: Pendiente de Clasificar (Warning banner layout) -->
+<article class="bg-inverse-surface rounded-xl p-3 flex flex-col gap-2.5 shadow-sm bg-gradient-to-r from-inverse-surface via-primary-container/5 to-inverse-surface">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[22px]">help_center</span>
+<span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-primary-container"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">Transferencia recibida</span>
+<span class="px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-primary-container/25 text-primary-container font-bold">⚠️ Revisar</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">BCP Notificaciones • 11:20 AM</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-inverse-on-surface">+S/ 120.00</span>
+<span class="font-label-sm text-label-sm text-primary-container mt-0.5">Sin categoría</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 bg-surface-variant/30 rounded-lg px-2.5 py-1.5">
+<p class="font-body-sm text-body-sm text-outline-variant truncate">Remitente: 987***210 (Depósito móvil)</p>
+<button class="shrink-0 px-3 py-1 rounded-full bg-primary-container text-on-primary-fixed font-label-md text-label-md font-bold active:scale-95 transition-transform shadow-xs">
+              Categorizar
+            </button>
+</div>
+</article>
+</div>
+</section>
+<!-- Group 2: AYER -->
+<section class="flex flex-col">
+<div class="flex items-center justify-between mb-2.5 px-0.5">
+<h2 class="font-label-sm text-label-sm font-bold text-outline-variant tracking-wider uppercase">AYER, 27 DE NOVIEMBRE</h2>
+<span class="font-label-sm text-label-sm text-outline">3 operaciones</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Item 4: Cliente Consultoría TI -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-[#002A8F]/30 flex items-center justify-center text-[#7ea5ff]">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-secondary text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">arrow_downward</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">Cliente Consultoría TI</span>
+<span class="px-1.5 py-0.2 rounded font-label-sm text-label-sm bg-[#002A8F]/40 text-[#a3c1ff]">Abono BCP</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Servicios Profesionales • 04:50 PM</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-secondary-fixed">+S/ 450.00</span>
+<span class="font-label-sm text-label-sm text-outline-variant mt-0.5">Facturado</span>
+</div>
+</article>
+<!-- Item 5: Netflix Perú Mensualidad -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-[#E50914]/20 flex items-center justify-center text-[#ff6169]">
+<span class="material-symbols-outlined text-[20px]">movie</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-tertiary text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">sync</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">Netflix Perú Mensual</span>
+<span class="px-1.5 py-0.2 rounded font-label-sm text-label-sm bg-surface-variant text-outline-variant font-medium">🔁 Recurrente</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Suscripción digital • Interbank Débito</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-tertiary-fixed">-S/ 44.90</span>
+<span class="font-label-sm text-label-sm text-outline-variant mt-0.5">Automático</span>
+</div>
+</article>
+<!-- Item 6: Transferencia a Cuenta Ahorros Propia -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm opacity-85 hover:opacity-100 transition-opacity cursor-pointer">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-surface-variant flex items-center justify-center text-outline-variant">
+<span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">Cuenta Ahorros Metas</span>
+<span class="px-1.5 py-0.2 rounded font-label-sm text-label-sm bg-surface-variant text-outline-variant">🔄 Interna (Excluida)</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Entre cuentas • BCP a Interbank</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-outline-variant">S/ 500.00</span>
+<span class="font-label-sm text-label-sm text-outline mt-0.5">Neutral</span>
+</div>
+</article>
+</div>
+</section>
+<!-- Group 3: 25 DE NOVIEMBRE -->
+<section class="flex flex-col">
+<div class="flex items-center justify-between mb-2.5 px-0.5">
+<h2 class="font-label-sm text-label-sm font-bold text-outline-variant tracking-wider uppercase">25 DE NOVIEMBRE</h2>
+<span class="font-label-sm text-label-sm text-outline">2 operaciones</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Item 7: Bodega Don Lucho -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-[#732282]/20 flex items-center justify-center text-inverse-on-surface">
+<span class="material-symbols-outlined text-[20px] text-[#E58BF8]">storefront</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#732282] text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">arrow_downward</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">Bodega Don Lucho</span>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Yape QR • 06:12 PM</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-secondary-fixed">+S/ 24.00</span>
+<span class="font-label-sm text-label-sm text-outline-variant mt-0.5">Verificado</span>
+</div>
+</article>
+<!-- Item 8: Recibo de Luz Enel -->
+<article class="bg-inverse-surface rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-11 h-11 rounded-full bg-tertiary/20 flex items-center justify-center text-tertiary-fixed">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-tertiary text-white flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">arrow_upward</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md font-bold text-inverse-on-surface truncate">Enel Distribución Perú</span>
+<span class="font-body-sm text-body-sm text-outline-variant truncate mt-0.5">Servicios Básicos • 09:30 AM</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="font-currency-tabular text-currency-tabular font-bold text-tertiary-fixed">-S/ 115.80</span>
+<span class="font-label-sm text-label-sm text-outline-variant mt-0.5">Comprobante OK</span>
+</div>
+</article>
+</div>
+</section>
+</div>
+<!-- Bottom Pagination & Footnote -->
+<div class="mt-space-lg mb-space-md flex flex-col items-center gap-2">
+<button class="w-full py-3 rounded-xl bg-inverse-surface hover:bg-surface-variant text-inverse-on-surface font-label-md text-label-md font-bold flex items-center justify-center gap-2 shadow-sm active:scale-[0.99] transition-all" id="load-more-btn">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span>Cargar más antiguos</span>
+</button>
+<span class="font-label-sm text-label-sm text-outline-variant">Mostrando 8 de 48 movimientos</span>
+</div>
+<!-- Micro Interaction Script for Tab Selection and Active State Navigation Highlight -->
+<script>
+    (() => {
+      // Highlight the "Movimientos" item in bottom nav
+      const movNavTab = document.querySelector('nav a[data-path="movimientos"]');
+      if (movNavTab) {
+        document.querySelectorAll('nav a').forEach(el => {
+          el.classList.remove('text-primary-container', 'font-bold');
+          el.classList.add('text-outline-variant');
+        });
+        movNavTab.classList.remove('text-outline-variant');
+        movNavTab.classList.add('text-primary-container', 'font-bold');
+        const icon = movNavTab.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.style.fontVariationSettings = "'FILL' 1";
+        }
+      }
+
+      // Filter tabs switching
+      const catButtons = document.querySelectorAll('#category-tabs .cat-pill');
+      catButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catButtons.forEach(b => {
+            b.classList.remove('bg-primary-container', 'text-on-primary-fixed', 'font-bold');
+            b.classList.add('bg-inverse-surface', 'text-outline-variant', 'font-medium');
+          });
+          btn.classList.add('bg-primary-container', 'text-on-primary-fixed', 'font-bold');
+          btn.classList.remove('bg-inverse-surface', 'text-outline-variant', 'font-medium');
+        });
+      });
+
+      // Quick search toggle behavior
+      const searchBtn = document.getElementById('search-toggle-btn');
+      const searchInput = document.getElementById('tx-search-input');
+      const clearBtn = document.getElementById('clear-search');
+
+      if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', () => {
+          searchInput.focus();
+        });
+      }
+
+      if (searchInput && clearBtn) {
+        searchInput.addEventListener('input', (e) => {
+          if (e.target.value.length > 0) {
+            clearBtn.classList.remove('hidden');
+          } else {
+            clearBtn.classList.add('hidden');
+          }
+        });
+
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          clearBtn.classList.add('hidden');
+          searchInput.focus();
+        });
+      }
+
+      // Micro Feedback on 'Cargar más'
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+          const original = this.innerHTML;
+          this.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Sincronizando operaciones...</span>';
+          setTimeout(() => {
+            this.innerHTML = original;
+          }, 1000);
+        });
+      }
+    })();
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_16px_rgba(0,0,0,0.04)]" data-active-classes="text-on-surface font-bold"><div class="relative flex items-center justify-between h-18 px-margin max-w-md mx-auto"><a class="flex-1 flex flex-col items-center justify-center min-w-[44px] min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="inicio" href="#"><span class="material-symbols-outlined text-[24px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Inicio</span></a><a class="flex-1 flex flex-col items-center justify-center min-w-[44px] min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="movimientos" href="#"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="font-label-sm text-label-sm mt-0.5">Movimientos</span></a><div class="flex-1 flex items-center justify-center min-w-[44px]"><a aria-label="Agregar Movimiento" class="-top-5 relative w-14 h-14 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center shadow-[0_4px_12px_rgba(217,169,28,0.35)] active:scale-95 transition-all" data-path="agregar-movimiento" href="#"><span class="material-symbols-outlined text-[28px] font-bold">add</span></a></div><a class="flex-1 flex flex-col items-center justify-center min-w-[44px] min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="reportes" href="#"><span class="material-symbols-outlined text-[24px]">insights</span><span class="font-label-sm text-label-sm mt-0.5">Reportes</span></a><a class="flex-1 flex flex-col items-center justify-center min-w-[44px] min-h-[48px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="perfil" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-sm text-label-sm mt-0.5">Perfil</span></a></div></nav></body></html>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="brand_name">PagoControl</string>
+    <string name="appearance">Cambiar apariencia</string>
+    <string name="theme_system">Usar tema del sistema</string>
+    <string name="theme_light">Modo claro</string>
+    <string name="theme_dark">Modo oscuro</string>
+</resources>

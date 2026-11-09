@@ -1,0 +1,5 @@
+<resources>
+    <string name="theme_save_error">No pudimos guardar la apariencia. Intenta nuevamente.</string>
+    <string name="accept">Aceptar</string>
+    <string name="app_name">PagoControl</string>
+</resources>

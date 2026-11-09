@@ -1,0 +1,36 @@
+<resources>
+    <string name="home_title">Inicio</string>
+    <string name="home_sign_out">Cerrar sesión</string>
+    <string name="home_greeting">Hola, %1$s 👋</string>
+    <string name="home_demo">Modo demostración · Noviembre · Datos de ejemplo</string>
+    <string name="home_balance">BALANCE DISPONIBLE</string>
+    <string name="home_sources">3 fuentes de ejemplo · SMS / Push</string>
+    <string name="home_income">Ingresos</string>
+    <string name="home_expense">Egresos</string>
+    <string name="home_income_count">%1$d cobros este mes</string>
+    <string name="home_expense_count">%1$d pagos registrados</string>
+    <string name="home_flow">Flujo semanal / mensual</string>
+    <string name="home_week">Semana</string>
+    <string name="home_month">Mes</string>
+    <string name="home_register">Registrar Yape / Plin</string>
+    <string name="home_services">Servicios por vencer</string>
+    <string name="home_detected">Notificación procesada · Ejemplo</string>
+    <string name="home_confirmed">Clasificación confirmada · Ejemplo</string>
+    <string name="home_detected_detail">Recibo de Yape (+ S/ 45.00) de María R., clasificado en Ventas. Esta demostración no modifica el balance.</string>
+    <string name="home_confirm">Confirmar</string>
+    <string name="home_reclassify">Reclasificar</string>
+    <string name="home_recent">Movimientos recientes</string>
+    <string name="home_auto">Auto-leído</string>
+    <string name="home_empty">Todavía no hay movimientos.</string>
+    <string name="home_error">No pudimos cargar tu resumen.</string>
+    <string name="home_retry">Reintentar</string>
+    <string name="home_upcoming_title">Próximamente</string>
+    <string name="home_upcoming_message">Por ahora están disponibles el acceso y el inicio. Movimientos, registros, servicios, reportes y perfil se incorporarán en próximas etapas.</string>
+    <string name="home_understood">Entendido</string>
+    <string name="home_movements">Movimientos</string>
+    <string name="home_add">Agregar movimiento</string>
+    <string name="home_reports">Reportes</string>
+    <string name="home_profile">Perfil</string>
+    <string-array name="home_days"><item>Lun</item><item>Mar</item><item>Mié</item><item>Jue</item><item>Vie</item><item>Sáb</item><item>Dom</item></string-array>
+    <string-array name="home_weeks"><item>Sem 1</item><item>Sem 2</item><item>Sem 3</item><item>Sem 4</item></string-array>
+</resources>
