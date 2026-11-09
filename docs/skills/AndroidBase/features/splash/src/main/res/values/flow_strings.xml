@@ -1,0 +1,15 @@
+<resources>
+    <string name="splash_brand">Android</string>
+    <string name="splash_brand_accent">Base</string>
+    <string name="splash_badge">SINCRONIZACIÓN INTELIGENTE</string>
+    <string name="splash_description">Tus finanzas bajo control en un solo lugar</string>
+    <string name="splash_sources">Yape · Plin · BCP · Interbank</string>
+    <string name="splash_privacy">Privacidad y control de tu información</string>
+    <string name="splash_error">No pudimos leer tus preferencias.</string>
+    <string name="splash_retry">Reintentar</string>
+    <string name="splash_country">PE</string>
+    <string name="splash_yape">Yape</string>
+    <string name="splash_plin">Plin</string>
+    <string name="splash_bcp">BCP</string>
+    <string name="splash_interbank">Interbank</string>
+</resources>
