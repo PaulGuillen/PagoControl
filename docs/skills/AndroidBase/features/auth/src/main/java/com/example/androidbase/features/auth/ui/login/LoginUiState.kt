@@ -1,7 +1,12 @@
 package com.example.androidbase.features.auth.ui.login
 
 data class LoginUiState(
-    val isLoading: Boolean = false,
-    val failure: LoginError? = null,
-    val resetSent: Boolean = false,
+    val demo: Boolean = true,
+    val email: String = "",
+    val password: String = "",
+    val passwordVisible: Boolean = false,
+    val emailInvalid: Boolean = false,
+    val passwordInvalid: Boolean = false,
+    val loading: Boolean = false,
+    val error: LoginError? = null,
 )

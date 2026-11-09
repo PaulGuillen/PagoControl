@@ -1,107 +1,68 @@
 package com.example.androidbase.features.auth.ui.login
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.androidbase.designsystem.BaseTheme
 import com.example.androidbase.features.auth.R
-import org.koin.androidx.compose.koinViewModel
+import com.example.androidbase.features.auth.ui.components.*
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    LoginContent(state, viewModel.isDemo, viewModel::accept)
-}
-
-@Composable
-fun LoginContent(state: LoginUiState, isDemo: Boolean, onIntent: (LoginUiIntent) -> Unit) {
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(stringResource(R.string.auth_title), style = MaterialTheme.typography.headlineLarge)
-        Spacer(Modifier.height(12.dp))
-        Text(stringResource(if (isDemo) R.string.auth_demo_description else R.string.auth_description))
-        Spacer(Modifier.height(24.dp))
-        if (!isDemo) {
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text(stringResource(R.string.auth_email)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = !state.isLoading,
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text(stringResource(R.string.auth_password)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = !state.isLoading,
-            )
-            Spacer(Modifier.height(16.dp))
+fun LoginScreen(
+    state: LoginUiState, onIntent: (LoginUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit,
+    onRegister: () -> Unit = {}, onForgotPassword: () -> Unit = {},
+) {
+    var providerInfo by rememberSaveable { mutableStateOf(false) }
+    AuthLayout(themeIndex = themeIndex, onThemeSelected = onThemeSelected) {
+        AuthHeading(stringResource(R.string.flow_login_title), stringResource(R.string.flow_login_description))
+        AuthProviderButton { providerInfo = true }
+        AuthDivider(stringResource(R.string.flow_login_separator))
+        AuthField(
+            value = state.email, onValueChange = { onIntent(LoginUiIntent.EmailChanged(it)) }, label = stringResource(R.string.flow_email),
+            error = state.emailInvalid, enabled = !state.loading, keyboardType = KeyboardType.Email,
+        )
+        AuthField(
+            value = state.password, onValueChange = { onIntent(LoginUiIntent.PasswordChanged(it)) }, label = stringResource(R.string.flow_password),
+            error = state.passwordInvalid, enabled = !state.loading,
+            password = true, visible = state.passwordVisible,
+            onToggleVisibility = { onIntent(LoginUiIntent.TogglePassword) }, onSubmit = { onIntent(LoginUiIntent.Submit) },
+        )
+        TextButton(onClick = onForgotPassword, enabled = !state.loading) {
+            Text(stringResource(R.string.flow_forgot_link), color = MaterialTheme.colorScheme.onSurface)
         }
-        Button(
-            onClick = { onIntent(LoginUiIntent.SignIn(email, password)) },
-            enabled = !state.isLoading,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(stringResource(if (isDemo) R.string.auth_continue_demo else R.string.auth_sign_in))
+        state.error?.let {
+            Text(stringResource(if (it == LoginError.InvalidCredentials) R.string.flow_credentials_error else R.string.flow_unavailable), color = MaterialTheme.colorScheme.error)
         }
-        if (!isDemo) {
-            OutlinedButton(
-                onClick = { onIntent(LoginUiIntent.Register(email, password)) },
-                enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(stringResource(R.string.auth_register)) }
-            TextButton(
-                onClick = { onIntent(LoginUiIntent.ResetPassword(email)) },
-                enabled = !state.isLoading,
-            ) { Text(stringResource(R.string.auth_reset)) }
+        AuthPrimaryButton(text = stringResource(R.string.flow_login_button), loading = state.loading) { onIntent(LoginUiIntent.Submit) }
+        TextButton(onClick = { providerInfo = true }, enabled = !state.loading) {
+            Text(stringResource(R.string.flow_fingerprint), color = MaterialTheme.colorScheme.onSurface)
         }
-        if (state.isLoading) CircularProgressIndicator()
-        if (state.resetSent) Text(stringResource(R.string.auth_reset_sent))
-        state.failure?.let { failure ->
-            val message = when (failure) {
-                LoginError.InvalidInput -> R.string.auth_invalid_input
-                LoginError.InvalidCredentials -> R.string.auth_invalid_credentials
-                LoginError.Network -> R.string.auth_network_error
-                LoginError.Unavailable -> R.string.auth_generic_error
+        TextButton(onClick = onRegister, enabled = !state.loading) {
+            Text(stringResource(R.string.flow_register_link), color = MaterialTheme.colorScheme.onSurface)
+        }
+        if (state.demo) {
+            Text(stringResource(R.string.flow_demo_title), style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.flow_demo_description), style = MaterialTheme.typography.bodySmall)
+            TextButton(onClick = { onIntent(LoginUiIntent.FillDemo) }, enabled = !state.loading) {
+                Text(stringResource(R.string.flow_demo_fill), color = MaterialTheme.colorScheme.onSurface)
             }
-            Text(stringResource(message), color = MaterialTheme.colorScheme.error)
         }
     }
+    if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) { providerInfo = false }
 }
+
+@Preview(name = "Login claro", showBackground = true)
+@Composable
+private fun LoginLightPreview() { BaseTheme(false) { LoginScreen(state = LoginUiState(), onIntent = {}, themeIndex = 1, onThemeSelected = {}) } }
+
+@Preview(name = "Login oscuro", showBackground = true)
+@Composable
+private fun LoginDarkPreview() { BaseTheme(true) { LoginScreen(state = LoginUiState(), onIntent = {}, themeIndex = 2, onThemeSelected = {}) } }

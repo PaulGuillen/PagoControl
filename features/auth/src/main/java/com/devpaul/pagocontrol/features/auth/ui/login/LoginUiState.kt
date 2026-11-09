@@ -1,6 +1,7 @@
 package com.devpaul.pagocontrol.features.auth.ui.login
 
 data class LoginUiState(
+    val demo: Boolean = true,
     val email: String = "",
     val password: String = "",
     val passwordVisible: Boolean = false,

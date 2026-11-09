@@ -1,5 +1,7 @@
 package com.example.androidbase.features.auth.ui.login
 
+import androidx.lifecycle.SavedStateHandle
+
 import com.example.androidbase.domain.AppFailure
 import com.example.androidbase.domain.AppResult
 import com.example.androidbase.platform.EventReporter
@@ -52,15 +54,17 @@ class LoginViewModelTest {
             override fun action(name: String) = Unit
             override fun error(operation: String) = Unit
         }
-        val viewModel = LoginViewModel(repository, reporter)
-        viewModel.accept(LoginUiIntent.SignIn("email", "password"))
-        viewModel.accept(LoginUiIntent.SignIn("email", "password"))
+        val viewModel = LoginViewModel(repository = repository, savedStateHandle = SavedStateHandle(), reporter = reporter)
+        viewModel.onIntent(LoginUiIntent.EmailChanged("demo@test.pe"))
+        viewModel.onIntent(LoginUiIntent.PasswordChanged("password"))
+        viewModel.onIntent(LoginUiIntent.Submit)
+        viewModel.onIntent(LoginUiIntent.Submit)
         runCurrent()
-        assertTrue(viewModel.state.value.isLoading)
+        assertTrue(viewModel.state.value.loading)
         assertEquals(1, requests)
         response.complete(AppResult.Failure(AppFailure.NETWORK))
         advanceUntilIdle()
-        assertFalse(viewModel.state.value.isLoading)
-        assertEquals(LoginError.Network, viewModel.state.value.failure)
+        assertFalse(viewModel.state.value.loading)
+        assertEquals(LoginError.Network, viewModel.state.value.error)
     }
 }
