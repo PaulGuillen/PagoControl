@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.features.auth.R
 import com.devpaul.pagocontrol.designsystem.AccountLink
@@ -99,6 +100,7 @@ fun RegisterScreen(
             AccountLink(
                 text = stringResource(R.string.flow_already_account),
                 action = stringResource(R.string.flow_login_button),
+                actionSpacing = 6.sp,
                 onClick = onLogin,
                 enabled = !state.loading,
             )

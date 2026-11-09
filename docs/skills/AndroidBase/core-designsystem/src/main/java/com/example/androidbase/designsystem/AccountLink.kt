@@ -12,7 +12,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun AccountLink(
@@ -21,6 +23,7 @@ fun AccountLink(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    actionSpacing: TextUnit = 0.sp,
 ) {
     val dark = EntryColors.isDark
     val actionColor = if (dark) EntryColors.Gold else MaterialTheme.colorScheme.onSurface
@@ -28,6 +31,13 @@ fun AccountLink(
         append(text)
         val start = text.lastIndexOf(action)
         if (start >= 0 && action.isNotEmpty()) {
+            if (start > 0 && text[start - 1].isWhitespace()) {
+                addStyle(
+                    style = SpanStyle(letterSpacing = actionSpacing),
+                    start = start - 1,
+                    end = start,
+                )
+            }
             addStyle(
                 style = SpanStyle(
                     color = actionColor,
