@@ -15,13 +15,25 @@ import com.devpaul.pagocontrol.features.auth.R as AuthResources
 import com.devpaul.pagocontrol.features.onboarding.R as OnboardingResources
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
+import org.junit.Assume.assumeTrue
+import kotlinx.coroutines.runBlocking
+import org.koin.core.context.GlobalContext
+import com.devpaul.pagocontrol.session.AuthRepository
+import com.devpaul.pagocontrol.features.auth.BuildConfig as AuthBuildConfig
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AccountScreensFlowTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @Before fun requireEmulators() {
+        assumeTrue("Requires Firebase emulators", AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
+        compose.activity.getSharedPreferences("auth_attempt_limits", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        runBlocking { GlobalContext.get().get<AuthRepository>().signOut() }
+    }
 
     @Test fun registerAndRecoveryValidateAndReturnToLogin() {
+        val testEmail = "account-${System.nanoTime()}@example.com"
         val activity = compose.activity
         val skip = activity.getString(OnboardingResources.string.onboarding_skip)
         val loginTitle = activity.getString(AuthResources.string.flow_login_title)
@@ -33,21 +45,21 @@ class AccountScreensFlowTest {
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_register_invalid)).performScrollTo().assertIsDisplayed()
         compose.onNode(hasText(activity.getString(AuthResources.string.flow_name)) and hasSetTextAction()).performScrollTo().performTextInput("Paul Demo")
-        compose.onNode(hasText(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput("demo@test.pe")
+        compose.onNode(hasText(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput(testEmail)
         compose.onNode(hasText(activity.getString(AuthResources.string.flow_password)) and hasSetTextAction()).performScrollTo().performTextInput("Password123")
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_accept_terms)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account)).performScrollTo().performClick()
-        val registerDemo = activity.getString(AuthResources.string.flow_register_demo)
-        compose.waitUntil(10_000) { compose.onNodeWithText(registerDemo).isDisplayed() }
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_back_login)).performScrollTo().performClick()
+        compose.waitUntil(15_000) { compose.onNodeWithText("BALANCE DISPONIBLE").isDisplayed() }
+        runBlocking { GlobalContext.get().get<AuthRepository>().signOut() }
+        compose.waitUntil(5_000) { compose.onNodeWithText(loginTitle).isDisplayed() }
 
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_forgot_link)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_email_invalid)).performScrollTo().assertIsDisplayed()
-        compose.onNode(hasContentDescription(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput("demo@test.pe")
+        compose.onNode(hasContentDescription(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput(testEmail)
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions)).performScrollTo().performClick()
-        val recoveryDemo = activity.getString(AuthResources.string.flow_forgot_demo)
-        compose.waitUntil(10_000) { compose.onNodeWithText(recoveryDemo).isDisplayed() }
+        val recoverySuccess = activity.getString(AuthResources.string.flow_forgot_success)
+        compose.waitUntil(10_000) { compose.onNodeWithText(recoverySuccess).isDisplayed() }
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_back_login)).performScrollTo().performClick()
         compose.onNodeWithText(loginTitle).performScrollTo().assertIsDisplayed()
     }

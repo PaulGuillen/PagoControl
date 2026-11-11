@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -20,6 +21,14 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Before
+import org.junit.Assume.assumeTrue
+import org.junit.Assert.assertEquals
+import kotlinx.coroutines.runBlocking
+import org.koin.core.context.GlobalContext
+import com.devpaul.pagocontrol.session.AccountRepository
+import com.devpaul.pagocontrol.session.AccountResult
+import com.devpaul.pagocontrol.session.AuthRepository
+import com.devpaul.pagocontrol.features.auth.BuildConfig as AuthBuildConfig
 import androidx.compose.ui.test.isDisplayed
 import com.devpaul.pagocontrol.features.auth.R as AuthResources
 import com.devpaul.pagocontrol.features.onboarding.R as OnboardingResources
@@ -29,9 +38,19 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AuthHomeFlowTest {
+    private val testEmail = "flow-${System.nanoTime()}@example.com"
+    private val testPassword = "TestPassword123!"
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
     @Before fun enterLogin() {
+        assumeTrue("Requires Firebase emulators", AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
+        compose.activity.getSharedPreferences("auth_attempt_limits", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        runBlocking {
+            val auth = GlobalContext.get().get<AuthRepository>()
+            auth.signOut()
+            assertEquals(AccountResult.Success, GlobalContext.get().get<AccountRepository>().register("Carlos", testEmail, testPassword))
+            auth.signOut()
+        }
         val loginLabel = compose.activity.getString(AuthResources.string.flow_login_title)
         val skipLabel = compose.activity.getString(OnboardingResources.string.onboarding_skip)
         compose.waitUntil(10_000) {
@@ -41,11 +60,20 @@ class AuthHomeFlowTest {
     }
 
     @Test fun loginThemeRecreationAndMovements() {
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email)).performScrollTo().performTextInput(testEmail)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
         compose.waitUntil(5_000) {
             compose.onAllNodes(androidx.compose.ui.test.hasText("BALANCE DISPONIBLE")).fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithText("S/ 4,580.50").assertIsDisplayed()
+        listOf("Inicio", "Movimientos", "Reportes", "Perfil").forEach { tab ->
+            compose.onNode(hasText(tab) and hasClickAction()).performClick()
+            compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+            compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_title)).assertIsDisplayed()
+            compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_cancel)).performClick()
+        }
+        compose.onNodeWithText("Inicio").performClick()
         compose.onNodeWithContentDescription("Notificaciones").assertIsDisplayed()
         compose.onNodeWithContentDescription("Cambiar apariencia").assertDoesNotExist()
         compose.onNodeWithContentDescription("Cerrar sesión").assertDoesNotExist()
@@ -72,6 +100,7 @@ class AuthHomeFlowTest {
         compose.onNodeWithText("Editar").performClick()
         compose.onNodeWithText("Nombre").performTextReplacement("Carlos Perfil")
         compose.onNodeWithText("Guardar").performClick()
+        compose.waitUntil(5_000) { compose.onNodeWithText("Carlos Perfil").isDisplayed() }
         compose.onNodeWithText("Carlos Perfil").assertIsDisplayed()
         compose.onNodeWithText("Plan Free").assertDoesNotExist()
         compose.onNodeWithText("Apariencia").performScrollTo().performClick()
@@ -105,5 +134,18 @@ class AuthHomeFlowTest {
         compose.waitUntil(5_000) {
             compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).isDisplayed()
         }
+    }
+
+    @Test fun backConfirmationSignsOutAndReturnsToLogin() {
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email)).performScrollTo().performTextInput(testEmail)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
+        compose.waitUntil(5_000) { compose.onNodeWithText("BALANCE DISPONIBLE").isDisplayed() }
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_confirm)).performClick()
+        compose.waitUntil(5_000) {
+            compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).isDisplayed()
+        }
+        assertEquals(null, GlobalContext.get().get<AuthRepository>().session.value)
     }
 }
