@@ -18,5 +18,5 @@ android {
         sourceCompatibility = Config.javaVersion
         targetCompatibility = Config.javaVersion
     }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
 }

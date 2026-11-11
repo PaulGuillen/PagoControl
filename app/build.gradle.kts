@@ -1,4 +1,6 @@
 plugins {
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
     id("plugin.application")
     id("plugin.koin")
 }
@@ -10,10 +12,18 @@ android {
         applicationId = "com.devpaul.pagocontrol"
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "ENVIRONMENT", "\"production\"")
+        buildConfigField("String", "FIREBASE_EMULATOR_HOST", "\"\"")
 
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "ENVIRONMENT", "\"development\"")
+            val emulatorHost = providers.gradleProperty("firebaseEmulatorHost").orElse("").get()
+            require(emulatorHost.matches(Regex("[a-zA-Z0-9.:-]*")))
+            buildConfigField("String", "FIREBASE_EMULATOR_HOST", "\"$emulatorHost\"")
+        }
         release {
             optimization {
                 enable = false
@@ -23,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-platform"))
     implementation(project(":core-domain"))
     implementation(project(":session"))
     implementation(project(":core-data"))
@@ -41,6 +52,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.icons)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)

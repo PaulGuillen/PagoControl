@@ -9,6 +9,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.firebase/
+/*-debug.log
+/*-debug.*.log
 
 # Project exclude paths
 /buildSrc/build/
