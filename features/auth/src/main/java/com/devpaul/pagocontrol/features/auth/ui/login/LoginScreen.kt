@@ -47,7 +47,14 @@ fun LoginScreen(
             )
         }
         state.error?.let {
-            Text(stringResource(if (it == LoginError.InvalidCredentials) R.string.flow_credentials_error else R.string.flow_unavailable), color = MaterialTheme.colorScheme.error)
+            Text(stringResource(when (it) {
+                LoginError.InvalidCredentials -> R.string.flow_credentials_error
+                LoginError.Network -> R.string.flow_network_error
+                LoginError.TooManyRequests -> R.string.flow_too_many_requests
+                LoginError.UserDisabled -> R.string.flow_user_disabled
+                LoginError.ProfileIncomplete -> R.string.flow_profile_incomplete
+                LoginError.Unavailable -> R.string.flow_unavailable
+            }), color = MaterialTheme.colorScheme.error)
         }
         AuthPrimaryButton(text = stringResource(R.string.flow_login_button), loading = state.loading) { onIntent(LoginUiIntent.Submit) }
         AuthFingerprintButton(onClick = { providerInfo = true }, enabled = !state.loading)

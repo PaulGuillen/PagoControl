@@ -8,6 +8,5 @@ data class RegisterUiState(
     val validationAttempted: Boolean = false,
     val loading: Boolean = false,
     val completed: Boolean = false,
-    val demoOnly: Boolean = false,
     val error: RegisterError? = null,
 )

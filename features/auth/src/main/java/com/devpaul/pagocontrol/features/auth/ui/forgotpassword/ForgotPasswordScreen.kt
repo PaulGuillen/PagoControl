@@ -85,7 +85,7 @@ fun ForgotPasswordScreen(
                 }
                 if (state.completed) {
                     Text(
-                        text = stringResource(if (state.demoOnly) R.string.flow_forgot_demo else R.string.flow_forgot_success),
+                        text = stringResource(R.string.flow_forgot_success),
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                     )
@@ -155,6 +155,7 @@ private fun RecoveryForm(state: ForgotPasswordUiState, onIntent: (ForgotPassword
                         ForgotPasswordError.InvalidEmail -> R.string.flow_email_invalid
                         ForgotPasswordError.Network -> R.string.flow_network_error
                         ForgotPasswordError.Unavailable -> R.string.flow_unavailable
+                        ForgotPasswordError.TooManyRequests -> R.string.flow_too_many_requests
                     }),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,

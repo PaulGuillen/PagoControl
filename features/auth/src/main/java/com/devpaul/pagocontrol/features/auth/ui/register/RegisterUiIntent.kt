@@ -6,4 +6,5 @@ sealed interface RegisterUiIntent {
     data class TermsChanged(val value: Boolean) : RegisterUiIntent
     data object TogglePassword : RegisterUiIntent
     data object Submit : RegisterUiIntent
+    data object ClearError : RegisterUiIntent
 }

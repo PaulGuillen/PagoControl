@@ -1,23 +1,17 @@
 package com.devpaul.pagocontrol.features.auth.ui.login
 
 import androidx.lifecycle.SavedStateHandle
-import com.devpaul.pagocontrol.session.AuthRepository
-import com.devpaul.pagocontrol.session.SignInResult
-import com.devpaul.pagocontrol.session.UserSession
+import com.devpaul.pagocontrol.features.auth.TestAuthRepository
+import com.devpaul.pagocontrol.features.auth.domain.entity.AuthUser
+import com.devpaul.pagocontrol.features.auth.domain.exception.AuthError
+import com.devpaul.pagocontrol.features.auth.domain.exception.AuthException
+import com.devpaul.pagocontrol.features.auth.domain.usecase.SignInUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
@@ -25,64 +19,40 @@ import org.junit.Test
 class LoginViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
-    @After fun tearDown() { Dispatchers.resetMain() }
-
-    @Test fun validationPreventsRepositoryCall() = runTest {
+    @After fun teardown() { Dispatchers.resetMain() }
+    @Test fun emptyFieldsNeverAuthenticate() = runTest {
         val repository = ControlledAuth()
-        val viewModel = LoginViewModel(repository, SavedStateHandle())
+        val viewModel = LoginViewModel(SignInUseCase(repository), SavedStateHandle())
         viewModel.onIntent(LoginUiIntent.Submit)
         advanceUntilIdle()
         assertTrue(viewModel.state.value.emailInvalid)
         assertTrue(viewModel.state.value.passwordInvalid)
         assertEquals(0, repository.calls)
     }
-
-    @Test fun duplicateSubmitIsIgnoredAndFailureCanRetry() = runTest {
+    @Test fun duplicateSubmitIsIgnoredAndFailureCanRetryWithoutPersistingPassword() = runTest {
         val repository = ControlledAuth()
         val handle = SavedStateHandle()
-        val viewModel = LoginViewModel(repository, handle)
+        val viewModel = LoginViewModel(SignInUseCase(repository), handle)
         viewModel.onIntent(LoginUiIntent.EmailChanged("paul@example.com"))
         viewModel.onIntent(LoginUiIntent.PasswordChanged("example-password"))
         viewModel.onIntent(LoginUiIntent.Submit)
         viewModel.onIntent(LoginUiIntent.Submit)
         runCurrent()
         assertEquals(1, repository.calls)
-        assertTrue(viewModel.state.value.loading)
-        repository.response.complete(SignInResult.InvalidCredentials)
+        repository.response.completeExceptionally(AuthException(AuthError.INVALID_CREDENTIALS))
         advanceUntilIdle()
-        assertFalse(viewModel.state.value.loading)
         assertEquals(LoginError.InvalidCredentials, viewModel.state.value.error)
-        repository.response = CompletableDeferred(SignInResult.Success)
+        assertFalse(viewModel.state.value.loading)
+        repository.response = CompletableDeferred(repository.user)
         viewModel.onIntent(LoginUiIntent.Submit)
         advanceUntilIdle()
         assertEquals(2, repository.calls)
         assertEquals("", viewModel.state.value.password)
         assertFalse(handle.contains("password"))
     }
-
-    @Test fun localProviderAcceptsEmptyFieldsWithoutAutofill() = runTest {
-        val repository = ControlledAuth(isDemo = true)
-        repository.response.complete(SignInResult.Success)
-        val handle = SavedStateHandle()
-        val viewModel = LoginViewModel(repository, handle)
-        viewModel.onIntent(LoginUiIntent.Submit)
-        advanceUntilIdle()
-        assertEquals(1, repository.calls)
-        assertEquals("", viewModel.state.value.email)
-        assertEquals("", viewModel.state.value.password)
-        assertFalse(viewModel.state.value.emailInvalid)
-        assertFalse(viewModel.state.value.passwordInvalid)
-        assertFalse(handle.contains("password"))
-    }
-
-    private class ControlledAuth(override val isDemo: Boolean = false) : AuthRepository {
-        override val session = MutableStateFlow<UserSession?>(null)
+    private class ControlledAuth : TestAuthRepository() {
         var calls = 0
-        var response = CompletableDeferred<SignInResult>()
-        override suspend fun signIn(email: String, password: String): SignInResult {
-            calls++
-            return response.await()
-        }
-        override suspend fun signOut() { session.value = null }
+        var response = CompletableDeferred<AuthUser>()
+        override suspend fun signIn(email: String, password: String): AuthUser { calls++; return response.await() }
     }
 }

@@ -1,4 +1,8 @@
 <resources>
+    <string name="flow_too_many_requests">Demasiados intentos. Espera unos minutos antes de volver a intentarlo.</string>
+    <string name="flow_user_disabled">Esta cuenta está deshabilitada. Contacta con el administrador.</string>
+    <string name="flow_email_in_use">Este correo ya está registrado. Inicia sesión o recupera tu contraseña.</string>
+    <string name="flow_profile_incomplete">No pudimos completar el perfil. Si ya creaste tu cuenta, intenta iniciar sesión; no necesitas registrarte otra vez.</string>
     <string name="flow_back">Volver</string>
     <string name="flow_show_password">Mostrar contraseña</string>
     <string name="flow_hide_password">Ocultar contraseña</string>
@@ -7,7 +11,7 @@
     <string name="flow_information">Información</string>
     <string name="flow_understood">Entendido</string>
     <string name="flow_provider_info">El acceso con Google y huella digital se habilitará al integrar esos proveedores.</string>
-    <string name="flow_terms_info">Esta versión es una demostración. Los términos y la política de privacidad del servicio se publicarán antes de habilitar cuentas reales.</string>
+    <string name="flow_terms_info">El acceso y el registro usan Firebase Authentication. Tu nombre, correo e identificador se guardan en Firebase para gestionar tu cuenta. Los movimientos y reportes siguen siendo ejemplos y no conectan cuentas bancarias.</string>
     <string name="flow_login_title">Bienvenido de nuevo</string>
     <string name="flow_login_description">Ingresa a tu cuenta para continuar</string>
     <string name="flow_login_separator">o con tu correo</string>
@@ -28,13 +32,11 @@
     <string name="flow_create_account">Crear cuenta</string>
     <string name="flow_already_account">¿Ya tienes una cuenta? Iniciar sesión</string>
     <string name="flow_register_invalid">Revisa tus datos. La contraseña debe tener al menos 8 caracteres.</string>
-    <string name="flow_register_demo">Formulario validado. Esta demo no crea cuentas reales; vuelve a Iniciar sesión para explorar sin credenciales.</string>
     <string name="flow_register_success">Tu cuenta está lista. Ya puedes iniciar sesión.</string>
     <string name="flow_forgot_title">¿Olvidaste tu contraseña?</string>
     <string name="flow_forgot_description">Ingresa tu correo registrado para recibir instrucciones de recuperación.</string>
     <string name="flow_email_invalid">Ingresa un correo válido.</string>
     <string name="flow_send_instructions">Enviar instrucciones</string>
-    <string name="flow_forgot_demo">En esta demo no se envían correos ni códigos. Puedes volver a Iniciar sesión para explorar sin credenciales.</string>
     <string name="flow_forgot_success">Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.</string>
     <string name="flow_account_security">Seguridad de tu cuenta</string>
     <string name="flow_security_description">No compartas tu contraseña ni códigos de recuperación con otras personas.</string>

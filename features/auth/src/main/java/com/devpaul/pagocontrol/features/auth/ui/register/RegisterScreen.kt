@@ -40,7 +40,7 @@ fun RegisterScreen(
     AuthLayout(onBack = onLogin, themeIndex = themeIndex, onThemeSelected = onThemeSelected) {
         AuthHeading(stringResource(R.string.flow_register_title), stringResource(R.string.flow_register_description))
         if (state.completed) {
-            Text(stringResource(if (state.demoOnly) R.string.flow_register_demo else R.string.flow_register_success))
+            Text(stringResource(R.string.flow_register_success))
             AuthPrimaryButton(text = stringResource(R.string.flow_back_login), loading = false, onClick = onLogin)
         } else {
             AuthProviderButton { providerInfo = true }
@@ -94,6 +94,9 @@ fun RegisterScreen(
                     RegisterError.TermsRequired -> R.string.flow_terms_required
                     RegisterError.Network -> R.string.flow_network_error
                     RegisterError.Unavailable -> R.string.flow_unavailable
+                    RegisterError.EmailAlreadyInUse -> R.string.flow_email_in_use
+                    RegisterError.TooManyRequests -> R.string.flow_too_many_requests
+                    RegisterError.ProfileIncomplete -> R.string.flow_profile_incomplete
                 }), color = MaterialTheme.colorScheme.error)
             }
             AuthPrimaryButton(text = stringResource(R.string.flow_create_account), loading = state.loading) { onIntent(RegisterUiIntent.Submit) }

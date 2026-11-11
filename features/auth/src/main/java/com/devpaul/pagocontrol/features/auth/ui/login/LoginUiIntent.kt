@@ -5,4 +5,5 @@ sealed interface LoginUiIntent {
     data class PasswordChanged(val value: String) : LoginUiIntent
     data object TogglePassword : LoginUiIntent
     data object Submit : LoginUiIntent
+    data object ClearError : LoginUiIntent
 }

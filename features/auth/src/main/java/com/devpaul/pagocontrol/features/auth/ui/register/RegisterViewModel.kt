@@ -1,9 +1,12 @@
 package com.devpaul.pagocontrol.features.auth.ui.register
 
+import com.devpaul.pagocontrol.domain.result.UseCaseResult
+import com.devpaul.pagocontrol.features.auth.domain.mapper.toAccountResult
+import com.devpaul.pagocontrol.platform.analytics.AppAnalytics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.devpaul.pagocontrol.platform.BaseViewModel
-import com.devpaul.pagocontrol.session.AccountRepository
+import com.devpaul.pagocontrol.features.auth.domain.usecase.RegisterUseCase
 import com.devpaul.pagocontrol.session.AccountResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -11,7 +14,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class RegisterViewModel(
-    private val repository: AccountRepository,
+    private val register: RegisterUseCase,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<RegisterUiState>(RegisterUiState(
     name = savedStateHandle["name"] ?: "", email = savedStateHandle["email"] ?: "",
@@ -31,13 +34,14 @@ class RegisterViewModel(
             is RegisterUiIntent.TermsChanged -> updateState { it.copy(termsAccepted = intent.value, error = null) }
             RegisterUiIntent.TogglePassword -> updateState { it.copy(passwordVisible = !it.passwordVisible) }
             RegisterUiIntent.Submit -> submit()
+            RegisterUiIntent.ClearError -> updateState { it.copy(error = null, validationAttempted = false) }
         }
     }
     private fun submit() {
         val current = state.value
         val validEmail = current.email.trim().matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))
         val error = when {
-            current.name.trim().length < 2 || !validEmail || current.password.length < 8 -> RegisterError.InvalidInput
+            current.name.trim().length !in 2..80 || !validEmail || current.password.length < 8 -> RegisterError.InvalidInput
             !current.termsAccepted -> RegisterError.TermsRequired
             else -> null
         }
@@ -46,7 +50,16 @@ class RegisterViewModel(
         updateState { it.copy(loading = true) }
         viewModelScope.launch {
             val result = try {
-                repository.register(name = current.name.trim(), email = current.email.trim(), password = current.password)
+                when (val response = register(name = current.name, email = current.email, password = current.password)) {
+                    is UseCaseResult.Success -> {
+                        AppAnalytics.outcome("register", "success")
+                        AccountResult.Success
+                    }
+                    is UseCaseResult.Error -> {
+                        AppAnalytics.error("register", code = response.error.error.name.lowercase())
+                        response.error.error.toAccountResult()
+                    }
+                }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
@@ -55,13 +68,16 @@ class RegisterViewModel(
             updateState {
                 it.copy(
                     loading = false,
-                    completed = result == AccountResult.Success || result == AccountResult.DemoOnly,
-                    demoOnly = result == AccountResult.DemoOnly,
-                    password = if (result == AccountResult.Success || result == AccountResult.DemoOnly) "" else it.password,
+                    completed = result == AccountResult.Success,
+                    password = if (result == AccountResult.Success) "" else it.password,
                     error = when (result) {
                         AccountResult.InvalidInput -> RegisterError.InvalidInput
                         AccountResult.Network -> RegisterError.Network
                         AccountResult.Unavailable -> RegisterError.Unavailable
+                        AccountResult.EmailAlreadyInUse -> RegisterError.EmailAlreadyInUse
+                        AccountResult.WeakPassword -> RegisterError.InvalidInput
+                        AccountResult.TooManyRequests -> RegisterError.TooManyRequests
+                        AccountResult.ProfileIncomplete -> RegisterError.ProfileIncomplete
                         else -> null
                     },
                 )

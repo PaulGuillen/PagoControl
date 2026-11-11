@@ -1,9 +1,12 @@
 package com.devpaul.pagocontrol.features.auth.ui.login
 
+import com.devpaul.pagocontrol.domain.result.UseCaseResult
+import com.devpaul.pagocontrol.features.auth.domain.mapper.toSignInResult
+import com.devpaul.pagocontrol.platform.analytics.AppAnalytics
 import androidx.lifecycle.SavedStateHandle
 import com.devpaul.pagocontrol.platform.BaseViewModel
 import androidx.lifecycle.viewModelScope
-import com.devpaul.pagocontrol.session.AuthRepository
+import com.devpaul.pagocontrol.features.auth.domain.usecase.SignInUseCase
 import com.devpaul.pagocontrol.domain.LoginValidation
 import com.devpaul.pagocontrol.session.SignInResult
 import kotlinx.coroutines.CancellationException
@@ -12,7 +15,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class LoginViewModel(
-    private val repository: AuthRepository,
+    private val signIn: SignInUseCase,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<LoginUiState>(LoginUiState(email = savedStateHandle["email"] ?: "")) {
 
@@ -28,13 +31,14 @@ class LoginViewModel(
             }
             LoginUiIntent.TogglePassword -> updateState { it.copy(passwordVisible = !it.passwordVisible) }
             LoginUiIntent.Submit -> submit()
+            LoginUiIntent.ClearError -> updateState { it.copy(error = null, emailInvalid = false, passwordInvalid = false) }
         }
     }
 
     private fun submit() {
         val current = state.value
-        val emailInvalid = !repository.isDemo && !LoginValidation.validEmail(current.email)
-        val passwordInvalid = !repository.isDemo && !LoginValidation.validPassword(current.password)
+        val emailInvalid = !LoginValidation.validEmail(current.email)
+        val passwordInvalid = current.password.isBlank()
         if (emailInvalid || passwordInvalid) {
             updateState { it.copy(emailInvalid = emailInvalid, passwordInvalid = passwordInvalid) }
             return
@@ -42,7 +46,16 @@ class LoginViewModel(
         updateState { it.copy(loading = true, error = null) }
         viewModelScope.launch {
             val result = try {
-                repository.signIn(current.email.trim(), current.password)
+                when (val response = signIn(current.email, current.password)) {
+                    is UseCaseResult.Success -> {
+                        AppAnalytics.outcome("login", "success")
+                        SignInResult.Success
+                    }
+                    is UseCaseResult.Error -> {
+                        AppAnalytics.error("login", code = response.error.error.name.lowercase())
+                        response.error.error.toSignInResult()
+                    }
+                }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
@@ -56,6 +69,10 @@ class LoginViewModel(
                         SignInResult.Success -> null
                         SignInResult.InvalidCredentials -> LoginError.InvalidCredentials
                         SignInResult.Unavailable -> LoginError.Unavailable
+                        SignInResult.Network -> LoginError.Network
+                        SignInResult.TooManyRequests -> LoginError.TooManyRequests
+                        SignInResult.UserDisabled -> LoginError.UserDisabled
+                        SignInResult.ProfileIncomplete -> LoginError.ProfileIncomplete
                     },
                 )
             }

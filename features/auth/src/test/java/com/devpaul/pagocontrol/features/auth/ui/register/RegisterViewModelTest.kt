@@ -1,36 +1,31 @@
 package com.devpaul.pagocontrol.features.auth.ui.register
 
 import androidx.lifecycle.SavedStateHandle
-import com.devpaul.pagocontrol.session.AccountRepository
-import com.devpaul.pagocontrol.session.AccountResult
+import com.devpaul.pagocontrol.features.auth.TestAuthRepository
+import com.devpaul.pagocontrol.features.auth.domain.entity.AuthUser
+import com.devpaul.pagocontrol.features.auth.domain.usecase.RegisterUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.junit.After
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.Assert.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RegisterViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
     @After fun teardown() { Dispatchers.resetMain() }
-
-    @Test fun validatesConsentAndIgnoresDoubleSubmit() = runTest {
-        val repository = ControlledAccount()
-        val saved = SavedStateHandle()
-        val viewModel = RegisterViewModel(repository, saved)
+    @Test fun validatesConsentAndIgnoresDuplicateSubmit() = runTest {
+        val repository = ControlledAuth()
+        val handle = SavedStateHandle()
+        val viewModel = RegisterViewModel(RegisterUseCase(repository), handle)
         viewModel.onIntent(RegisterUiIntent.Submit)
         assertEquals(RegisterError.InvalidInput, viewModel.state.value.error)
         viewModel.onIntent(RegisterUiIntent.NameChanged("Paul"))
-        viewModel.onIntent(RegisterUiIntent.EmailChanged("demo@test.pe"))
+        viewModel.onIntent(RegisterUiIntent.EmailChanged("paul@example.com"))
         viewModel.onIntent(RegisterUiIntent.PasswordChanged("Password123"))
         viewModel.onIntent(RegisterUiIntent.Submit)
         assertEquals(RegisterError.TermsRequired, viewModel.state.value.error)
@@ -40,21 +35,15 @@ class RegisterViewModelTest {
         viewModel.onIntent(RegisterUiIntent.Submit)
         runCurrent()
         assertEquals(1, repository.calls)
-        repository.response.complete(AccountResult.DemoOnly)
+        repository.response.complete(repository.user)
         advanceUntilIdle()
         assertTrue(viewModel.state.value.completed)
-        assertTrue(viewModel.state.value.demoOnly)
         assertEquals("", viewModel.state.value.password)
-        assertFalse(saved.contains("password"))
+        assertFalse(handle.contains("password"))
     }
-
-    private class ControlledAccount : AccountRepository {
+    private class ControlledAuth : TestAuthRepository() {
         var calls = 0
-        val response = CompletableDeferred<AccountResult>()
-        override suspend fun register(name: String, email: String, password: String): AccountResult {
-            calls++
-            return response.await()
-        }
-        override suspend fun sendPasswordReset(email: String) = AccountResult.Unavailable
+        val response = CompletableDeferred<AuthUser>()
+        override suspend fun register(name: String, email: String, password: String): AuthUser { calls++; return response.await() }
     }
 }

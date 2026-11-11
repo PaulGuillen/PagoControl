@@ -9,10 +9,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.devpaul.pagocontrol.features.auth.ui.login.LoginScreen
 import com.devpaul.pagocontrol.features.auth.ui.login.LoginViewModel
+import com.devpaul.pagocontrol.features.auth.ui.login.LoginUiIntent
 import com.devpaul.pagocontrol.features.auth.ui.register.RegisterScreen
 import com.devpaul.pagocontrol.features.auth.ui.register.RegisterViewModel
+import com.devpaul.pagocontrol.features.auth.ui.register.RegisterUiIntent
 import com.devpaul.pagocontrol.features.auth.ui.forgotpassword.ForgotPasswordScreen
 import com.devpaul.pagocontrol.features.auth.ui.forgotpassword.ForgotPasswordViewModel
+import com.devpaul.pagocontrol.features.auth.ui.forgotpassword.ForgotPasswordUiIntent
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.authGraph(
@@ -28,8 +31,8 @@ fun NavGraphBuilder.authGraph(
                 onIntent = viewModel::onIntent,
                 themeIndex = themeIndex,
                 onThemeSelected = onThemeSelected,
-                onRegister = onRegister,
-                onForgotPassword = onForgotPassword,
+                onRegister = { viewModel.onIntent(LoginUiIntent.ClearError); onRegister() },
+                onForgotPassword = { viewModel.onIntent(LoginUiIntent.ClearError); onForgotPassword() },
             )
         }
         composable<AuthRoute.Register> {
@@ -38,7 +41,7 @@ fun NavGraphBuilder.authGraph(
             RegisterScreen(
                 state = state,
                 onIntent = viewModel::onIntent,
-                onLogin = onLogin,
+                onLogin = { viewModel.onIntent(RegisterUiIntent.ClearError); onLogin() },
                 themeIndex = themeIndex,
                 onThemeSelected = onThemeSelected,
             )
@@ -49,7 +52,7 @@ fun NavGraphBuilder.authGraph(
             ForgotPasswordScreen(
                 state = state,
                 onIntent = viewModel::onIntent,
-                onLogin = onLogin,
+                onLogin = { viewModel.onIntent(ForgotPasswordUiIntent.ClearError); onLogin() },
             )
         }
     }

@@ -7,4 +7,5 @@ interface AuthRepository {
     val session: StateFlow<UserSession?>
     suspend fun signIn(email: String, password: String): SignInResult
     suspend fun signOut()
+    suspend fun updateName(name: String): AccountResult = AccountResult.Unavailable
 }
