@@ -1,5 +1,9 @@
 # Base de PagoControl
 
+## App y Auth con Firebase
+
+La implementación vigente de autenticación y arranque se documenta en [FIREBASE_SETUP.md](FIREBASE_SETUP.md). Sustituye el acceso sin credenciales de la primera etapa: ahora se usan Firebase Authentication, perfiles Firestore, casos de uso y errores tipados dentro de `features:auth`, límite persistente de intentos y sesión restaurable. `app` inicializa Timber, Analytics/Crashlytics, App Check y Koin siguiendo AndroidBase. La UI de PagoControl se conserva; Google y huella siguen pendientes. Las notas inferiores de acceso demo describen la etapa inicial, no el proveedor de autenticación actual.
+
 ## Reportes financieros y navegación principal
 
 `features:reports` implementa las referencias `reportes_financieros_modo_claro` y `reportes_financieros_modo_oscuro` con la identidad visual de PagoControl. Incluye balance neto, comparación con el período anterior cuando hay datos, tasa de ahorro calculada, ingresos/egresos, gráfico interactivo, seis categorías, cuatro canales y suscripciones recurrentes. El período se puede cambiar entre noviembre, últimos tres meses, año y un rango personalizado de meses de 2023.
@@ -20,7 +24,7 @@ Las pruebas del módulo verifican los importes de noviembre, conservación de to
 
 `ProfileRoute` define Graph, Profile, Help y Privacy. La feature conserva su módulo Koin y los contratos de estado/intenciones/ViewModel. Los tres destinos están protegidos por sesión; Inicio, Movimientos y Perfil se conectan desde app sin dependencias entre features. Al salir se limpian los estados de navegación guardados de los módulos autenticados.
 
-`ProfileRepository` vive en dominio y `DataStoreProfileRepository` en datos. Las preferencias se separan por identificador de usuario; la apariencia continúa usando el repositorio global existente. Los cambios del nombre/correo personalizan también el saludo de Inicio mediante la sesión de presentación en `AppViewModel`. Los errores de escritura permiten reintentar; las operaciones evitan envíos duplicados.
+`ProfileRepository` vive en dominio y `DataStoreProfileRepository` en datos. Las preferencias se separan por identificador de usuario; la apariencia continúa usando el repositorio global existente. Los cambios del nombre/correo personalizan también el saludo de Inicio mediante la sesión observada por `AuthSessionViewModel` en `MainGraph`. Los errores de escritura permiten reintentar; las operaciones evitan envíos duplicados.
 
 Las notificaciones son una preferencia local para la futura integración: no solicitan permisos ni habilitan lectura bancaria. La valoración se guarda localmente y no se envía a Google Play ni a un servidor. El selector de idioma indica que actualmente solo está disponible español. Ayuda y Privacidad describen estas capacidades reales del prototipo y no contienen enlaces o servicios ficticios.
 
