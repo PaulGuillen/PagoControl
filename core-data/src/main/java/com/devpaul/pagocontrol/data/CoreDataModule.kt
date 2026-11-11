@@ -1,6 +1,8 @@
 package com.devpaul.pagocontrol.data
 
 import com.devpaul.pagocontrol.data.local.DataStoreAppearanceRepository
+import com.devpaul.pagocontrol.data.local.DataStoreProfileRepository
+import com.devpaul.pagocontrol.domain.ProfileRepository
 import com.devpaul.pagocontrol.data.local.DemoAuthRepository
 import com.devpaul.pagocontrol.data.local.DemoHomeRepository
 
@@ -19,6 +21,9 @@ import org.koin.core.annotation.Single
 @Module
 @ComponentScan
 class CoreDataModule {
+    @Single
+    fun profileRepository(context: Context): ProfileRepository = DataStoreProfileRepository(context)
+
     @Single
     fun startupPreferences(context: Context): StartupPreferences = DataStoreStartupPreferences(context)
 

@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":features:auth"))
     implementation(project(":features:home"))
     implementation(project(":features:movements"))
+    implementation(project(":features:profile"))
     implementation(project(":features:splash"))
     implementation(project(":features:onboarding"))
     implementation(libs.koin.compose)
