@@ -25,15 +25,48 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.devpaul.pagocontrol.session.UserSession
+import androidx.navigation.NavHostController
+import com.devpaul.pagocontrol.platform.analytics.AppAnalytics
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.devpaul.pagocontrol.features.auth.ui.session.AuthSessionViewModel
+import com.devpaul.pagocontrol.features.auth.domain.usecase.SignOutUseCase
+import com.devpaul.pagocontrol.ui.LogoutConfirmationDialog
+import com.devpaul.pagocontrol.ui.MainScreenBackHandler
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import android.widget.Toast
 import com.devpaul.pagocontrol.features.auth.authGraph
 import com.devpaul.pagocontrol.features.home.homeGraph
 import com.devpaul.pagocontrol.features.splash.splashGraph
 import com.devpaul.pagocontrol.features.onboarding.onboardingGraph
 
 @Composable
-fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> Unit) {
-    val controller = rememberNavController()
+fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: NavHostController = rememberNavController()) {
+    val authSession: AuthSessionViewModel = koinViewModel()
+    val signOut: SignOutUseCase = koinInject()
+    val session by authSession.session.collectAsStateWithLifecycle()
+    val authenticated = session != null
+    val userName = session?.name.orEmpty()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = rememberCoroutineScope()
+    var showLogoutConfirmation by rememberSaveable { mutableStateOf(false) }
+    var signingOut by remember { mutableStateOf(false) }
+    DisposableEffect(lifecycleOwner, authSession) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) authSession.refreshUser()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    LaunchedEffect(session?.id) { authSession.refreshUser() }
+    val controller = navController
     val context = LocalContext.current
     val version = remember(context) { context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty() }
     fun navigateTab(route: GraphRoute) {
@@ -45,6 +78,48 @@ fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> 
     }
     var onboardingCompleted by rememberSaveable { mutableStateOf<Boolean?>(null) }
     val currentEntry by controller.currentBackStackEntryAsState()
+    LaunchedEffect(currentEntry?.destination) {
+        showLogoutConfirmation = false
+        val destination = currentEntry?.destination ?: return@LaunchedEffect
+        val screen = when {
+            destination.hasRoute<AuthRoute.Login>() -> "login"
+            destination.hasRoute<AuthRoute.Register>() -> "register"
+            destination.hasRoute<AuthRoute.ForgotPassword>() -> "password_reset"
+            destination.hasRoute<HomeRoute.Home>() -> "home"
+            destination.hasRoute<MovementsRoute.Movements>() -> "movements"
+            destination.hasRoute<ReportsRoute.Reports>() -> "reports"
+            destination.hasRoute<ProfileRoute.Profile>() -> "profile"
+            destination.hasRoute<ProfileRoute.Help>() -> "help"
+            destination.hasRoute<ProfileRoute.Privacy>() -> "privacy"
+            destination.hasRoute<SplashRoute.Splash>() -> "splash"
+            else -> "onboarding"
+        }
+        AppAnalytics.screenView(screen)
+    }
+    if (showLogoutConfirmation && session != null) {
+        LogoutConfirmationDialog(
+            loading = signingOut,
+            onDismiss = { if (!signingOut) showLogoutConfirmation = false },
+            onConfirm = {
+                if (!signingOut) {
+                    signingOut = true
+                    scope.launch {
+                        try {
+                            signOut()
+                            showLogoutConfirmation = false
+                        } catch (error: CancellationException) {
+                            throw error
+                        } catch (error: Exception) {
+                            AppAnalytics.error("sign_out", error)
+                            Toast.makeText(context, R.string.logout_error, Toast.LENGTH_LONG).show()
+                        } finally {
+                            signingOut = false
+                        }
+                    }
+                }
+            },
+        )
+    }
     LaunchedEffect(key1 = session?.id, key2 = currentEntry?.destination, key3 = onboardingCompleted) {
         val destination = currentEntry?.destination ?: return@LaunchedEffect
         val splash = destination.hierarchy.any { it.hasRoute<SplashRoute.Graph>() }
@@ -82,19 +157,19 @@ fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> 
             onForgotPassword = { controller.navigate(AuthRoute.ForgotPassword) { launchSingleTop = true } },
             onLogin = { controller.popBackStack<AuthRoute.Login>(inclusive = false) },
         )
-        homeGraph(name = session?.name.orEmpty(), themeIndex = themeIndex, onThemeSelected = onThemeSelected, authorized = session != null,
+        homeGraph(name = userName, themeIndex = themeIndex, onThemeSelected = onThemeSelected, authorized = authenticated,
             onMovements = { navigateTab(MovementsRoute.Graph) },
             onProfile = { navigateTab(ProfileRoute.Graph) },
             onReports = { navigateTab(ReportsRoute.Graph) },
         )
         movementsGraph(
-            authorized = session != null,
+            authorized = authenticated,
             onHome = { controller.popBackStack<HomeRoute.Home>(inclusive = false) },
             onProfile = { navigateTab(ProfileRoute.Graph) },
             onReports = { navigateTab(ReportsRoute.Graph) },
         )
         profileGraph(
-            authorized = session != null, themeIndex = themeIndex, version = version, onThemeSelected = onThemeSelected,
+            authorized = authenticated, themeIndex = themeIndex, version = version, onThemeSelected = onThemeSelected,
             onHome = { controller.popBackStack<HomeRoute.Home>(inclusive = false) },
             onMovements = { navigateTab(MovementsRoute.Graph) },
             onHelp = { controller.navigate(ProfileRoute.Help) { launchSingleTop = true } },
@@ -103,10 +178,14 @@ fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> 
             onReports = { navigateTab(ReportsRoute.Graph) },
         )
         reportsGraph(
-            authorized = session != null,
+            authorized = authenticated,
             onHome = { controller.popBackStack<HomeRoute.Home>(inclusive = false) },
             onMovements = { navigateTab(MovementsRoute.Graph) },
             onProfile = { navigateTab(ProfileRoute.Graph) },
         )
     }
+    MainScreenBackHandler(
+        destination = currentEntry?.destination.takeIf { session != null },
+        onRequestLogout = { showLogoutConfirmation = true },
+    )
 }

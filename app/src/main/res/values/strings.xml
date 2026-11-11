@@ -2,4 +2,16 @@
     <string name="theme_save_error">No pudimos guardar la apariencia. Intenta nuevamente.</string>
     <string name="accept">Aceptar</string>
     <string name="app_name">PagoControl</string>
+    <string name="logout_confirmation_title">¿Quieres cerrar sesión?</string>
+    <string name="logout_confirmation_confirm">Cerrar sesión</string>
+    <string name="logout_confirmation_cancel">Cancelar</string>
+    <string name="logout_error">No pudimos cerrar sesión. Intenta nuevamente.</string>
+    <string name="update_available">NUEVA VERSIÓN DISPONIBLE</string>
+    <string name="update_title">Actualiza para continuar</string>
+    <string name="update_description">Descarga la última versión de PagoControl para seguir gestionando tus finanzas.</string>
+    <string name="update_action">Actualizar en Play Store</string>
+    <string name="update_caption">Necesitas actualizar PagoControl para continuar.</string>
+    <string name="update_security">Correcciones de seguridad</string>
+    <string name="update_performance">Mejoras de rendimiento</string>
+    <string name="update_features">Nuevas funcionalidades</string>
 </resources>
