@@ -1,0 +1,34 @@
+<resources>
+    <string name="cvs_choose_action_hint">Elige el CV al que deseas aplicar la acción.</string>
+    <string name="cvs_choose_duplicate">¿Qué CV quieres duplicar?</string>
+    <string name="cvs_choose_template">¿A qué CV quieres cambiar la plantilla?</string>
+    <string name="cvs_choose_details">%1$s · Actualizado %2$s</string>
+    <string name="cvs_active">Activo</string>
+    <string name="cvs_suite">Suite de Empleabilidad</string>
+    <string name="cvs_notifications">Notificaciones</string>
+    <string name="cvs_search">Buscar CV por nombre o plantilla</string>
+    <string name="cvs_no_results">No se encontraron CV con esa búsqueda.</string>
+    <string name="cvs_grid_view">Vista en cuadrícula</string>
+    <string name="cvs_list_view">Vista de lista detallada</string>
+    <string name="cvs_profile_strength">Fuerza de perfil</string>
+    <string name="cvs_profile_complete">Perfil completo</string>
+    <string name="cvs_profile_pending">Completa tus secciones</string>
+    <string name="cvs_analysis">Ver análisis</string>
+    <string name="cvs_analysis_description">Revisión de las cinco secciones principales de tu CV. Comprueba que tus datos estén actualizados antes de enviarlo.</string>
+    <string name="cvs_section_complete">✓ %1$s: completado</string>
+    <string name="cvs_section_missing">○ %1$s: pendiente</string>
+    <string name="cvs_contact">Contacto</string>
+    <string name="cvs_experience">Experiencia laboral</string>
+    <string name="cvs_education">Educación</string>
+    <string name="cvs_skills">Habilidades</string>
+    <string name="cvs_summary">Resumen profesional</string>
+    <string name="cvs_close">Cerrar</string>
+    <string name="cvs_quick_actions">ACCIONES PROACTIVAS</string>
+    <string name="cvs_actions_for">Para: %1$s</string>
+    <string name="cvs_duplicate">Duplicar CV</string>
+    <string name="cvs_duplicate_description">Personalizar para otra oferta laboral</string>
+    <string name="cvs_change_template">Cambiar plantilla</string>
+    <string name="cvs_template_description">Probar Budapest y otros diseños</string>
+    <string name="cvs_duplicate_success">CV duplicado. Puedes editar la copia en la lista.</string>
+    <string name="cvs_duplicate_error">No se pudo duplicar el CV. Inténtalo nuevamente.</string>
+</resources>

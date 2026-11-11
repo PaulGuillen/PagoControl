@@ -1,0 +1,17 @@
+<resources>
+    <plurals name="gallery_active_templates">
+        <item quantity="one">%1$d active</item>
+        <item quantity="other">%1$d active</item>
+    </plurals>
+    <string name="gallery_filter_all">All</string>
+    <string name="gallery_filter_executive">Executive</string>
+    <string name="gallery_filter_minimal">Minimal</string>
+    <string name="gallery_filter_tech">Tech</string>
+    <string name="gallery_filter_columns">Two columns</string>
+    <string name="gallery_subtitle">DESIGNS FOR YOUR NEXT CAREER STEP</string>
+    <string name="gallery_sort">Sort</string>
+    <string name="gallery_sort_default">Catalog order</string>
+    <string name="gallery_sort_name">Name: A–Z</string>
+    <string name="gallery_empty">No templates in this category.</string>
+    <string name="gallery_tip">Explore the previews and choose the design that best presents your experience. Always review the content before exporting your resume.</string>
+</resources>

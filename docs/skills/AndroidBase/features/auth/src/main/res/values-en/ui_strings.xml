@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_version">Version %1$s</string>
+    <string name="register_brand_subtitle">Executive Career Toolkit</string>
+    <string name="register_name_placeholder">Elena Vargas</string>
+    <string name="register_password_hint">Use at least 8 characters. Combine letters and numbers for better security.</string>
+    <string name="login_welcome_subtitle">Sign in to your career toolkit</string>
+    <string name="login_english">English</string>
+    <string name="auth_attempt_limit_reached">You reached the limit of 3 attempts in 15 minutes for this action. Try again later.</string>
+    <string name="ui_build_your_professional_future_today_6af353">Build your professional future today</string>
+    <string name="ui_hide_password_a0e898">Hide password</string>
+    <string name="ui_show_password_3d04be">Show password</string>
+    <string name="ui_back_84a715">Back</string>
+    <string name="ui_reset_your_password_560101">Reset your password</string>
+    <string name="ui_enter_the_email_associated_with_your_account_and_we_ll_send_b6b33f">Enter the email associated with your account and we\'ll send you a link to create a new password.</string>
+    <string name="ui_email_59a167">Email</string>
+    <string name="ui_send_a91a95">Send</string>
+    <string name="ui_check_your_email_c4c0d3">Check your email</string>
+    <string name="ui_we_sent_password_reset_instructions_to_9d4d8e">We sent password reset instructions to</string>
+    <string name="ui_back_to_home_1afb11">Back to home</string>
+    <string name="ui_welcome_back_246d60">Welcome back!</string>
+    <string name="ui_forgot_your_password_28ca3f">Forgot your password?</string>
+    <string name="ui_password_5a6d1c">Password</string>
+    <string name="ui_sign_in_9c18b1">Sign in</string>
+    <string name="ui_don_t_have_an_account_0cb9ce">Don\'t have an account?</string>
+    <string name="ui_create_account_11bd80">Create account</string>
+    <string name="ui_secure_and_encrypted_ffc3eb">Secure and encrypted</string>
+    <string name="ui_spanish_2001ca">Spanish</string>
+    <string name="ui_get_started_for_free_and_create_your_first_professional_resu_873328">Get started for free and create your first professional resume.</string>
+    <string name="ui_full_name_cccece">Full name</string>
+    <string name="ui_at_least_8_characters_53cf13">At least 8 characters</string>
+    <string name="ui_sign_up_be32fb">Sign up</string>
+    <string name="ui_already_have_an_account_65b418">Already have an account?</string>
+    <string name="ui_enter_a_valid_email_address_4ddef7">Enter a valid email address.</string>
+    <string name="ui_enter_your_password_5337bc">Enter your password.</string>
+    <string name="ui_password_must_be_at_least_8_characters_long_0af404">Password must be at least 8 characters long.</string>
+    <string name="ui_enter_a_valid_name_893e60">Enter a valid name.</string>
+    <string name="ui_an_account_with_this_email_already_exists_bec7d2">An account with this email already exists.</string>
+    <string name="ui_the_email_or_password_is_incorrect_2ee7a8">The email or password is incorrect.</string>
+    <string name="ui_this_account_is_disabled_1b4749">This account is disabled.</string>
+    <string name="ui_too_many_attempts_wait_a_few_minutes_and_try_again_483702">Too many attempts. Wait a few minutes and try again.</string>
+    <string name="ui_couldn_t_connect_check_your_connection_and_try_again_e38359">Couldn\'t connect. Check your connection and try again.</string>
+    <string name="ui_the_operation_couldn_t_be_completed_try_again_03bf2c">The operation couldn\'t be completed. Try again.</string>
+</resources>

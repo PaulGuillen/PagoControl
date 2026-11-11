@@ -17,3 +17,7 @@ google-services.json
 .firebase/
 captures/
 *.hprof
+*.apk
+*.aab
+*.dm
+**/output-metadata.json

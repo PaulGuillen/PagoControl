@@ -1,0 +1,18 @@
+match /users/{uid}/resumes/{resumeId} {
+  function ownsResume() {
+    return request.auth != null && request.auth.uid == uid;
+  }
+
+  function validResume(data) {
+    return data.keys().hasAll(['schemaVersion', 'content', 'updatedAt', 'syncedAt'])
+      && data.keys().hasOnly(['schemaVersion', 'content', 'updatedAt', 'syncedAt'])
+      && data.schemaVersion == '1'
+      && data.content is string && data.content.size() > 0 && data.content.size() <= 750000
+      && data.updatedAt is int && data.updatedAt >= 0
+      && data.syncedAt == request.time
+      && resumeId.size() > 0 && resumeId.size() <= 200;
+  }
+
+  allow read, delete: if ownsResume();
+  allow create, update: if ownsResume() && validResume(request.resource.data);
+}

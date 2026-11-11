@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_new_version_available_d8cb2e">NEW VERSION AVAILABLE</string>
+    <string name="ui_update_to_continue_01e518">Update to continue</string>
+    <string name="ui_this_version_is_no_longer_supported_download_the_latest_vers_7f2476">This version is no longer supported. Download the latest version to keep using the app.</string>
+    <string name="ui_update_on_play_store_60cd3e">Update on Play Store</string>
+    <string name="ui_the_app_will_not_work_without_updating_a436ff">The app will not work without updating</string>
+    <string name="ui_you_must_update_the_app_to_continue_76be00">You must update the app to continue.</string>
+</resources>

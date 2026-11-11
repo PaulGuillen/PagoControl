@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="resume_cloud_loading">Loading your resumes from Firestore…</string>
+    <string name="resume_cloud_synced">Your resumes are synced with your account.</string>
+    <string name="resume_cloud_pending">Changes on this device are waiting to sync. Connect to back them up.</string>
+    <string name="resume_cloud_cached">Showing the copy available on this device. Waiting for a Firestore connection.</string>
+    <string name="resume_cloud_error">Your resumes could not be synced. Check your connection and Firestore permissions.</string>
+    <string name="resume_cloud_retry">Retry connection</string>
+    <string name="resume_cloud_import_local">Migrate resumes from this device</string>
+    <string name="resume_cloud_migration_confirm">Save local resumes to the account %1$s? Each old copy will only be removed after Firestore confirms receipt. An Internet connection is required.</string>
+    <string name="resume_cloud_migrating">Migrating your resumes to Firestore… Keep this screen open.</string>
+    <string name="resume_cloud_migration_error">Migration did not finish. Pending resumes remain on this device; you can retry.</string>
+    <string name="resume_cloud_later">Not now</string>
+</resources>

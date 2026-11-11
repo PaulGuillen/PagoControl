@@ -1,0 +1,5 @@
+<resources>
+    <string name="navigation_home">Inicio</string>
+    <string name="navigation_my_resumes">Mis CV</string>
+    <string name="navigation_settings">Ajustes</string>
+</resources>

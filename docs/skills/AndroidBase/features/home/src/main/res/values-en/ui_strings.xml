@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_suite">Career Toolkit</string>
+    <string name="home_workspace">Your professional development space</string>
+    <string name="home_impact_label">IMPACT OPTIMIZATION</string>
+    <string name="home_impact_action">Apply impact formulas</string>
+    <string name="home_impact_example">Use this formula: action + result + metric.\n\nInstead of “Responsible for support”, write “Resolved 40 weekly incidents and reduced response time by 25%”.\n\nAdapt the example to your actual results and update your experience or professional summary.</string>
+    <string name="home_understood">Got it</string>
+    <string name="home_templates_subtitle">Designs that highlight your experience</string>
+    <string name="home_template_executive">EXECUTIVE</string>
+    <string name="home_template_editorial">EDITORIAL</string>
+    <string name="home_template_classic">CLASSIC</string>
+    <string name="home_preview_pdf">Preview and export PDF</string>
+    <string name="home_profile_loading">Loading profile</string>
+    <string name="ui_back_84a715">Back</string>
+</resources>

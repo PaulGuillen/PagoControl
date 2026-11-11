@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="splash_tagline">Create your professional resume and accelerate your job search</string>
+    <string name="splash_badge">OPTIMIZED FOR ATS AND RECRUITERS</string>
+    <string name="splash_loading">Starting CV Free</string>
+    <string name="splash_suite">Career Toolkit</string>
+    <string name="splash_version">Career Toolkit · v%1$s</string>
+    <string name="ui_create_your_professional_resume_for_free_7b4396">Create your professional resume for free</string>
+</resources>

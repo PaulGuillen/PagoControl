@@ -1,0 +1,3 @@
+match /ai_device_quotas/{deviceHash} {
+  allow read, write: if false;
+}

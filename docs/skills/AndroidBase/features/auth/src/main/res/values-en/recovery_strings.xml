@@ -1,0 +1,10 @@
+<resources>
+    <string name="recovery_security">SECURITY</string>
+    <string name="recovery_send_link">Send link</string>
+    <string name="recovery_inbox_hint">Check your inbox and spam folder after requesting the link.</string>
+    <string name="recovery_remembered">Remember your password?</string>
+    <string name="recovery_help_link">Trouble signing in? View help</string>
+    <string name="recovery_help_title">Help recovering your access</string>
+    <string name="recovery_help_body">Check that you entered the email you used to create your account.\n\nCheck your inbox and spam folder. The message may take a few minutes to arrive.\n\nIf the link no longer works, request a new one and use the most recent message.</string>
+    <string name="recovery_help_close">Got it</string>
+</resources>

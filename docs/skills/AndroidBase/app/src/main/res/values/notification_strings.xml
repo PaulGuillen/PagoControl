@@ -1,0 +1,11 @@
+<resources>
+    <string name="notification_history_title">Notificaciones</string>
+    <string name="notification_history_back">Volver</string>
+    <string name="notification_history_empty">Aún no tienes notificaciones</string>
+    <string name="notification_history_empty_body">Cuando guardes un CV, aparecerá aquí.</string>
+    <string name="notification_history_order">De la más reciente a la más antigua</string>
+    <string name="notification_saved_channel">CV guardados</string>
+    <string name="notification_saved_channel_description">Confirmaciones al guardar tus CV</string>
+    <string name="notification_resume_saved_title">CV guardado</string>
+    <string name="notification_resume_saved_body">Tu CV se guardó correctamente. Toca para ver tus CV.</string>
+</resources>

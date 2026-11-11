@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_your_name_f308e7">TU NOMBRE</string>
+    <string name="ui_about_me_d15068">SOBRE MÍ</string>
+    <string name="ui_education_4e9a5f">EDUCACIÓN</string>
+    <string name="ui_links_d38518">ENLACES</string>
+    <string name="ui_languages_c765ac">IDIOMAS</string>
+    <string name="ui_experience_0c1122">EXPERIENCIA</string>
+    <string name="ui_skills_0794df">HABILIDADES</string>
+    <string name="ui_courses_177a73">CURSOS</string>
+    <string name="ui_references_9e4676">REFERENCIAS</string>
+    <string name="ui_pdf_saved_successfully_e80449">PDF guardado correctamente</string>
+    <string name="ui_the_pdf_couldn_t_be_generated_183c0d">No se pudo generar el PDF</string>
+    <string name="ui_the_preview_couldn_t_be_captured_9102da">No se pudo capturar la vista previa</string>
+    <string name="ui_the_resume_couldn_t_be_saved_8205c7">No se pudo guardar el CV</string>
+    <string name="ui_your_resume_is_ready_0d5cd6">Tu currículum está listo</string>
+    <string name="ui_generating_55c32a">Generando</string>
+    <string name="ui_download_pdf_40863e">Descargar PDF</string>
+    <string name="ui_saving_92902e">Guardando</string>
+    <string name="ui_save_resume_8c58fc">Guardar CV</string>
+    <string name="ui_preview_with_sample_information_ab7559">Vista previa con información de ejemplo</string>
+    <string name="ui_preview_432932">Vista previa</string>
+    <string name="ui_back_84a715">Volver</string>
+    <string name="ui_work_experience_1706e7">EXPERIENCIA LABORAL</string>
+    <string name="ui_contact_2f09b4">CONTACTO</string>
+    <string name="ui_about_me_3b9d35">SOBRE MI</string>
+    <string name="ui_choose_a_template_4d9458">Selecciona una plantilla</string>
+    <string name="ui_the_design_applies_to_both_the_preview_and_the_pdf_file_529017">El diseño define tanto la vista previa como el archivo PDF.</string>
+    <string name="ui_continue_to_preview_b47de1">Continuar a la vista previa</string>
+    <string name="ui_selected_ec2675">Seleccionada</string>
+    <string name="ui_templates_0b4c44">Plantillas</string>
+    <string name="ui_professional_two_column_design_with_uppercase_headings_42bfe8">Diseño profesional de dos columnas con títulos en mayúsculas.</string>
+    <string name="ui_black_and_white_editorial_style_with_columns_and_fine_divide_a05aa9">Estilo editorial en blanco y negro con columnas y divisores finos.</string>
+    <string name="ui_prague_4a9ba9">Praga</string>
+    <string name="ui_clean_design_with_a_split_header_and_structured_sections_2fd903">Diseño sobrio con encabezado dividido y secciones estructuradas.</string>
+    <string name="ui_tokyo_08bc81">Tokio</string>
+    <string name="ui_compact_single_column_layout_with_light_blue_highlighted_sec_f13561">Formato compacto de una columna con secciones resaltadas en azul claro.</string>
+</resources>

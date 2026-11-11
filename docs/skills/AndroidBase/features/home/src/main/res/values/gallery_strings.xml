@@ -1,0 +1,17 @@
+<resources>
+    <plurals name="gallery_active_templates">
+        <item quantity="one">%1$d activa</item>
+        <item quantity="other">%1$d activas</item>
+    </plurals>
+    <string name="gallery_filter_all">Todas</string>
+    <string name="gallery_filter_executive">Ejecutivas</string>
+    <string name="gallery_filter_minimal">Minimalistas</string>
+    <string name="gallery_filter_tech">Tech</string>
+    <string name="gallery_filter_columns">Dos columnas</string>
+    <string name="gallery_subtitle">DISEÑOS PARA TU PRÓXIMO PASO PROFESIONAL</string>
+    <string name="gallery_sort">Reordenar</string>
+    <string name="gallery_sort_default">Orden del catálogo</string>
+    <string name="gallery_sort_name">Nombre: A–Z</string>
+    <string name="gallery_empty">No hay plantillas en esta categoría.</string>
+    <string name="gallery_tip">Explora las vistas previas y elige el diseño que mejor presente tu experiencia. Revisa siempre el contenido antes de exportar tu CV.</string>
+</resources>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="ai_quota_checking">Checking your AI allowance. You can import without AI in the meantime.</string>
+    <string name="ai_quota_available_free">1 AI import is available on this device. The allowance renews 7 days after use.</string>
+    <string name="ai_quota_available">AI assistance is available.</string>
+    <string name="ai_quota_used_until">This device has used its AI allowance. Available again: %1$s. You can continue importing without AI.</string>
+    <string name="ai_quota_busy">An AI import is already running on this device. You can continue without AI.</string>
+    <string name="ai_quota_unverified">AI availability could not be verified. Import will continue directly on the device, without AI.</string>
+    <string name="ai_import_enhanced">The content was organized with AI.</string>
+</resources>

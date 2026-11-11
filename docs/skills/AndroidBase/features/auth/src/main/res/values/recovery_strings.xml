@@ -1,0 +1,10 @@
+<resources>
+    <string name="recovery_security">SEGURIDAD</string>
+    <string name="recovery_send_link">Enviar enlace</string>
+    <string name="recovery_inbox_hint">Revisa tu bandeja de entrada y la carpeta de correo no deseado después de solicitar el enlace.</string>
+    <string name="recovery_remembered">¿Recordaste tu contraseña?</string>
+    <string name="recovery_help_link">¿Problemas para acceder? Ver ayuda</string>
+    <string name="recovery_help_title">Ayuda para recuperar tu acceso</string>
+    <string name="recovery_help_body">Comprueba que escribiste el correo con el que creaste tu cuenta.\n\nRevisa la bandeja de entrada y el correo no deseado. El mensaje puede tardar unos minutos en llegar.\n\nSi el enlace ya no funciona, solicita uno nuevo y utiliza el mensaje más reciente.</string>
+    <string name="recovery_help_close">Entendido</string>
+</resources>

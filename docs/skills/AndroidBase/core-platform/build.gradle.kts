@@ -1,9 +1,18 @@
-plugins { id("plugin.android.lib") }
+import dependence.*
 
-android { namespace = "com.example.androidbase.platform" }
+plugins {
+    id("plugin.android.lib")
+    id("org.jetbrains.kotlin.plugin.compose")
+}
+
+android {
+    namespace = "com.devpaul.core.platform"
+    buildFeatures {
+        compose = true
+    }
+}
 
 dependencies {
-    api(libs.androidx.lifecycle.viewmodel)
-    api(libs.coroutines.android)
     implementation(libs.timber)
+    composeImplementation()
 }

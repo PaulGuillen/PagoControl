@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="splash_tagline">Crea tu currículum profesional y acelera tu contratación</string>
+    <string name="splash_badge">OPTIMIZADO PARA ATS Y RECLUTADORES</string>
+    <string name="splash_loading">Iniciando CV Free</string>
+    <string name="splash_suite">Suite de Empleabilidad</string>
+    <string name="splash_version">Suite de Empleabilidad · v%1$s</string>
+    <string name="ui_create_your_professional_resume_for_free_7b4396">Crea tu currículum profesional gratis</string>
+</resources>

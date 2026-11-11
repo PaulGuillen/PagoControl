@@ -1,0 +1,5 @@
+<resources>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_my_resumes">My resumes</string>
+    <string name="navigation_settings">Settings</string>
+</resources>

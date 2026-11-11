@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_suite">Suite de Empleabilidad</string>
+    <string name="home_workspace">Tu espacio de desarrollo profesional</string>
+    <string name="home_impact_label">OPTIMIZACIÓN DE IMPACTO</string>
+    <string name="home_impact_action">Aplicar fórmulas de impacto</string>
+    <string name="home_impact_example">Usa esta fórmula: acción + resultado + métrica.\n\nEn lugar de «Responsable del soporte», escribe «Resolví 40 incidencias semanales y reduje el tiempo de respuesta un 25%».\n\nAdapta el ejemplo a tus resultados reales y actualiza tu experiencia o resumen profesional.</string>
+    <string name="home_understood">Entendido</string>
+    <string name="home_templates_subtitle">Diseños para destacar tu experiencia</string>
+    <string name="home_template_executive">EJECUTIVO</string>
+    <string name="home_template_editorial">EDITORIAL</string>
+    <string name="home_template_classic">CLÁSICO</string>
+    <string name="home_preview_pdf">Vista previa y exportar PDF</string>
+    <string name="home_profile_loading">Cargando perfil</string>
+    <string name="ui_back_84a715">Volver</string>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_version">Versión %1$s</string>
+    <string name="register_brand_subtitle">Suite de Empleabilidad Ejecutiva</string>
+    <string name="register_name_placeholder">Elena Vargas</string>
+    <string name="register_password_hint">Usa al menos 8 caracteres. Combina letras y números para mayor seguridad.</string>
+    <string name="login_welcome_subtitle">Ingresa a tu suite de empleabilidad</string>
+    <string name="login_english">English</string>
+    <string name="auth_attempt_limit_reached">Alcanzaste el límite de 3 intentos en 15 minutos para esta acción. Inténtalo más tarde.</string>
+    <string name="ui_build_your_professional_future_today_6af353">Crea tu futuro profesional hoy</string>
+    <string name="ui_hide_password_a0e898">Ocultar contraseña</string>
+    <string name="ui_show_password_3d04be">Mostrar contraseña</string>
+    <string name="ui_back_84a715">Volver</string>
+    <string name="ui_reset_your_password_560101">Recupera tu contraseña</string>
+    <string name="ui_enter_the_email_associated_with_your_account_and_we_ll_send_b6b33f">Escribe el correo asociado a tu cuenta y te enviaremos un enlace para crear una nueva contraseña.</string>
+    <string name="ui_email_59a167">Correo electrónico</string>
+    <string name="ui_send_a91a95">Enviar</string>
+    <string name="ui_check_your_email_c4c0d3">Revisa tu correo</string>
+    <string name="ui_we_sent_password_reset_instructions_to_9d4d8e">Enviamos las instrucciones para restablecer tu contraseña a</string>
+    <string name="ui_back_to_home_1afb11">Volver al inicio</string>
+    <string name="ui_welcome_back_246d60">¡Bienvenido de nuevo!</string>
+    <string name="ui_forgot_your_password_28ca3f">¿Olvidaste tu contraseña?</string>
+    <string name="ui_password_5a6d1c">Contraseña</string>
+    <string name="ui_sign_in_9c18b1">Iniciar sesión</string>
+    <string name="ui_don_t_have_an_account_0cb9ce">¿No tienes una cuenta?</string>
+    <string name="ui_create_account_11bd80">Crear cuenta</string>
+    <string name="ui_secure_and_encrypted_ffc3eb">Seguro y encriptado</string>
+    <string name="ui_spanish_2001ca">Español</string>
+    <string name="ui_get_started_for_free_and_create_your_first_professional_resu_873328">Empieza gratis y crea tu primer currículum profesional.</string>
+    <string name="ui_full_name_cccece">Nombre completo</string>
+    <string name="ui_at_least_8_characters_53cf13">Mínimo 8 caracteres</string>
+    <string name="ui_sign_up_be32fb">Registrarme</string>
+    <string name="ui_already_have_an_account_65b418">¿Ya tienes cuenta?</string>
+    <string name="ui_enter_a_valid_email_address_4ddef7">Escribe un correo electrónico válido.</string>
+    <string name="ui_enter_your_password_5337bc">Escribe tu contraseña.</string>
+    <string name="ui_password_must_be_at_least_8_characters_long_0af404">La contraseña debe tener al menos 8 caracteres.</string>
+    <string name="ui_enter_a_valid_name_893e60">Escribe un nombre válido.</string>
+    <string name="ui_an_account_with_this_email_already_exists_bec7d2">Ya existe una cuenta con este correo.</string>
+    <string name="ui_the_email_or_password_is_incorrect_2ee7a8">El correo o la contraseña son incorrectos.</string>
+    <string name="ui_this_account_is_disabled_1b4749">Esta cuenta está deshabilitada.</string>
+    <string name="ui_too_many_attempts_wait_a_few_minutes_and_try_again_483702">Demasiados intentos. Espera unos minutos y vuelve a intentarlo.</string>
+    <string name="ui_couldn_t_connect_check_your_connection_and_try_again_e38359">No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="ui_the_operation_couldn_t_be_completed_try_again_03bf2c">No se pudo completar la operación. Inténtalo de nuevo.</string>
+</resources>

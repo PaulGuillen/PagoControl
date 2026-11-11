@@ -1,0 +1,11 @@
+<resources>
+    <string name="notification_history_title">Notifications</string>
+    <string name="notification_history_back">Back</string>
+    <string name="notification_history_empty">No notifications yet</string>
+    <string name="notification_history_empty_body">When you save a resume, it will appear here.</string>
+    <string name="notification_history_order">Newest to oldest</string>
+    <string name="notification_saved_channel">Saved resumes</string>
+    <string name="notification_saved_channel_description">Confirmations when you save your resumes</string>
+    <string name="notification_resume_saved_title">Resume saved</string>
+    <string name="notification_resume_saved_body">Your resume was saved successfully. Tap to view your resumes.</string>
+</resources>

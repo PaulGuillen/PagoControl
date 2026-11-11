@@ -1,0 +1,16 @@
+<resources>
+    <string name="rating_intro">How do you like CV Free? Choose 1 to 5 stars and share your feedback.</string>
+    <string name="rating_not_recommended">Do not recommend</string>
+    <string name="rating_recommended">Recommend</string>
+    <string name="rating_stars_description">Rate %1$d out of 5 stars</string>
+    <string name="rating_comment">Comment (optional)</string>
+    <string name="rating_comment_hint">Tell us how we can improve…</string>
+    <string name="rating_frequency">You can submit one rating every 24 hours.</string>
+    <string name="rating_checking">Checking your last rating…</string>
+    <string name="rating_send">Send</string>
+    <string name="rating_sending">Sending…</string>
+    <string name="rating_ok">Got it</string>
+    <string name="rating_success">Thank you for your feedback! Your rating was saved successfully.</string>
+    <string name="rating_daily_limit">You have already submitted a rating. You can only send one every 24 hours. Please try again once that time has passed since your last submission.</string>
+    <string name="rating_error">We could not connect to the rating service. Check your connection and try again.</string>
+</resources>

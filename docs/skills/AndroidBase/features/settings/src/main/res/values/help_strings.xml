@@ -1,0 +1,33 @@
+<resources>
+    <string name="help_back">Volver a Ajustes</string>
+    <string name="help_intro_title">¿Cómo podemos ayudarte?</string>
+    <string name="help_intro_body">Encuentra respuestas para crear, editar y guardar tu currículum con CV Free. Toca una pregunta para ver la respuesta.</string>
+    <string name="help_faq_title">Preguntas frecuentes</string>
+    <string name="help_expanded">Respuesta desplegada</string>
+    <string name="help_collapsed">Respuesta contraída</string>
+    <string name="help_developer_credit">CV Free\nDesarrollado por Paul Guillen Acuña</string>
+    <string name="help_create_question">¿Cómo creo mi primer currículum?</string>
+    <string name="help_create_answer">Entra en Mis CV y toca el botón + para crear un currículum desde cero. Elige las secciones que deseas incluir, completa tus datos y selecciona una plantilla. Al finalizar, revisa la vista previa y guarda tu CV.</string>
+    <string name="help_sections_question">¿Qué información puedo incluir en mi CV?</string>
+    <string name="help_sections_answer">Puedes agregar datos de contacto, experiencia laboral, educación, habilidades y un resumen profesional. También puedes incluir secciones opcionales de cursos, enlaces, idiomas y referencias al configurar tu currículum.</string>
+    <string name="help_edit_question">¿Cómo edito un currículum guardado?</string>
+    <string name="help_edit_answer">Abre Mis CV, busca tu currículum y toca su botón de editar. Revisa las secciones, actualiza la información que necesites y guarda el CV desde la vista previa.</string>
+    <string name="help_templates_question">¿Cómo elijo o cambio la plantilla?</string>
+    <string name="help_templates_answer">Durante la creación o edición de tu CV, llegarás a la selección de plantillas después de completar el resumen profesional. Elige el diseño que prefieras y continúa para revisar cómo se ve con tus datos antes de guardarlo.</string>
+    <string name="help_pdf_question">¿Cómo guardo mi currículum en PDF?</string>
+    <string name="help_pdf_answer">En la vista previa de tu currículum, toca la opción para exportar a PDF. Se abrirá el selector de archivos de Android: elige el nombre y la ubicación y confirma el guardado. Después podrás buscar el archivo en esa carpeta.</string>
+    <string name="help_import_question">¿Puedo importar un CV que ya tengo en PDF?</string>
+    <string name="help_import_answer">Sí. En Mis CV, toca + y elige la opción de importar un PDF. Selecciona el documento y sigue el proceso de importación. Revisa los datos detectados antes de continuar, ya que el resultado puede variar según el formato y la calidad del archivo.</string>
+    <string name="help_scan_question">¿Puedo escanear un currículum en papel?</string>
+    <string name="help_scan_answer">En Mis CV, toca + y selecciona la opción de escanear. Captura las páginas con buena iluminación, ajusta el recorte y confirma el documento para importarlo. La disponibilidad del escáner depende de la compatibilidad de tu dispositivo.</string>
+    <string name="help_autosave_question">¿Cómo activo el guardado automático?</string>
+    <string name="help_autosave_answer">Ve a Ajustes y activa Guardado automático en Preferencias. Esta opción conserva los cambios mientras completas o editas tu currículum. También puedes guardar el CV al terminar desde la vista previa.</string>
+    <string name="help_delete_question">¿Cómo elimino un currículum?</string>
+    <string name="help_delete_answer">En Mis CV, abre el menú del currículum que deseas quitar y selecciona eliminar. La app te pedirá confirmar la acción. Revisa que hayas elegido el documento correcto antes de aceptar.</string>
+    <string name="help_language_question">¿Cómo cambio el idioma de la aplicación?</string>
+    <string name="help_language_answer">Abre Ajustes, toca Idioma y elige Español o Inglés. Los textos de la aplicación se actualizarán al idioma seleccionado. La información que escribiste en tu currículum conserva su idioma original.</string>
+    <string name="help_appearance_question">¿Puedo usar CV Free en modo oscuro?</string>
+    <string name="help_appearance_answer">Sí. Ve a Ajustes y toca Apariencia. Puedes elegir Claro, Oscuro o Sistema para seguir la configuración de tu dispositivo. El cambio se aplica a la interfaz de la aplicación.</string>
+    <string name="help_developer_question">¿Quién desarrolla CV Free?</string>
+    <string name="help_developer_answer">CV Free es desarrollada por Paul Guillen Acuña para ayudarte a crear y organizar tu currículum desde tu dispositivo Android. La app reúne edición por secciones, plantillas, importación de documentos y exportación a PDF para preparar tu presentación profesional.</string>
+</resources>

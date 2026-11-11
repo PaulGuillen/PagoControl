@@ -1,0 +1,34 @@
+<resources>
+    <string name="cvs_choose_action_hint">Choose the resume for this action.</string>
+    <string name="cvs_choose_duplicate">Which resume would you like to duplicate?</string>
+    <string name="cvs_choose_template">Which resume would you like to change the template for?</string>
+    <string name="cvs_choose_details">%1$s · Updated %2$s</string>
+    <string name="cvs_active">Active</string>
+    <string name="cvs_suite">Career Toolkit</string>
+    <string name="cvs_notifications">Notifications</string>
+    <string name="cvs_search">Search resumes by name or template</string>
+    <string name="cvs_no_results">No resumes match your search.</string>
+    <string name="cvs_grid_view">Grid view</string>
+    <string name="cvs_list_view">Detailed list view</string>
+    <string name="cvs_profile_strength">Profile strength</string>
+    <string name="cvs_profile_complete">Profile complete</string>
+    <string name="cvs_profile_pending">Complete your sections</string>
+    <string name="cvs_analysis">View analysis</string>
+    <string name="cvs_analysis_description">Review of the five main sections of your resume. Check that your information is up to date before sending it.</string>
+    <string name="cvs_section_complete">✓ %1$s: complete</string>
+    <string name="cvs_section_missing">○ %1$s: pending</string>
+    <string name="cvs_contact">Contact</string>
+    <string name="cvs_experience">Work experience</string>
+    <string name="cvs_education">Education</string>
+    <string name="cvs_skills">Skills</string>
+    <string name="cvs_summary">Professional summary</string>
+    <string name="cvs_close">Close</string>
+    <string name="cvs_quick_actions">PROACTIVE ACTIONS</string>
+    <string name="cvs_actions_for">For: %1$s</string>
+    <string name="cvs_duplicate">Duplicate resume</string>
+    <string name="cvs_duplicate_description">Customize for another job opening</string>
+    <string name="cvs_change_template">Change template</string>
+    <string name="cvs_template_description">Try Budapest and other designs</string>
+    <string name="cvs_duplicate_success">Resume duplicated. You can edit the copy in the list.</string>
+    <string name="cvs_duplicate_error">The resume could not be duplicated. Please try again.</string>
+</resources>

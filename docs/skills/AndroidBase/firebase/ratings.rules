@@ -1,0 +1,36 @@
+match /app_ratings/{uid} {
+  function isOwner() {
+    return request.auth != null && request.auth.uid == uid;
+  }
+
+  function validRating(data) {
+    return data.keys().hasAll(['uid', 'stars', 'comment', 'submittedAt', 'submissionId'])
+      && data.keys().hasOnly(['uid', 'stars', 'comment', 'submittedAt', 'submissionId'])
+      && data.uid == uid
+      && data.stars is int && data.stars >= 1 && data.stars <= 5
+      && data.comment is string && data.comment.size() <= 500
+      && data.submittedAt == request.time
+      && data.submissionId is string && data.submissionId.size() > 0;
+  }
+
+  function hasMatchingSubmission() {
+    return getAfter(/databases/$(database)/documents/app_ratings/$(uid)/submissions/$(request.resource.data.submissionId)).data
+      == request.resource.data;
+  }
+
+  allow read: if isOwner();
+  allow create: if isOwner() && validRating(request.resource.data)
+    && hasMatchingSubmission();
+  allow update: if isOwner() && validRating(request.resource.data)
+    && request.time >= resource.data.submittedAt + duration.value(24, 'h')
+    && hasMatchingSubmission();
+  allow delete: if false;
+
+  match /submissions/{submissionId} {
+    allow read: if isOwner();
+    allow create: if isOwner() && validRating(request.resource.data)
+      && request.resource.data.submissionId == submissionId
+      && getAfter(/databases/$(database)/documents/app_ratings/$(uid)).data == request.resource.data;
+    allow update, delete: if false;
+  }
+}

@@ -1,2 +1,0 @@
--keepattributes Signature,InnerClasses,EnclosingMethod
--keep class com.example.androidbase.data.remote.** { *; }

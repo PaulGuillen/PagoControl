@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_step_by_step">Step by step</string>
+    <string name="onboarding_ready_to_share">Ready to share</string>
+    <string name="onboarding_progress">Step %1$d of %2$d</string>
+    <string name="ui_skip_2e5178">Skip</string>
+    <string name="ui_get_started_8b1222">Get started</string>
+    <string name="ui_next_c4d83a">Next</string>
+    <string name="ui_recommended_fef9d9">Recommended</string>
+    <string name="ui_choose_a_professional_template_c2bf47">Choose a professional template</string>
+    <string name="ui_enter_your_details_choose_a_template_and_download_your_resum_4c7b40">Enter your details, choose a template, and download your resume as a PDF.</string>
+    <string name="ui_customizable_designs_7da30c">Customizable designs</string>
+    <string name="ui_high_quality_pdf_95ca8f">High-quality PDF</string>
+    <string name="ui_complete_your_profile_easily_31abf9">Complete your profile easily</string>
+    <string name="ui_organize_your_experience_education_and_skills_step_by_step_9162c7">Organize your experience, education, and skills step by step.</string>
+    <string name="ui_easy_editing_917c49">Easy editing</string>
+    <string name="ui_protected_data_35294e">Protected data</string>
+    <string name="ui_your_next_job_starts_here_46ad25">Your next job starts here</string>
+    <string name="ui_keep_your_resume_updated_and_ready_to_share_whenever_you_nee_f2a3f6">Keep your resume updated and ready to share whenever you need it.</string>
+    <string name="ui_professional_result_b29d95">Professional result</string>
+    <string name="ui_instant_download_ba9628">Instant download</string>
+</resources>

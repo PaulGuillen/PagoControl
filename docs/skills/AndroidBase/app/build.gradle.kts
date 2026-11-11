@@ -1,88 +1,64 @@
-import java.util.Properties
-
 plugins {
     id("plugin.application")
-    id("plugin.koin")
-}
-
-val firebaseEnabled = providers.gradleProperty("firebase.enabled").map(String::toBoolean).getOrElse(false)
-if (firebaseEnabled) {
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
-}
-
-val signingFile = rootProject.file("keystore.properties")
-val signingValues = Properties().apply {
-    if (signingFile.exists()) signingFile.inputStream().use { load(it) }
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
-    namespace = "com.example.androidbase"
+    namespace = "com.devpaul.cvfree"
+
     defaultConfig {
-        applicationId = "com.example.androidbase"
-        versionCode = providers.gradleProperty("app.versionCode").get().toInt()
-        versionName = providers.gradleProperty("app.versionName").get()
-        buildConfigField("boolean", "FIREBASE_ENABLED", firebaseEnabled.toString())
+        applicationId = "com.devpaul.cvfree"
+        buildConfigField("String", "PREMIUM_PRODUCT_ID", "\"cvfree_premium\"")
+        buildConfigField("String", "PREMIUM_BASE_PLAN_ID", "\"monthly\"")
     }
-    flavorDimensions += "environment"
+
+    flavorDimensions += "access"
     productFlavors {
-        create("dev") {
-            dimension = "environment"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
+        create("free") {
+            dimension = "access"
+            buildConfigField("String", "ACCESS_PLAN", "\"free\"")
+            buildConfigField("boolean", "PREMIUM_ACCESS_OVERRIDE", "false")
         }
-        create("prod") { dimension = "environment" }
-    }
-    signingConfigs {
-        if (signingFile.exists()) {
-            create("production") {
-                storeFile = rootProject.file(signingValues.getProperty("storeFile"))
-                storePassword = signingValues.getProperty("storePassword")
-                keyAlias = signingValues.getProperty("keyAlias")
-                keyPassword = signingValues.getProperty("keyPassword")
-            }
+        create("premium") {
+            dimension = "access"
+            buildConfigField("String", "ACCESS_PLAN", "\"premium\"")
+            buildConfigField("boolean", "PREMIUM_ACCESS_OVERRIDE", "true")
         }
     }
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            if (signingFile.exists()) signingConfig = signingConfigs.getByName("production")
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("release")) { variant ->
+        if (variant.productFlavors.any { (_, flavor) -> flavor == "premium" }) {
+            variant.enable = false
         }
     }
 }
 
 dependencies {
-    implementation(project(":core-domain"))
-    implementation(project(":core-data"))
-    implementation(project(":session"))
+    implementation(project(":navigation"))
     implementation(project(":core-platform"))
     implementation(project(":core-designsystem"))
-    implementation(project(":navigation"))
+    implementation(project(":core-data"))
+    implementation(project(":core-domain"))
+
+    // Features
+    implementation(project(":features:splash"))
     implementation(project(":features:auth"))
     implementation(project(":features:home"))
-    implementation(project(":features:splash"))
     implementation(project(":features:onboarding"))
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.compose.material3)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.koin.android)
+    implementation(project(":features:resume"))
+    implementation(project(":features:settings"))
+    implementation(project(":features:templates"))
+
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.app.update.ktx)
+    implementation(libs.play.billing)
     implementation(libs.koin.compose)
-    implementation(libs.timber)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.firebase.config)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     debugImplementation(libs.firebase.appcheck.debug)
-    releaseImplementation(libs.firebase.appcheck.integrity)
-    debugImplementation(libs.compose.tooling)
-    debugImplementation(libs.compose.test.manifest)
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.compose.test)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.espresso)
 }

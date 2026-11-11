@@ -1,2 +1,7 @@
-plugins { id("plugin.feature") }
-android { namespace = "com.example.androidbase.features.splash" }
+plugins {
+    id("plugin.feature")
+}
+
+android {
+    namespace = "com.devpaul.features.splash"
+}

@@ -1,0 +1,33 @@
+<resources>
+    <string name="help_back">Back to Settings</string>
+    <string name="help_intro_title">How can we help you?</string>
+    <string name="help_intro_body">Find answers about creating, editing and saving your resume with CV Free. Tap a question to see the answer.</string>
+    <string name="help_faq_title">Frequently asked questions</string>
+    <string name="help_expanded">Answer expanded</string>
+    <string name="help_collapsed">Answer collapsed</string>
+    <string name="help_developer_credit">CV Free\nDeveloped by Paul Guillen Acuña</string>
+    <string name="help_create_question">How do I create my first resume?</string>
+    <string name="help_create_answer">Open My CVs and tap the + button to create a resume from scratch. Choose the sections to include, fill in your details and select a template. Finally, review the preview and save your resume.</string>
+    <string name="help_sections_question">What information can I include in my resume?</string>
+    <string name="help_sections_answer">You can add contact details, work experience, education, skills and a professional summary. You can also include optional sections for courses, links, languages and references when setting up your resume.</string>
+    <string name="help_edit_question">How do I edit a saved resume?</string>
+    <string name="help_edit_answer">Open My CVs, find your resume and tap its edit button. Review the sections, update the information you need and save the resume from the preview.</string>
+    <string name="help_templates_question">How do I choose or change a template?</string>
+    <string name="help_templates_answer">When creating or editing your resume, you will reach template selection after completing the professional summary. Choose your preferred design and continue to see how it looks with your details before saving.</string>
+    <string name="help_pdf_question">How do I save my resume as a PDF?</string>
+    <string name="help_pdf_answer">In your resume preview, tap the option to export a PDF. The Android file picker will open: choose a name and location, then confirm to save. You can find the file in that folder afterwards.</string>
+    <string name="help_import_question">Can I import an existing PDF resume?</string>
+    <string name="help_import_answer">Yes. In My CVs, tap + and choose the option to import a PDF. Select your document and follow the import process. Review the detected details before continuing, as results can vary depending on the file format and quality.</string>
+    <string name="help_scan_question">Can I scan a printed resume?</string>
+    <string name="help_scan_answer">In My CVs, tap + and select the scan option. Capture the pages in good lighting, adjust the crop and confirm the document to import it. Scanner availability depends on device compatibility.</string>
+    <string name="help_autosave_question">How do I enable autosave?</string>
+    <string name="help_autosave_answer">Go to Settings and enable Autosave under Preferences. This option keeps your changes while you complete or edit your resume. You can also save your finished resume from the preview.</string>
+    <string name="help_delete_question">How do I delete a resume?</string>
+    <string name="help_delete_answer">In My CVs, open the menu of the resume you want to remove and select delete. The app will ask you to confirm. Check that you have selected the correct document before accepting.</string>
+    <string name="help_language_question">How do I change the application language?</string>
+    <string name="help_language_answer">Open Settings, tap Language and choose Spanish or English. The application text will update to the selected language. The information you entered in your resume keeps its original language.</string>
+    <string name="help_appearance_question">Can I use CV Free in dark mode?</string>
+    <string name="help_appearance_answer">Yes. Go to Settings and tap Appearance. Choose Light, Dark or System to follow your device settings. This changes the application interface.</string>
+    <string name="help_developer_question">Who develops CV Free?</string>
+    <string name="help_developer_answer">CV Free is developed by Paul Guillen Acuña to help you create and organize your resume on your Android device. The app combines section editing, templates, document import and PDF export to prepare your professional presentation.</string>
+</resources>

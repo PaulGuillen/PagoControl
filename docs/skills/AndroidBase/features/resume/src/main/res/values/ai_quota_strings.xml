@@ -1,0 +1,9 @@
+<resources>
+    <string name="ai_quota_checking">Comprobando el cupo de IA. Mientras tanto, puedes importar sin IA.</string>
+    <string name="ai_quota_available_free">Tienes 1 importación con IA disponible en este dispositivo. El cupo se renueva 7 días después de utilizarlo.</string>
+    <string name="ai_quota_available">Asistencia de IA disponible.</string>
+    <string name="ai_quota_used_until">Ya utilizaste el cupo de IA de este dispositivo. Disponible nuevamente: %1$s. Puedes seguir importando sin IA.</string>
+    <string name="ai_quota_busy">Hay una importación con IA en curso en este dispositivo. Puedes continuar sin IA.</string>
+    <string name="ai_quota_unverified">No se pudo verificar la disponibilidad de IA. La importación continuará directamente en el dispositivo, sin IA.</string>
+    <string name="ai_import_enhanced">El contenido se organizó con IA.</string>
+</resources>

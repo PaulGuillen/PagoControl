@@ -1,0 +1,16 @@
+<resources>
+    <string name="rating_intro">¿Qué te parece CV Free? Elige de 1 a 5 estrellas y comparte tu opinión.</string>
+    <string name="rating_not_recommended">No recomiendo</string>
+    <string name="rating_recommended">Recomiendo</string>
+    <string name="rating_stars_description">Calificar con %1$d de 5 estrellas</string>
+    <string name="rating_comment">Comentario (opcional)</string>
+    <string name="rating_comment_hint">Cuéntanos cómo podemos mejorar…</string>
+    <string name="rating_frequency">Puedes enviar una calificación cada 24 horas.</string>
+    <string name="rating_checking">Consultando tu última calificación…</string>
+    <string name="rating_send">Enviar</string>
+    <string name="rating_sending">Enviando…</string>
+    <string name="rating_ok">Entendido</string>
+    <string name="rating_success">¡Gracias por tu opinión! Tu calificación se guardó correctamente.</string>
+    <string name="rating_daily_limit">Ya enviaste una calificación. Solo puedes enviar una cada 24 horas. Vuelve a intentarlo cuando se cumpla ese plazo desde tu último envío.</string>
+    <string name="rating_error">No pudimos conectar con el servicio de calificaciones. Comprueba tu conexión e inténtalo de nuevo.</string>
+</resources>

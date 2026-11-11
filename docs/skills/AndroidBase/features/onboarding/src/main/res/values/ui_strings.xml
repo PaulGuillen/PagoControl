@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_step_by_step">Paso a paso</string>
+    <string name="onboarding_ready_to_share">Listo para compartir</string>
+    <string name="onboarding_progress">Paso %1$d de %2$d</string>
+    <string name="ui_skip_2e5178">Saltar</string>
+    <string name="ui_get_started_8b1222">Empezar</string>
+    <string name="ui_next_c4d83a">Siguiente</string>
+    <string name="ui_recommended_fef9d9">Recomendado</string>
+    <string name="ui_choose_a_professional_template_c2bf47">Elige una plantilla profesional</string>
+    <string name="ui_enter_your_details_choose_a_template_and_download_your_resum_4c7b40">Completa tus datos, elige una plantilla y descarga tu CV en PDF.</string>
+    <string name="ui_customizable_designs_7da30c">Diseños personalizables</string>
+    <string name="ui_high_quality_pdf_95ca8f">PDF de alta calidad</string>
+    <string name="ui_complete_your_profile_easily_31abf9">Completa tu perfil fácilmente</string>
+    <string name="ui_organize_your_experience_education_and_skills_step_by_step_9162c7">Organiza tu experiencia, estudios y habilidades paso a paso.</string>
+    <string name="ui_easy_editing_917c49">Edición sencilla</string>
+    <string name="ui_protected_data_35294e">Datos protegidos</string>
+    <string name="ui_your_next_job_starts_here_46ad25">Tu próximo empleo empieza aquí</string>
+    <string name="ui_keep_your_resume_updated_and_ready_to_share_whenever_you_nee_f2a3f6">Mantén tu currículum actualizado y listo para compartir cuando lo necesites.</string>
+    <string name="ui_professional_result_b29d95">Resultado profesional</string>
+    <string name="ui_instant_download_ba9628">Descarga inmediata</string>
+</resources>

@@ -1,3 +1,16 @@
-plugins { id("plugin.feature") }
+import dependence.*
 
-android { namespace = "com.example.androidbase.features.auth" }
+plugins {
+    id("plugin.feature")
+}
+
+android {
+    namespace = "com.devpaul.features.auth"
+}
+
+dependencies {
+    firebaseImplementation()
+    coroutinesPlayServicesImplementation()
+    implementation(libs.koin.compose)
+    testImplementation(libs.kotlinx.coroutines.test)
+}

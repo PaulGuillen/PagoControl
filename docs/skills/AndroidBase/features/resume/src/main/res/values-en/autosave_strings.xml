@@ -1,0 +1,3 @@
+<resources>
+    <string name="resume_autosave_error">Your changes could not be saved automatically. Try saving your resume again.</string>
+</resources>

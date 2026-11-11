@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="resume_cloud_loading">Cargando tus CV de Firestore…</string>
+    <string name="resume_cloud_synced">Tus CV están sincronizados con tu cuenta.</string>
+    <string name="resume_cloud_pending">Cambios en este dispositivo pendientes de sincronizar. Conéctate para respaldarlos.</string>
+    <string name="resume_cloud_cached">Mostrando la copia disponible en este dispositivo. Esperando conexión con Firestore.</string>
+    <string name="resume_cloud_error">No se pudieron sincronizar tus CV. Revisa tu conexión y los permisos de Firestore.</string>
+    <string name="resume_cloud_retry">Reintentar conexión</string>
+    <string name="resume_cloud_import_local">Migrar CV de este dispositivo</string>
+    <string name="resume_cloud_migration_confirm">¿Guardar los CV locales en la cuenta %1$s? Se eliminará cada copia antigua solo después de que Firestore confirme su recepción. Necesitas conexión a Internet.</string>
+    <string name="resume_cloud_migrating">Migrando tus CV a Firestore… No cierres esta pantalla.</string>
+    <string name="resume_cloud_migration_error">No se completó la migración. Los CV pendientes siguen en este dispositivo; puedes reintentar.</string>
+    <string name="resume_cloud_later">Ahora no</string>
+</resources>

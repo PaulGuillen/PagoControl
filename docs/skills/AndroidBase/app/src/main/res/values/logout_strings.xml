@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="logout_confirmation_title">¿Quieres cerrar sesión?</string>
+    <string name="logout_confirmation_confirm">Sí, cerrar sesión</string>
+    <string name="logout_confirmation_cancel">No, volver</string>
+</resources>

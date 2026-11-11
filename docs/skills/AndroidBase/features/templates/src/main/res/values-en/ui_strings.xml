@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_your_name_f308e7">YOUR NAME</string>
+    <string name="ui_about_me_d15068">ABOUT ME</string>
+    <string name="ui_education_4e9a5f">EDUCATION</string>
+    <string name="ui_links_d38518">LINKS</string>
+    <string name="ui_languages_c765ac">LANGUAGES</string>
+    <string name="ui_experience_0c1122">EXPERIENCE</string>
+    <string name="ui_skills_0794df">SKILLS</string>
+    <string name="ui_courses_177a73">COURSES</string>
+    <string name="ui_references_9e4676">REFERENCES</string>
+    <string name="ui_pdf_saved_successfully_e80449">PDF saved successfully</string>
+    <string name="ui_the_pdf_couldn_t_be_generated_183c0d">The PDF couldn\'t be generated</string>
+    <string name="ui_the_preview_couldn_t_be_captured_9102da">The preview couldn\'t be captured</string>
+    <string name="ui_the_resume_couldn_t_be_saved_8205c7">The resume couldn\'t be saved</string>
+    <string name="ui_your_resume_is_ready_0d5cd6">Your resume is ready</string>
+    <string name="ui_generating_55c32a">Generating</string>
+    <string name="ui_download_pdf_40863e">Download PDF</string>
+    <string name="ui_saving_92902e">Saving</string>
+    <string name="ui_save_resume_8c58fc">Save resume</string>
+    <string name="ui_preview_with_sample_information_ab7559">Preview with sample information</string>
+    <string name="ui_preview_432932">Preview</string>
+    <string name="ui_back_84a715">Back</string>
+    <string name="ui_work_experience_1706e7">WORK EXPERIENCE</string>
+    <string name="ui_contact_2f09b4">CONTACT</string>
+    <string name="ui_about_me_3b9d35">ABOUT ME</string>
+    <string name="ui_choose_a_template_4d9458">Choose a template</string>
+    <string name="ui_the_design_applies_to_both_the_preview_and_the_pdf_file_529017">The design applies to both the preview and the PDF file.</string>
+    <string name="ui_continue_to_preview_b47de1">Continue to preview</string>
+    <string name="ui_selected_ec2675">Selected</string>
+    <string name="ui_templates_0b4c44">Templates</string>
+    <string name="ui_professional_two_column_design_with_uppercase_headings_42bfe8">Professional two-column design with uppercase headings.</string>
+    <string name="ui_black_and_white_editorial_style_with_columns_and_fine_divide_a05aa9">Black-and-white editorial style with columns and fine dividers.</string>
+    <string name="ui_prague_4a9ba9">Prague</string>
+    <string name="ui_clean_design_with_a_split_header_and_structured_sections_2fd903">Clean design with a split header and structured sections.</string>
+    <string name="ui_tokyo_08bc81">Tokyo</string>
+    <string name="ui_compact_single_column_layout_with_light_blue_highlighted_sec_f13561">Compact single-column layout with light-blue highlighted sections.</string>
+</resources>

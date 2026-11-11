@@ -3,6 +3,7 @@ package plugin
 import Config
 
 plugins {
+    id("java-library")
     id("org.jetbrains.kotlin.jvm")
 }
 
