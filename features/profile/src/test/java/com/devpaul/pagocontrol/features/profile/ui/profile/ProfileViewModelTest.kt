@@ -124,6 +124,7 @@ class ProfileViewModelTest {
     }
 
     private class DemoAuth : AuthRepository {
+        override val isDemo = true
         override val session = MutableStateFlow<UserSession?>(UserSession("demo", "Carlos", ""))
         var signOutCount = 0
         override suspend fun signIn(email: String, password: String) = SignInResult.Success

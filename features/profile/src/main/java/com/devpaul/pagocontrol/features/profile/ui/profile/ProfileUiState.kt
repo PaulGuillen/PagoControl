@@ -4,6 +4,7 @@ enum class ProfileDialog { Edit, Appearance, Language, Rating, SignOut, Notifica
 enum class ProfileNotice { SavedRating, SaveError, LoadError, Upcoming }
 
 data class ProfileUiState(
+    val emailEditable: Boolean = true,
     val name: String = "",
     val email: String = "",
     val notificationsEnabled: Boolean = true,
@@ -17,6 +18,6 @@ data class ProfileUiState(
     val comment: String = "",
 ) {
     val canSaveIdentity: Boolean
-        get() = draftName.isNotBlank() && draftName.trim().length <= 80 &&
+        get() = draftName.trim().length in 2..80 &&
             (draftEmail.isBlank() || com.devpaul.pagocontrol.domain.LoginValidation.validEmail(draftEmail))
 }

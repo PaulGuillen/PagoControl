@@ -52,7 +52,7 @@ internal fun ProfileDialogs(state: ProfileUiState, themeIndex: Int, onThemeSelec
                             OutlinedTextField(
                                 state.draftEmail, { onIntent(ProfileUiIntent.Email(it)) },
                                 label = { Text(stringResource(R.string.email)) }, singleLine = true,
-                                enabled = !state.saving, modifier = Modifier.fillMaxWidth(),
+                                enabled = !state.saving, readOnly = !state.emailEditable, modifier = Modifier.fillMaxWidth(),
                                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Email),
                                 isError = state.draftEmail.isNotBlank() && !com.devpaul.pagocontrol.domain.LoginValidation.validEmail(state.draftEmail),
                             )

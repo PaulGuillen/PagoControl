@@ -29,9 +29,9 @@
     <string name="edit_profile">Editar perfil</string>
     <string name="choose_appearance">Seleccionar apariencia</string>
     <string name="choose_language">Idioma de la aplicación</string>
-    <string name="edit_detail">Estos datos se guardan en este dispositivo para personalizar tu perfil de demostración.</string>
+    <string name="edit_detail">Tu nombre se actualiza en tu cuenta de Firebase. El correo identifica tu cuenta y no se cambia desde esta pantalla.</string>
     <string name="name">Nombre</string>
-    <string name="email">Correo electrónico (opcional)</string>
+    <string name="email">Correo de la cuenta</string>
     <string name="language_available">PagoControl está disponible en español. Se incorporarán más idiomas en próximas versiones.</string>
     <string name="rating_intro">¿Qué te parece PagoControl? Elige de 1 a 5 estrellas y comparte tu opinión.</string>
     <string name="stars">%1$d / 5 estrellas</string>
@@ -70,7 +70,7 @@
     <string name="privacy_intro_title">Tu información, con claridad</string>
     <string name="privacy_intro_body">Conoce qué utiliza esta versión de PagoControl, para qué se necesita y cómo puedes gestionar la información en tu dispositivo.</string>
     <string name="privacy_account_title">Datos de tu perfil</string>
-    <string name="privacy_account_body">El acceso actual crea una sesión local de demostración. El nombre y el correo que edites en Perfil se guardan en este dispositivo para personalizar la aplicación; no crean ni actualizan una cuenta bancaria o una cuenta remota.</string>
+    <string name="privacy_account_body">El registro y el acceso usan Firebase Authentication. Tu identificador, nombre, correo y fecha de creación del perfil se guardan en Cloud Firestore. La recuperación envía un enlace por correo. Tu contraseña no se guarda en las preferencias ni en el estado de los formularios de PagoControl.</string>
     <string name="privacy_movements_title">Movimientos de ejemplo</string>
     <string name="privacy_movements_body">Los saldos y movimientos que se muestran son ilustrativos. Esta versión no lee tus SMS, no accede a notificaciones de otras aplicaciones y no se conecta a bancos, Yape o Plin. Al compartir movimientos, tú eliges la aplicación que recibirá el texto.</string>
     <string name="privacy_preferences_title">Preferencias del dispositivo</string>
