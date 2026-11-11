@@ -1,4 +1,10 @@
 <resources>
+    <string name="notifications">Notificaciones</string>
+    <string name="dock_home">Inicio</string>
+    <string name="dock_movements">Movimientos</string>
+    <string name="dock_add">Agregar movimiento</string>
+    <string name="dock_reports">Reportes</string>
+    <string name="dock_profile">Perfil</string>
     <string name="brand_name">PagoControl</string>
     <string name="appearance">Cambiar apariencia</string>
     <string name="theme_system">Usar tema del sistema</string>
