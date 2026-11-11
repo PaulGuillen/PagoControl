@@ -28,3 +28,5 @@ include(":core-domain", ":core-data", ":core-platform", ":core-designsystem", ":
 include(":features:auth", ":features:home", ":features:splash", ":features:onboarding")
 include(":features:movements")
 include(":features:profile")
+include(":features:reports")
+ 

@@ -1,0 +1,92 @@
+<resources>
+    <string name="reports_single_month">%1$s 2023</string>
+    <string name="reports_title">Reportes financieros</string>
+    <string name="reports_this_month">Este mes · Noviembre</string>
+    <string name="reports_last_quarter">Últimos 3 meses</string>
+    <string name="reports_this_year">Año 2023</string>
+    <string name="reports_custom">Personalizado</string>
+    <string name="reports_range">%1$s – %2$s 2023</string>
+    <string name="reports_demo">Modo demostración · Datos de ejemplo</string>
+    <string name="reports_net_balance">BALANCE NETO DEL PERÍODO</string>
+    <string name="reports_change">%1$s vs. período anterior</string>
+    <string name="reports_savings">Tasa de ahorro</string>
+    <string name="reports_savings_detail">Porcentaje de ingresos retenidos</string>
+    <string name="reports_income">Ingresos</string>
+    <string name="reports_expense">Egresos</string>
+    <string name="reports_transactions">Transacciones: %1$d</string>
+    <string name="reports_weekly_flow">Flujo mensual por semanas</string>
+    <string name="reports_monthly_flow">Flujo del período por meses</string>
+    <string name="reports_point_amounts">Ing: %1$s · Egr: %2$s</string>
+    <string name="reports_chart_description">%1$s, ingresos %2$s, egresos %3$s</string>
+    <string name="reports_categories">Gastos por categoría</string>
+    <string name="reports_expense_total">Total egresos: %1$s</string>
+    <string name="reports_category_count">6 rubros</string>
+    <string name="reports_category_food">Alimentación y restaurantes</string>
+    <string name="reports_category_services">Servicios básicos y luz</string>
+    <string name="reports_category_shopping">Compras y negocio</string>
+    <string name="reports_category_subscriptions">Suscripciones digitales</string>
+    <string name="reports_category_transport">Transporte / movilidad</string>
+    <string name="reports_category_other">Otros imprevistos</string>
+    <string name="reports_channels">Flujo por canal financiero</string>
+    <string name="reports_channels_detail">Fuentes de ejemplo · Sin conexión bancaria</string>
+    <string name="reports_channel_share">%1$s del flujo total</string>
+    <string name="reports_operations">Operaciones: %1$d</string>
+    <string name="reports_channel_yape">Yape BCP</string>
+    <string name="reports_channel_bcp">BCP Cuentas</string>
+    <string name="reports_channel_plin">Plin / BBVA</string>
+    <string name="reports_channel_interbank">Interbank Simple</string>
+    <string name="reports_subscriptions">Suscripciones recurrentes</string>
+    <string name="reports_recurring_period">Gasto recurrente en el período</string>
+    <string name="reports_active_services">5 servicios de ejemplo</string>
+    <string name="reports_monthly_services">Las etiquetas muestran el importe mensual de cada servicio.</string>
+    <string name="reports_export_title">Exportar reporte</string>
+    <string name="reports_export_detail">Guarda un resumen de ingresos, egresos, categorías y canales.</string>
+    <string name="reports_format_pdf">PDF Ejecutivo</string>
+    <string name="reports_format_excel">Excel (.xlsx)</string>
+    <string name="reports_format_csv">Datos (CSV)</string>
+    <string name="reports_download">Descargar resumen completo</string>
+    <string name="reports_exporting">Generando reporte…</string>
+    <string name="reports_export_note">Resumen ilustrativo; sin validez tributaria.</string>
+    <string name="reports_custom_title">Período personalizado</string>
+    <string name="reports_custom_detail">Selecciona los meses del reporte. Datos de ejemplo disponibles de enero a noviembre de 2023.</string>
+    <string name="reports_first_month">Desde</string>
+    <string name="reports_last_month">Hasta</string>
+    <string name="reports_invalid_range">El mes inicial debe ser anterior o igual al mes final.</string>
+    <string name="reports_apply">Aplicar</string>
+    <string name="reports_cancel">Cancelar</string>
+    <string name="reports_close">Cerrar</string>
+    <string name="reports_notifications_notice">Las notificaciones automáticas se incorporarán en una próxima etapa. Puedes gestionar tu preferencia desde Perfil.</string>
+    <string name="reports_export_saved">El reporte se guardó en la ubicación que seleccionaste.</string>
+    <string name="reports_export_error">No se pudo guardar el reporte. Inténtalo de nuevo.</string>
+    <string name="reports_demo_export">Datos de demostración</string>
+    <string name="reports_period_label">Período</string>
+    <string name="reports_currency">Moneda</string>
+    <string-array name="reports_months">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
+    <string-array name="reports_short_months">
+        <item>Ene</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Abr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Ago</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dic</item>
+    </string-array>
+</resources>
