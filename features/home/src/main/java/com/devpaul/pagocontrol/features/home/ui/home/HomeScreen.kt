@@ -13,28 +13,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Insights
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -44,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -53,8 +44,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.devpaul.pagocontrol.designsystem.AppearanceMenu
-import com.devpaul.pagocontrol.designsystem.PagoBrand
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.InstitutionAvatar
@@ -65,10 +54,10 @@ import com.devpaul.pagocontrol.domain.Movement
 
 
 @Composable
-fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit) {
+fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit, onMovements: () -> Unit = {}, onProfile: () -> Unit = {}, onReports: () -> Unit = {}) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { HomeDock { onIntent(HomeUiIntent.Upcoming) } },
+        bottomBar = { com.devpaul.pagocontrol.designsystem.PagoDock(false, {}, onMovements, onProfile = onProfile, onReports = onReports) },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
             LazyColumn(
@@ -77,13 +66,7 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        PagoBrand(stringResource(R.string.home_title), Modifier.weight(1f))
-                        AppearanceMenu(themeIndex, onThemeSelected)
-                        IconButton(onClick = { onIntent(HomeUiIntent.SignOut) }, enabled = !state.signingOut) {
-                            Icon(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.home_sign_out))
-                        }
-                    }
+                    com.devpaul.pagocontrol.designsystem.PagoHeader(stringResource(R.string.home_title), { onIntent(HomeUiIntent.Upcoming) })
                 }
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -264,34 +247,6 @@ private fun MovementRow(movement: Movement) {
     }
 }
 
-@Composable
-private fun HomeDock(onUpcoming: () -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
-        Row(modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            DockItem(icon = Icons.Outlined.Home, label = stringResource(R.string.home_title), modifier = Modifier.weight(1f), selected = true) {}
-            DockItem(icon = Icons.AutoMirrored.Outlined.ReceiptLong, label = stringResource(R.string.home_movements), modifier = Modifier.weight(1f), selected = false, onClick = onUpcoming)
-            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                FilledIconButton(onClick = onUpcoming, modifier = Modifier.size(56.dp)) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(R.string.home_add), modifier = Modifier.size(28.dp))
-                }
-            }
-            DockItem(icon = Icons.Outlined.Insights, label = stringResource(R.string.home_reports), modifier = Modifier.weight(1f), selected = false, onClick = onUpcoming)
-            DockItem(icon = Icons.Outlined.Person, label = stringResource(R.string.home_profile), modifier = Modifier.weight(1f), selected = false, onClick = onUpcoming)
-        }
-    }
-}
-
-@Composable
-private fun DockItem(icon: ImageVector, label: String, modifier: Modifier, selected: Boolean, onClick: () -> Unit) {
-    Column(
-        modifier = modifier.clip(MaterialTheme.shapes.small).semantics { this.selected = selected }
-            .clickable(role = Role.Tab, onClick = onClick).heightIn(min = 56.dp).padding(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(imageVector = icon, contentDescription = null, tint = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
-    }
-}
 
 @Preview(name = "Home claro", showBackground = true)
 @Composable

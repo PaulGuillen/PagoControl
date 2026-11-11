@@ -1,0 +1,33 @@
+<resources>
+    <string name="empty_month_range">Octubre 2023</string>
+    <string name="movements_title">Movimientos</string>
+    <string name="demo">Demo</string>
+    <plurals name="operation_count">
+        <item quantity="one">%1$d operación de ejemplo</item>
+        <item quantity="other">%1$d operaciones de ejemplo</item>
+    </plurals>
+    <string name="search">Buscar movimientos</string>
+    <string name="export">Exportar movimientos</string>
+    <string name="search_hint">Buscar por comercio, remitente o monto…</string>
+    <string name="clear">Limpiar búsqueda</string>
+    <string name="all">Todos</string>
+    <string name="income">Ingresos</string>
+    <string name="expense">Egresos</string>
+    <string name="transfers">Transferencias</string>
+    <string name="pending">Pendientes</string>
+    <string name="source">Fuente: %1$s</string>
+    <string name="status">Estado: %1$s</string>
+    <string name="reset">Restablecer filtros</string>
+    <string name="empty">No se encontraron movimientos</string>
+    <string name="date_group">%1$d DE NOVIEMBRE</string>
+    <string name="net_amount">%1$s neto</string>
+    <string name="shown">Movimientos de ejemplo: %1$d / %2$d</string>
+    <string name="load_more">Cargar más antiguos</string>
+    <string name="choose_category">Selecciona una categoría para este movimiento de ejemplo.</string>
+    <string name="close">Cerrar</string>
+    <string name="demo_title">Modo demostración</string>
+    <string name="balance">Balance Mensualizado</string>
+    <string name="month_range">1 – 28 Nov</string>
+    <string name="net">Neto Caja</string>
+    <string name="review">Revisar</string>
+</resources>

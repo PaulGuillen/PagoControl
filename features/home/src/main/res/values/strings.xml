@@ -25,7 +25,7 @@
     <string name="home_error">No pudimos cargar tu resumen.</string>
     <string name="home_retry">Reintentar</string>
     <string name="home_upcoming_title">Próximamente</string>
-    <string name="home_upcoming_message">Por ahora están disponibles el acceso y el inicio. Movimientos, registros, servicios, reportes y perfil se incorporarán en próximas etapas.</string>
+    <string name="home_upcoming_message">Registros, servicios, notificaciones, reportes y perfil se incorporarán en próximas etapas.</string>
     <string name="home_understood">Entendido</string>
     <string name="home_movements">Movimientos</string>
     <string name="home_add">Agregar movimiento</string>

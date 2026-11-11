@@ -2,6 +2,9 @@ package com.devpaul.pagocontrol
 
 import com.devpaul.pagocontrol.navigation.route.AuthRoute
 import com.devpaul.pagocontrol.navigation.route.HomeRoute
+import com.devpaul.pagocontrol.navigation.route.MovementsRoute
+import com.devpaul.pagocontrol.navigation.route.GraphRoute
+import com.devpaul.pagocontrol.features.movements.movementsGraph
 import com.devpaul.pagocontrol.navigation.route.SplashRoute
 import com.devpaul.pagocontrol.navigation.route.OnboardingRoute
 
@@ -25,6 +28,13 @@ import com.devpaul.pagocontrol.features.onboarding.onboardingGraph
 @Composable
 fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> Unit) {
     val controller = rememberNavController()
+    fun navigateTab(route: GraphRoute) {
+        controller.navigate(route) {
+            popUpTo<HomeRoute.Home> { saveState = true }
+            restoreState = true
+            launchSingleTop = true
+        }
+    }
     var onboardingCompleted by rememberSaveable { mutableStateOf<Boolean?>(null) }
     val currentEntry by controller.currentBackStackEntryAsState()
     LaunchedEffect(key1 = session?.id, key2 = currentEntry?.destination, key3 = onboardingCompleted) {
@@ -38,10 +48,13 @@ fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> 
                 launchSingleTop = true
             }
         } else if (!onboarding) {
-            val correct = destination.hierarchy.any { if (session == null) it.hasRoute<AuthRoute.Graph>() else it.hasRoute<HomeRoute.Graph>() }
-            if (!correct) controller.navigate(if (session == null) AuthRoute.Graph else HomeRoute.Graph) {
-                popUpTo(controller.graph.id) { inclusive = true }
-                launchSingleTop = true
+            val correct = destination.hierarchy.any { if (session == null) it.hasRoute<AuthRoute.Graph>() else it.hasRoute<HomeRoute.Graph>() || it.hasRoute<MovementsRoute.Graph>() }
+            if (!correct) {
+                controller.clearBackStack<MovementsRoute.Graph>()
+                controller.navigate(if (session == null) AuthRoute.Graph else HomeRoute.Graph) {
+                    popUpTo(controller.graph.id) { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         }
     }
@@ -59,6 +72,12 @@ fun MainGraph(session: UserSession?, themeIndex: Int, onThemeSelected: (Int) -> 
             onForgotPassword = { controller.navigate(AuthRoute.ForgotPassword) { launchSingleTop = true } },
             onLogin = { controller.popBackStack<AuthRoute.Login>(inclusive = false) },
         )
-        homeGraph(name = session?.name.orEmpty(), themeIndex = themeIndex, onThemeSelected = onThemeSelected, authorized = session != null)
+        homeGraph(name = session?.name.orEmpty(), themeIndex = themeIndex, onThemeSelected = onThemeSelected, authorized = session != null,
+            onMovements = { navigateTab(MovementsRoute.Graph) },
+        )
+        movementsGraph(
+            authorized = session != null,
+            onHome = { controller.popBackStack<HomeRoute.Home>(inclusive = false) },
+        )
     }
 }
