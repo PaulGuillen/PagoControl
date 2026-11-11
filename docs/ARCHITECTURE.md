@@ -1,5 +1,41 @@
 # Base de PagoControl
 
+## Reportes financieros y navegación principal
+
+`features:reports` implementa las referencias `reportes_financieros_modo_claro` y `reportes_financieros_modo_oscuro` con la identidad visual de PagoControl. Incluye balance neto, comparación con el período anterior cuando hay datos, tasa de ahorro calculada, ingresos/egresos, gráfico interactivo, seis categorías, cuatro canales y suscripciones recurrentes. El período se puede cambiar entre noviembre, últimos tres meses, año y un rango personalizado de meses de 2023.
+
+Los datos de reportes son ilustrativos y están contenidos en la feature. Noviembre reproduce los importes del diseño; las distribuciones por categoría, canal y período conservan los totales en céntimos. No se afirma sincronización bancaria ni lectura de notificaciones. Los gráficos y las exportaciones utilizan el mismo resumen seleccionado.
+
+`ReportsGraph`, `ReportsModule`, `ReportsViewModel`, estado e intenciones siguen el patrón de las demás features. `ReportsRoute` define el grafo y su destino protegido. La aplicación ensambla la navegación y limpia su estado guardado al cerrar sesión.
+
+`PagoDock` ofrece únicamente Inicio, Movimientos, Reportes y Perfil, sin botón central de agregar. Las cuatro secciones se conectan desde app, con selección y restauración de estado entre pestañas.
+
+La descarga abre el selector de documentos de Android. `AndroidReportExporter` genera archivos PDF, Excel OOXML (.xlsx) y CSV UTF-8 en la ubicación elegida, sin permisos de almacenamiento generales ni nuevas bibliotecas de documentos. La exportación conserva el período/formato capturados al abrir el selector y permite cancelar o reintentar. Los archivos indican que contienen datos de demostración y no constituyen libros tributarios ni formatos oficiales para SUNAT.
+
+Las pruebas del módulo verifican los importes de noviembre, conservación de totales en todos los rangos, filtros, selección de barras y cancelación/error/concurrencia de exportación. `ReportsExportTest` verifica PDF, CSV y los XML del archivo Excel en Android. `AuthHomeFlowTest` recorre las cuatro secciones, la recreación de Reportes y la ausencia del botón de agregar.
+
+## Perfil y preferencias
+
+`features:profile` incorpora Perfil, Centro de ayuda y Privacidad a partir de las capturas proporcionadas. Usa la paleta, Manrope, tarjetas redondeadas, header y dock compartidos de PagoControl en claro y oscuro, sin planes ni suscripciones. Incluye edición local de nombre/correo, selector global de apariencia, idioma disponible (español), preferencia de notificaciones, preguntas desplegables, valoración de 1 a 5 estrellas con comentario de hasta 500 caracteres y confirmación de cierre de sesión.
+
+`ProfileRoute` define Graph, Profile, Help y Privacy. La feature conserva su módulo Koin y los contratos de estado/intenciones/ViewModel. Los tres destinos están protegidos por sesión; Inicio, Movimientos y Perfil se conectan desde app sin dependencias entre features. Al salir se limpian los estados de navegación guardados de los módulos autenticados.
+
+`ProfileRepository` vive en dominio y `DataStoreProfileRepository` en datos. Las preferencias se separan por identificador de usuario; la apariencia continúa usando el repositorio global existente. Los cambios del nombre/correo personalizan también el saludo de Inicio mediante la sesión de presentación en `AppViewModel`. Los errores de escritura permiten reintentar; las operaciones evitan envíos duplicados.
+
+Las notificaciones son una preferencia local para la futura integración: no solicitan permisos ni habilitan lectura bancaria. La valoración se guarda localmente y no se envía a Google Play ni a un servidor. El selector de idioma indica que actualmente solo está disponible español. Ayuda y Privacidad describen estas capacidades reales del prototipo y no contienen enlaces o servicios ficticios.
+
+Validación del módulo: `:features:profile:testDebugUnitTest`, `:features:profile:lintDebug` y `:app:assembleDebug`. La prueba instrumentada `AuthHomeFlowTest` cubre el acceso, los módulos autenticados, cambio de apariencia, persistencia de notificaciones tras recrear Activity, ayuda, privacidad, valoración y cierre de sesión.
+
+## Movimientos e historial
+
+`features:movements` implementa las referencias `movimientos_historial_modo_claro` y `movimientos_historial_modo_oscuro` con búsqueda, filtros combinables por tipo, fuente, estado y mes, balance mensual y tarjetas agrupadas por fecha. Incluye revisión y categorización local de pendientes, detalles y exportación mediante el menú de compartir de Android. Los ocho registros son ejemplos de noviembre de 2023; no existe sincronización real ni historial adicional. El balance mensual reproduce los totales ilustrativos de la referencia y permanece independiente de los filtros de la lista.
+
+La feature mantiene `MovementsGraph`, `MovementsModule`, ViewModel, estado e intenciones propios. `MovementsRoute` define su grafo y destino tipados; `MainGraph` protege ambos grafos autenticados y conecta Inicio con Movimientos sin dependencias entre features. Atrás o Inicio regresa al dashboard.
+
+`PagoHeader` y `PagoDock` viven en `core-designsystem` y se comparten entre las pantallas principales. El header conserva la marca y el subtítulo; la acción de notificaciones es opcional y se omite en Perfil. La apariencia se selecciona desde el acceso o desde Perfil; los controles de apariencia y cierre de sesión ya no aparecen en el header de Inicio. El dock identifica la sección activa con un indicador amarillo, un icono relleno y una etiqueta en negrita.
+
+Las pruebas de Movimientos verifican filtros combinados, búsqueda por monto, separación de transferencias, mes vacío, restablecimiento y categorización de pendientes. `AuthHomeFlowTest` recorre acceso en oscuro, navegación entre Inicio y Movimientos y recreación de la Activity.
+
 ## Alcance implementado
 
 Cuatro features: `splash`, `onboarding`, `auth` y `home`. Splash, los tres pasos del onboarding y Login/Registro/recuperación siguen las referencias de `docs/stitch_pagocontrol_android_app_ui`, adaptadas a los temas claro y oscuro. El acceso y el dashboard de PagoControl siguen siendo de demostración: no hay Firebase, servidor, lectura de SMS, permisos bancarios ni sincronización real.
