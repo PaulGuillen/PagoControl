@@ -12,17 +12,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -74,7 +70,10 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                         Text(text = stringResource(R.string.home_demo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                when (val content = state.content) {
+                item { HomeSectionTabs(section = state.section, onIntent = onIntent) }
+                if (state.section == HomeSection.Mail) {
+                    item { MailTransactionsCard() }
+                } else when (val content = state.content) {
                     HomeContent.Loading -> item {
                         Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
@@ -88,39 +87,19 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                     }
                     is HomeContent.Ready -> {
                         val dashboard = content.dashboard
-                        item { BalanceCard(dashboard) }
-                        item {
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                SummaryCard(income = true, amount = dashboard.incomeCents, count = dashboard.incomeCount, modifier = Modifier.weight(1f))
-                                SummaryCard(income = false, amount = dashboard.expenseCents, count = dashboard.expenseCount, modifier = Modifier.weight(1f))
-                            }
+                        item { ReceivedPaymentsCard(dashboard) }
+                        item { NotificationControls(state = state, onIntent = onIntent) }
+                        val pending = state.pendingNotifications
+                        items(items = pending, key = { "notification-${it.id}" }) { notification ->
+                            PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent)
                         }
                         item { FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent) }
                         item {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                QuickAction(label = stringResource(R.string.home_register), modifier = Modifier.weight(1f)) { onIntent(HomeUiIntent.Upcoming) }
-                                QuickAction(label = stringResource(R.string.home_services), modifier = Modifier.weight(1f)) { onIntent(HomeUiIntent.Upcoming) }
-                            }
-                        }
-                        item {
-                            PagoCard(Modifier.fillMaxWidth()) {
-                                Text(stringResource(if (state.confirmed) R.string.home_confirmed else R.string.home_detected), style = MaterialTheme.typography.titleSmall)
-                                Text(stringResource(R.string.home_detected_detail), style = MaterialTheme.typography.bodyMedium)
-                                if (!state.confirmed) Row {
-                                    TextButton(onClick = { onIntent(HomeUiIntent.ConfirmNotification) }) {
-                                        Text(stringResource(R.string.home_confirm), color = MaterialTheme.colorScheme.onSurface)
-                                    }
-                                    TextButton(onClick = { onIntent(HomeUiIntent.Upcoming) }) {
-                                        Text(stringResource(R.string.home_reclassify), color = MaterialTheme.colorScheme.onSurface)
-                                    }
-                                }
-                            }
-                        }
-                        item {
                             Text(stringResource(R.string.home_recent), style = MaterialTheme.typography.headlineSmall)
                         }
-                        if (dashboard.movements.isEmpty()) item { Text(stringResource(R.string.home_empty)) }
-                        items(items = dashboard.movements, key = { it.id }) { MovementRow(it) }
+                        val movements = dashboard.receivedMovements
+                        if (movements.isEmpty()) item { Text(stringResource(R.string.home_empty)) }
+                        items(items = movements, key = { it.id }) { MovementRow(it) }
                         item { Spacer(Modifier.height(8.dp)) }
                     }
                 }
@@ -142,33 +121,22 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
 }
 
 @Composable
-private fun BalanceCard(dashboard: Dashboard) {
+private fun ReceivedPaymentsCard(dashboard: Dashboard) {
     Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(R.string.home_balance), style = MaterialTheme.typography.labelLarge)
-            Text(formatSoles(dashboard.balanceCents), style = MaterialTheme.typography.displaySmall)
+            Text(formatSoles(dashboard.incomeCents), style = MaterialTheme.typography.displaySmall)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(imageVector = Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
-                Text(stringResource(R.string.home_sources), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.home_income_count, dashboard.incomeCount), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
 }
 
 @Composable
-private fun SummaryCard(income: Boolean, amount: Long, count: Int, modifier: Modifier) {
-    val tint = if (income) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
-    PagoCard(modifier) {
-        Icon(imageVector = if (income) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward, contentDescription = null, tint = tint)
-        Text(stringResource(if (income) R.string.home_income else R.string.home_expense), style = MaterialTheme.typography.bodySmall)
-        Text(text = formatSoles(if (income) amount else -amount, signed = true), color = tint, style = MaterialTheme.typography.titleMedium)
-        Text(text = stringResource(if (income) R.string.home_income_count else R.string.home_expense_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-@Composable
 private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIntent: (HomeUiIntent) -> Unit) {
-    val values = if (monthly) dashboard.monthlyFlow else dashboard.weeklyFlow
+    val values = if (monthly) dashboard.monthlyIncomeFlow else dashboard.weeklyIncomeFlow
     val labels = stringArrayResource(if (monthly) R.array.home_weeks else R.array.home_days)
     PagoCard(Modifier.fillMaxWidth()) {
         Text(stringResource(R.string.home_flow), style = MaterialTheme.typography.headlineSmall)
@@ -190,7 +158,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
             style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary,
         )
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
-            val maximum = (values.maxOrNull() ?: 1L).coerceAtLeast(1L)
+            val maximum = (values.maxOfOrNull { kotlin.math.abs(it) } ?: 1L).coerceAtLeast(1L)
             values.forEachIndexed { index, amount ->
                 val label = labels.getOrElse(index) { "" }
                 val description = "$label: ${formatSoles(amount)}"
@@ -207,7 +175,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                 ) {
                     Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.BottomCenter) {
                         Box(
-                            Modifier.fillMaxWidth(0.8f).height((24 + 96 * amount.toFloat() / maximum).dp)
+                            Modifier.fillMaxWidth(0.8f).height((24 + 96 * kotlin.math.abs(amount).toFloat() / maximum).dp)
                                 .clip(MaterialTheme.shapes.small)
                                 .background(if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh),
                         )
@@ -216,13 +184,6 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun QuickAction(label: String, modifier: Modifier, onClick: () -> Unit) {
-    Surface(modifier = modifier.clip(MaterialTheme.shapes.medium).clickable(onClick = onClick), color = MaterialTheme.colorScheme.surface) {
-        Text(text = label, modifier = Modifier.heightIn(min = 56.dp).padding(12.dp), style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -241,7 +202,6 @@ private fun MovementRow(movement: Movement) {
                     text = formatSoles(movement.amountCents, signed = true), style = MaterialTheme.typography.titleMedium,
                     color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
                 )
-                if (movement.automatic) Text(text = stringResource(R.string.home_auto), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
             }
         }
     }

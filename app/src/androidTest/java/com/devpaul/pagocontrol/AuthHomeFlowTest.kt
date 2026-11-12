@@ -64,9 +64,9 @@ class AuthHomeFlowTest {
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
         compose.waitUntil(5_000) {
-            compose.onAllNodes(androidx.compose.ui.test.hasText("BALANCE DISPONIBLE")).fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodes(androidx.compose.ui.test.hasText("COBROS RECIBIDOS ESTE MES")).fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onNodeWithText("BALANCE DISPONIBLE").assertIsDisplayed()
+        compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").assertIsDisplayed()
         listOf("Inicio", "Movimientos", "Reportes", "Perfil").forEach { tab ->
             compose.onNode(hasText(tab) and hasClickAction()).performClick()
             compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
@@ -85,7 +85,7 @@ class AuthHomeFlowTest {
         compose.onNodeWithText("Ingresos  4").performClick()
         compose.onNodeWithText("María Rodríguez").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Inicio").performClick()
-        compose.onNodeWithText("BALANCE DISPONIBLE").assertIsDisplayed()
+        compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").assertIsDisplayed()
         compose.onNodeWithContentDescription("Agregar movimiento").assertDoesNotExist()
         compose.onNodeWithText("Reportes").performClick()
         compose.onNodeWithText("BALANCE NETO DEL PERÍODO").assertIsDisplayed()
@@ -140,7 +140,7 @@ class AuthHomeFlowTest {
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email)).performScrollTo().performTextInput(testEmail)
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
-        compose.waitUntil(5_000) { compose.onNodeWithText("BALANCE DISPONIBLE").isDisplayed() }
+        compose.waitUntil(5_000) { compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").isDisplayed() }
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_confirm)).performClick()
         compose.waitUntil(5_000) {

@@ -4,6 +4,8 @@ import com.devpaul.pagocontrol.session.AuthRepository
 import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
+import com.devpaul.pagocontrol.domain.PaymentNotification
+import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
 import com.devpaul.pagocontrol.session.SignInResult
 import com.devpaul.pagocontrol.session.UserSession
 import kotlinx.coroutines.Dispatchers
@@ -23,12 +25,14 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun tearDown() { Dispatchers.resetMain() }
 
     @Test fun retriesFailureAndDisplaysEmptyDashboard() = runTest {
         val repository = ControlledHome()
-        val viewModel = HomeViewModel(repository, DemoSession())
+        val viewModel = HomeViewModel(home = repository, auth = DemoSession(), notifications = ControlledNotifications())
         advanceUntilIdle()
         assertEquals(HomeContent.Error, viewModel.state.value.content)
         repository.result = DashboardResult.Success(Dashboard(balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0, weeklyFlow = emptyList(), monthlyFlow = emptyList(), movements = emptyList()))
@@ -42,7 +46,7 @@ class HomeViewModelTest {
 
     @Test fun logoutIsNotDuplicated() = runTest {
         val auth = DemoSession()
-        val viewModel = HomeViewModel(ControlledHome(), auth)
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = auth, notifications = ControlledNotifications())
         viewModel.onIntent(HomeUiIntent.SignOut)
         viewModel.onIntent(HomeUiIntent.SignOut)
         advanceUntilIdle()
@@ -52,13 +56,55 @@ class HomeViewModelTest {
 
     private class ControlledHome : HomeRepository {
         var result: DashboardResult = DashboardResult.Unavailable
+
         override suspend fun loadDashboard() = result
+    }
+
+    @Test fun observesNotificationsAndPersistsReviewActions() = runTest {
+        val notifications = ControlledNotifications()
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = notifications)
+        advanceUntilIdle()
+        notifications.pending.value = listOf(PaymentNotification(
+            id = "payment", packageName = "test.bank", source = "Banco", title = "Pago",
+            text = "Recibiste S/ 25.00", postedAt = 1L, suggestedAmountCents = 2500L,
+        ))
+        advanceUntilIdle()
+        assertEquals(1, viewModel.state.value.pendingNotifications.size)
+        viewModel.onIntent(HomeUiIntent.ConfirmPayment(id = "payment", amountCents = 2500L))
+        advanceUntilIdle()
+        assertEquals("payment" to 2500L, notifications.confirmed)
+        assertTrue(viewModel.state.value.pendingNotifications.isEmpty())
+    }
+
+    private class ControlledNotifications : PaymentNotificationRepository {
+        val pending = MutableStateFlow<List<PaymentNotification>>(emptyList())
+        val sources = MutableStateFlow<Set<String>>(emptySet())
+        var confirmed: Pair<String, Long>? = null
+
+        override fun observePending() = pending
+
+        override fun observeSources() = sources
+
+        override suspend fun setSource(packageName: String, enabled: Boolean) {
+            sources.value = if (enabled) sources.value + packageName else sources.value - packageName
+        }
+
+        override suspend fun capture(notification: PaymentNotification) { pending.value += notification }
+
+        override suspend fun confirm(id: String, amountCents: Long) {
+            confirmed = id to amountCents
+            pending.value = pending.value.filterNot { it.id == id }
+        }
+
+        override suspend fun discard(id: String) { pending.value = pending.value.filterNot { it.id == id } }
     }
 
     private class DemoSession : AuthRepository {
         override val session = MutableStateFlow<UserSession?>(UserSession(id = "demo", name = "Carlos", email = "demo@pagocontrol.pe"))
         var signOutCount = 0
+
         override suspend fun signIn(email: String, password: String) = SignInResult.Success
+
         override suspend fun signOut() { signOutCount++; session.value = null }
     }
 }

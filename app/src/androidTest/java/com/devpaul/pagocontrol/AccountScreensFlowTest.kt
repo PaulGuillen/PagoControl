@@ -49,7 +49,7 @@ class AccountScreensFlowTest {
         compose.onNode(hasText(activity.getString(AuthResources.string.flow_password)) and hasSetTextAction()).performScrollTo().performTextInput("Password123")
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_accept_terms)).performScrollTo().performClick()
         compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account)).performScrollTo().performClick()
-        compose.waitUntil(15_000) { compose.onNodeWithText("BALANCE DISPONIBLE").isDisplayed() }
+        compose.waitUntil(15_000) { compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").isDisplayed() }
         runBlocking { GlobalContext.get().get<AuthRepository>().signOut() }
         compose.waitUntil(5_000) { compose.onNodeWithText(loginTitle).isDisplayed() }
 
