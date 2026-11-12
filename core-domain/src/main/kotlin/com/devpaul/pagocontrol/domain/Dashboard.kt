@@ -1,5 +1,8 @@
 package com.devpaul.pagocontrol.domain
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+
 data class Movement(
     val id: String,
     val title: String,
@@ -18,6 +21,9 @@ data class Dashboard(
     val weeklyFlow: List<Long>,
     val monthlyFlow: List<Long>,
     val movements: List<Movement>,
+    val weeklyIncomeFlow: List<Long> = weeklyFlow,
+    val monthlyIncomeFlow: List<Long> = monthlyFlow,
+    val receivedMovements: List<Movement> = movements.filter { it.amountCents > 0 },
 )
 
 sealed interface DashboardResult {
@@ -28,4 +34,6 @@ sealed interface DashboardResult {
 
 interface HomeRepository {
     suspend fun loadDashboard(): DashboardResult
+
+    fun observeDashboard(): Flow<DashboardResult> = flow { emit(loadDashboard()) }
 }
