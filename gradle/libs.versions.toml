@@ -15,12 +15,15 @@ ksp = "2.3.11"
 coroutines = "1.10.2"
 serialization = "1.9.0"
 datastore = "1.1.7"
+room = "2.8.4"
 firebaseBom = "35.1.0"
 googleServices = "4.5.0"
 firebaseCrashlytics = "3.0.8"
 timber = "5.0.1"
 
 [libraries]
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }

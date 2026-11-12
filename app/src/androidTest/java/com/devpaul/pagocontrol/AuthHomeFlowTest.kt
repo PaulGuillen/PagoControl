@@ -66,7 +66,7 @@ class AuthHomeFlowTest {
         compose.waitUntil(5_000) {
             compose.onAllNodes(androidx.compose.ui.test.hasText("BALANCE DISPONIBLE")).fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onNodeWithText("S/ 4,580.50").assertIsDisplayed()
+        compose.onNodeWithText("BALANCE DISPONIBLE").assertIsDisplayed()
         listOf("Inicio", "Movimientos", "Reportes", "Perfil").forEach { tab ->
             compose.onNode(hasText(tab) and hasClickAction()).performClick()
             compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }

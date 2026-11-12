@@ -3,11 +3,10 @@ package com.devpaul.pagocontrol.data
 import com.devpaul.pagocontrol.data.local.DataStoreAppearanceRepository
 import com.devpaul.pagocontrol.data.local.DataStoreProfileRepository
 import com.devpaul.pagocontrol.domain.ProfileRepository
-import com.devpaul.pagocontrol.data.local.DemoHomeRepository
+import androidx.room.Room
+import com.devpaul.pagocontrol.data.notifications.PaymentDatabase
 
 import com.devpaul.pagocontrol.domain.AppearanceRepository
-import com.devpaul.pagocontrol.session.AuthRepository
-import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.data.local.DataStoreStartupPreferences
 import com.devpaul.pagocontrol.domain.StartupPreferences
 import android.content.Context
@@ -25,7 +24,11 @@ class CoreDataModule {
     fun startupPreferences(context: Context): StartupPreferences = DataStoreStartupPreferences(context)
 
     @Single
-    fun homeRepository(authRepository: AuthRepository): HomeRepository = DemoHomeRepository(authRepository)
+    fun paymentDatabase(context: Context): PaymentDatabase = Room.databaseBuilder(
+        context = context,
+        klass = PaymentDatabase::class.java,
+        name = "payment_notifications.db",
+    ).build()
 
     @Single
     fun appearanceRepository(context: Context): AppearanceRepository = DataStoreAppearanceRepository(context)
