@@ -34,7 +34,7 @@ class OnboardingViewModel(
         updateState { it.copy(saving = true, failed = false) }
         viewModelScope.launch {
             try {
-               // preferences.completeOnboarding()
+                preferences.completeOnboarding()
                 updateState { it.copy(saving = false, destination = destination) }
             } catch (cancelled: CancellationException) {
                 throw cancelled
