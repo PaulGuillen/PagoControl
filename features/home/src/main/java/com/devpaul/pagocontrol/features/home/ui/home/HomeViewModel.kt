@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.devpaul.pagocontrol.session.AuthRepository
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
+import com.devpaul.pagocontrol.domain.HomeGuidePreferences
+import kotlinx.coroutines.flow.first
 import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
 import kotlinx.coroutines.Job
@@ -18,14 +20,30 @@ class HomeViewModel(
     private val auth: AuthRepository,
     private val notifications: PaymentNotificationRepository,
     private val gmail: GmailMonitoringRepository,
+    private val guides: HomeGuidePreferences,
 ) : BaseViewModel<HomeUiState>(HomeUiState()) {
     private var chartDate = currentChartDate()
+    private var completedGuides: Set<String>? = null
     private var dashboardJob: Job? = null
     private var pendingJob: Job? = null
     private var sourcesJob: Job? = null
     private var gmailJobs: List<Job> = emptyList()
 
-    init { load(); observeNotifications(); observeGmail() }
+    init {
+        load()
+        observeNotifications()
+        observeGmail()
+        viewModelScope.launch {
+            try {
+                completedGuides = guides.completedGuides.first() + completedGuides.orEmpty()
+                updateState { it.copy(guideStep = if (it.section.guideKey in completedGuides.orEmpty()) null else it.guideStep ?: 0) }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                completedGuides = emptySet()
+            }
+        }
+    }
 
     fun onIntent(intent: HomeUiIntent) {
         when (intent) {
@@ -36,7 +54,18 @@ class HomeViewModel(
                     updateState { it.copy(selectedBar = currentChartBar(it.monthly)) }
                 }
             }
-            is HomeUiIntent.SelectSection -> updateState { it.copy(section = intent.section) }
+            HomeUiIntent.ShowGuide -> updateState { it.copy(guideStep = 0) }
+            HomeUiIntent.NextGuideStep -> {
+                val step = state.value.guideStep ?: return
+                if (step == 3) dismissGuide() else updateState { it.copy(guideStep = step + 1) }
+            }
+            HomeUiIntent.PreviousGuideStep -> updateState { it.copy(guideStep = it.guideStep?.minus(1)?.coerceAtLeast(0)) }
+            HomeUiIntent.DismissGuide -> dismissGuide()
+            is HomeUiIntent.SelectSection -> {
+                if (state.value.section != intent.section) updateState {
+                    it.copy(section = intent.section, guideStep = if (completedGuides != null && intent.section.guideKey !in completedGuides.orEmpty()) 0 else null)
+                }
+            }
             HomeUiIntent.Retry -> { load(); observeNotifications(); observeGmail() }
             is HomeUiIntent.SelectPeriod -> updateState {
                 it.copy(monthly = intent.monthly, selectedBar = currentChartBar(intent.monthly))
@@ -56,6 +85,21 @@ class HomeViewModel(
             }
             is HomeUiIntent.DiscardNotification -> saveNotification(mail = intent.mail) { notifications.discard(intent.id) }
             is HomeUiIntent.SetGmailMonitoring -> saveNotification(mail = true) { gmail.setGmailEnabled(intent.enabled) }
+        }
+    }
+
+    private fun dismissGuide() {
+        val section = state.value.section.guideKey
+        completedGuides = completedGuides.orEmpty() + section
+        updateState { it.copy(guideStep = null) }
+        viewModelScope.launch {
+            try {
+                guides.completeGuide(section)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                completedGuides = completedGuides.orEmpty() - section
+            }
         }
     }
 

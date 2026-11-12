@@ -1,4 +1,28 @@
 <resources>
+    <string name="home_guide_help">¿Cómo funciona Inicio?</string>
+    <string name="home_guide_step">Guía de Inicio · %1$d de 4</string>
+    <string name="home_guide_cancel">Cancelar</string>
+    <string name="home_guide_back">Atrás</string>
+    <string name="home_guide_next">Siguiente</string>
+    <string name="home_guide_finish">Entendido</string>
+    <string-array name="home_guide_titles">
+        <item>Tu resumen</item>
+        <item>Activa las notificaciones</item>
+        <item>Explora tus cobros</item>
+        <item>Revisa tus movimientos</item>
+    </string-array>
+    <string-array name="home_guide_wallets">
+        <item>Consulta tus cobros del mes. No es tu saldo bancario; Correo lleva un registro separado.</item>
+        <item>Toca Añadir y elige tu billetera. En Activar monitoreo, permite el acceso de PagoControl. Tu billetera también debe mostrar notificaciones.</item>
+        <item>Elige Semana o Mes y toca una barra para ver cuánto recibiste.</item>
+        <item>Aquí aparecen tus cobros guardados. Si un aviso queda pendiente, toca Revisar movimiento. Solo se capturan notificaciones nuevas.</item>
+    </string-array>
+    <string-array name="home_guide_mail">
+        <item>Consulta ingresos y egresos confirmados desde Gmail, separados de tus billeteras. El balance no es tu saldo bancario.</item>
+        <item>Activa Monitorear Gmail. En Activar monitoreo, permite el acceso de PagoControl. Habilita también las notificaciones de comprobantes en Gmail.</item>
+        <item>Toca una barra para ver tus cobros por Semana o Mes. Los pagos de salida aparecen en Egresos.</item>
+        <item>Toca Revisar movimiento y confirma ingreso o egreso. Descarta duplicados. Solo se capturan notificaciones nuevas, no correos antiguos.</item>
+    </string-array>
     <string name="home_title">Inicio</string>
     <string name="home_sign_out">Cerrar sesión</string>
     <string name="home_greeting">Hola, %1$s 👋</string>

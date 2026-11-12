@@ -2,6 +2,10 @@ package com.devpaul.pagocontrol.features.home.ui.home
 
 sealed interface HomeUiIntent {
     data object RefreshDate : HomeUiIntent
+    data object ShowGuide : HomeUiIntent
+    data object NextGuideStep : HomeUiIntent
+    data object PreviousGuideStep : HomeUiIntent
+    data object DismissGuide : HomeUiIntent
     data class SelectSection(val section: HomeSection) : HomeUiIntent
     data object Retry : HomeUiIntent
     data class SelectPeriod(val monthly: Boolean) : HomeUiIntent

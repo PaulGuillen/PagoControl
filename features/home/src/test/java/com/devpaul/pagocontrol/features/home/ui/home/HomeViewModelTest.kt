@@ -4,6 +4,7 @@ import com.devpaul.pagocontrol.session.AuthRepository
 import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
+import com.devpaul.pagocontrol.domain.HomeGuidePreferences
 import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
@@ -33,7 +34,7 @@ class HomeViewModelTest {
 
     @Test fun retriesFailureAndDisplaysEmptyDashboard() = runTest {
         val repository = ControlledHome()
-        val viewModel = HomeViewModel(home = repository, auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail())
+        val viewModel = HomeViewModel(home = repository, auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = ControlledGuides())
         advanceUntilIdle()
         assertEquals(HomeContent.Error, viewModel.state.value.content)
         repository.result = DashboardResult.Success(Dashboard(balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0, weeklyFlow = emptyList(), monthlyFlow = emptyList(), movements = emptyList()))
@@ -49,7 +50,7 @@ class HomeViewModelTest {
 
     @Test fun logoutIsNotDuplicated() = runTest {
         val auth = DemoSession()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = auth, notifications = ControlledNotifications(), gmail = ControlledGmail())
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = auth, notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = ControlledGuides())
         viewModel.onIntent(HomeUiIntent.SignOut)
         viewModel.onIntent(HomeUiIntent.SignOut)
         advanceUntilIdle()
@@ -65,7 +66,7 @@ class HomeViewModelTest {
 
     @Test fun observesNotificationsAndPersistsReviewActions() = runTest {
         val notifications = ControlledNotifications()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = notifications, gmail = ControlledGmail())
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = notifications, gmail = ControlledGmail(), guides = ControlledGuides())
         advanceUntilIdle()
         notifications.pending.value = listOf(PaymentNotification(
             id = "payment", packageName = "test.bank", source = "Banco", title = "Pago",
@@ -81,7 +82,7 @@ class HomeViewModelTest {
 
     @Test fun keepsGmailMonitoringAndErrorsIndependentFromWallets() = runTest {
         val gmail = ControlledGmail()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = gmail)
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = gmail, guides = ControlledGuides())
         advanceUntilIdle()
         viewModel.onIntent(HomeUiIntent.SetGmailMonitoring(true))
         advanceUntilIdle()
@@ -95,11 +96,46 @@ class HomeViewModelTest {
         assertEquals(false, viewModel.state.value.savingNotification)
     }
 
+    @Test fun guidesAreIndependentPersistedAndReplayable() = runTest {
+        val guides = ControlledGuides()
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = guides)
+        advanceUntilIdle()
+        assertEquals(0, viewModel.state.value.guideStep)
+        viewModel.onIntent(HomeUiIntent.NextGuideStep)
+        assertEquals(1, viewModel.state.value.guideStep)
+        viewModel.onIntent(HomeUiIntent.PreviousGuideStep)
+        assertEquals(0, viewModel.state.value.guideStep)
+        repeat(4) { viewModel.onIntent(HomeUiIntent.NextGuideStep) }
+        advanceUntilIdle()
+        assertEquals(null, viewModel.state.value.guideStep)
+        assertEquals(setOf("wallets"), guides.completedGuides.value)
+        viewModel.onIntent(HomeUiIntent.SelectSection(HomeSection.Mail))
+        assertEquals(0, viewModel.state.value.guideStep)
+        viewModel.onIntent(HomeUiIntent.DismissGuide)
+        advanceUntilIdle()
+        assertEquals(setOf("wallets", "mail"), guides.completedGuides.value)
+        viewModel.onIntent(HomeUiIntent.SelectSection(HomeSection.Wallets))
+        assertEquals(null, viewModel.state.value.guideStep)
+        viewModel.onIntent(HomeUiIntent.ShowGuide)
+        assertEquals(0, viewModel.state.value.guideStep)
+        val reopened = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = guides)
+        advanceUntilIdle()
+        assertEquals(null, reopened.state.value.guideStep)
+    }
+
     @Test fun refreshingSameDatePreservesManualBarSelection() = runTest {
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail())
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = ControlledGuides())
         viewModel.onIntent(HomeUiIntent.SelectBar(0))
         viewModel.onIntent(HomeUiIntent.RefreshDate)
         assertEquals(0, viewModel.state.value.selectedBar)
+    }
+
+    private class ControlledGuides : HomeGuidePreferences {
+        override val completedGuides = MutableStateFlow<Set<String>>(emptySet())
+
+        override suspend fun completeGuide(section: String) {
+            completedGuides.value += section
+        }
     }
 
     private class ControlledGmail : GmailMonitoringRepository {

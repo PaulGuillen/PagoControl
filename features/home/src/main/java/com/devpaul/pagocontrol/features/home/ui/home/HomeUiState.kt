@@ -2,7 +2,7 @@ package com.devpaul.pagocontrol.features.home.ui.home
 
 import com.devpaul.pagocontrol.domain.PaymentNotification
 
-enum class HomeSection { Wallets, Mail }
+enum class HomeSection(val guideKey: String) { Wallets("wallets"), Mail("mail") }
 
 data class HomeUiState(
     val content: HomeContent = HomeContent.Loading,
@@ -19,4 +19,5 @@ data class HomeUiState(
     val gmailPendingNotifications: List<PaymentNotification> = emptyList(),
     val gmailMonitoring: Boolean = false,
     val gmailError: Boolean = false,
+    val guideStep: Int? = null,
 )

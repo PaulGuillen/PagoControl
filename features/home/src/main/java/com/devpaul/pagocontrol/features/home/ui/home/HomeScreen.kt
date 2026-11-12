@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ArrowDownward
@@ -31,9 +32,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -54,68 +62,118 @@ import com.devpaul.pagocontrol.domain.Movement
 @Composable
 fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit, onMovements: () -> Unit = {}, onProfile: () -> Unit = {}, onReports: () -> Unit = {}) {
     val mail = state.section == HomeSection.Mail
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { com.devpaul.pagocontrol.designsystem.PagoDock(false, {}, onMovements, onProfile = onProfile, onReports = onReports) },
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
-            LazyColumn(
-                modifier = Modifier.widthIn(max = 840.dp).fillMaxSize(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                item {
-                    com.devpaul.pagocontrol.designsystem.PagoHeader(stringResource(R.string.home_title), { onIntent(HomeUiIntent.Upcoming) })
-                }
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(stringResource(R.string.home_greeting, name), style = MaterialTheme.typography.headlineMedium)
-                        Text(text = stringResource(R.string.home_demo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    val listState = rememberLazyListState()
+    val ready = (if (mail) state.gmailContent else state.content) is HomeContent.Ready
+    val pendingCount = if (mail) state.gmailPendingNotifications.size else state.pendingNotifications.size
+    val guideTargets = remember(state.section) { mutableStateMapOf<Int, Rect>() }
+    val guiding = ready && state.guideStep != null
+    LaunchedEffect(state.section, state.guideStep, ready) {
+        if (ready && state.guideStep != null) {
+            val index = when (state.guideStep) {
+                0 -> 3
+                1 -> if (mail) 5 else 4
+                2 -> (if (mail) 6 else 5) + pendingCount
+                else -> (if (mail) 7 else 6) + pendingCount
+            }
+            listState.scrollToItem(index)
+        } else if (state.guideStep == null) {
+            listState.scrollToItem(0)
+        }
+    }
+    Box(Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = if (guiding) Modifier.clearAndSetSemantics {} else Modifier,
+            containerColor = MaterialTheme.colorScheme.background,
+            bottomBar = { com.devpaul.pagocontrol.designsystem.PagoDock(false, {}, onMovements, onProfile = onProfile, onReports = onReports) },
+        ) { padding ->
+            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.widthIn(max = 840.dp).fillMaxSize(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    item {
+                        com.devpaul.pagocontrol.designsystem.PagoHeader(stringResource(R.string.home_title), { onIntent(HomeUiIntent.Upcoming) })
                     }
-                }
-                item { HomeSectionTabs(section = state.section, onIntent = onIntent) }
-                when (val content = if (mail) state.gmailContent else state.content) {
-                    HomeContent.Loading -> item {
-                        Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(stringResource(R.string.home_greeting, name), style = MaterialTheme.typography.headlineMedium)
+                            Text(text = stringResource(R.string.home_demo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            TextButton(onClick = { onIntent(HomeUiIntent.ShowGuide) }) {
+                                Text(stringResource(R.string.home_guide_help))
+                            }
                         }
                     }
-                    HomeContent.Error -> item {
-                        PagoCard(Modifier.fillMaxWidth()) {
-                            Text(stringResource(R.string.home_error))
-                            Button(onClick = { onIntent(HomeUiIntent.Retry) }) { Text(stringResource(R.string.home_retry)) }
+                    item { HomeSectionTabs(section = state.section, onIntent = onIntent) }
+                    when (val content = if (mail) state.gmailContent else state.content) {
+                        HomeContent.Loading -> item {
+                            Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
                         }
-                    }
-                    is HomeContent.Ready -> {
-                        val dashboard = content.dashboard
-                        if (mail) {
-                            item { MailBalanceCard(dashboard) }
-                            item {
-                                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    MailSummaryCard(income = true, dashboard = dashboard, modifier = Modifier.weight(1f))
-                                    MailSummaryCard(income = false, dashboard = dashboard, modifier = Modifier.weight(1f))
+                        HomeContent.Error -> item {
+                            PagoCard(Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.home_error))
+                                Button(onClick = { onIntent(HomeUiIntent.Retry) }) { Text(stringResource(R.string.home_retry)) }
+                            }
+                        }
+                        is HomeContent.Ready -> {
+                            val dashboard = content.dashboard
+                            if (mail) {
+                                item {
+                                    Column(Modifier.onGloballyPositioned { guideTargets[0] = it.boundsInRoot() }) {
+                                        MailBalanceCard(dashboard)
+                                    }
+                                }
+                                item {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                        MailSummaryCard(income = true, dashboard = dashboard, modifier = Modifier.weight(1f))
+                                        MailSummaryCard(income = false, dashboard = dashboard, modifier = Modifier.weight(1f))
+                                    }
+                                }
+                                item {
+                                    Column(Modifier.onGloballyPositioned { guideTargets[1] = it.boundsInRoot() }) {
+                                        GmailMonitoringCard(state = state, onIntent = onIntent)
+                                    }
+                                }
+                            } else {
+                                item {
+                                    Column(Modifier.onGloballyPositioned { guideTargets[0] = it.boundsInRoot() }) {
+                                        ReceivedPaymentsCard(dashboard)
+                                    }
+                                }
+                                item {
+                                    Column(Modifier.onGloballyPositioned { guideTargets[1] = it.boundsInRoot() }) {
+                                        NotificationControls(state = state, onIntent = onIntent)
+                                    }
                                 }
                             }
-                            item { GmailMonitoringCard(state = state, onIntent = onIntent) }
-                        } else {
-                            item { ReceivedPaymentsCard(dashboard) }
-                            item { NotificationControls(state = state, onIntent = onIntent) }
+                            val pending = if (mail) state.gmailPendingNotifications else state.pendingNotifications
+                            items(items = pending, key = { "notification-${it.id}" }) { notification ->
+                                PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent, mail = mail)
+                            }
+                            item {
+                                Column(Modifier.onGloballyPositioned { guideTargets[2] = it.boundsInRoot() }) {
+                                    FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent)
+                                }
+                            }
+                            item {
+                                Column(Modifier.onGloballyPositioned { guideTargets[3] = it.boundsInRoot() }) {
+                                    Text(stringResource(if (mail) R.string.gmail_recent else R.string.home_recent), style = MaterialTheme.typography.headlineSmall)
+                                }
+                            }
+                            val movements = if (mail) dashboard.movements else dashboard.receivedMovements
+                            if (movements.isEmpty()) item { Text(stringResource(if (mail) R.string.gmail_empty else R.string.home_empty)) }
+                            items(items = movements, key = { it.id }) { MovementRow(it) }
+                            item { Spacer(Modifier.height(8.dp)) }
                         }
-                        val pending = if (mail) state.gmailPendingNotifications else state.pendingNotifications
-                        items(items = pending, key = { "notification-${it.id}" }) { notification ->
-                            PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent, mail = mail)
-                        }
-                        item { FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent) }
-                        item {
-                            Text(stringResource(if (mail) R.string.gmail_recent else R.string.home_recent), style = MaterialTheme.typography.headlineSmall)
-                        }
-                        val movements = if (mail) dashboard.movements else dashboard.receivedMovements
-                        if (movements.isEmpty()) item { Text(stringResource(if (mail) R.string.gmail_empty else R.string.home_empty)) }
-                        items(items = movements, key = { it.id }) { MovementRow(it) }
-                        item { Spacer(Modifier.height(8.dp)) }
                     }
                 }
             }
+        }
+        if (guiding) {
+            HomeGuideOverlay(state = state, target = guideTargets[state.guideStep], onIntent = onIntent)
         }
     }
     if (state.showUpcoming) {
