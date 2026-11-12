@@ -35,12 +35,19 @@ class EntryAppearanceTest {
     @get:Rule val compose = createComposeRule()
 
     @Test fun splashDark() = captureSplash(true)
+
     @Test fun splashLight() = captureSplash(false)
+
     @Test fun onboardingDark() = captureOnboarding(true)
+
     @Test fun onboardingLight() = captureOnboarding(false)
+
     @Test fun privacyDark() = captureOnboarding(dark = true, page = 1)
+
     @Test fun privacyLight() = captureOnboarding(dark = false, page = 1)
+
     @Test fun controlDark() = captureOnboarding(dark = true, page = 2)
+
     @Test fun controlLight() = captureOnboarding(dark = false, page = 2)
 
     @Test fun providerColorsSupportWhiteLabels() {

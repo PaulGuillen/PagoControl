@@ -85,6 +85,7 @@ internal fun ReportFlowCard(report: FinancialReport, selected: Int, onSelect: (I
     val colors = MaterialTheme.colorScheme
     val months = stringArrayResource(R.array.reports_short_months)
     val point = report.points.getOrElse(selected) { report.points.first() }
+
     fun pointLabel(number: Int): String = if (report.weekly) "Sem $number" else months[number - 1]
     ReportCard {
         Text(stringResource(if (report.weekly) R.string.reports_weekly_flow else R.string.reports_monthly_flow), style = MaterialTheme.typography.titleMedium)

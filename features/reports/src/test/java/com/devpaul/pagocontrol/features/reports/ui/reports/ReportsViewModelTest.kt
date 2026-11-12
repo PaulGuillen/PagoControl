@@ -18,7 +18,9 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReportsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun tearDown() { Dispatchers.resetMain() }
 
     @Test fun periodsAndPointSelectionStayWithinRange() {
@@ -76,6 +78,7 @@ class ReportsViewModelTest {
     private class MemoryExporter : ReportExporter {
         val exports = mutableListOf<ReportExport>()
         var fail = false
+
         override suspend fun write(uri: String, export: ReportExport) {
             if (fail) error("Cannot write document")
             exports += export

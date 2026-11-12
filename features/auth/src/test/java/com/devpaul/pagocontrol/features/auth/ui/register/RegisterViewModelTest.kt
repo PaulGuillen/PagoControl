@@ -16,8 +16,11 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class RegisterViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun teardown() { Dispatchers.resetMain() }
+
     @Test fun validatesConsentAndIgnoresDuplicateSubmit() = runTest {
         val repository = ControlledAuth()
         val handle = SavedStateHandle()
@@ -44,6 +47,7 @@ class RegisterViewModelTest {
     private class ControlledAuth : TestAuthRepository() {
         var calls = 0
         val response = CompletableDeferred<AuthUser>()
+
         override suspend fun register(name: String, email: String, password: String): AuthUser { calls++; return response.await() }
     }
 }

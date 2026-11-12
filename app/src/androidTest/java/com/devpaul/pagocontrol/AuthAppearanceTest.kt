@@ -34,10 +34,15 @@ class AuthAppearanceTest {
     @get:Rule val compose = createComposeRule()
 
     @Test fun loginDark() = captureLogin(true)
+
     @Test fun loginLight() = captureLogin(false)
+
     @Test fun registerDark() = captureRegister(true)
+
     @Test fun registerLight() = captureRegister(false)
+
     @Test fun recoveryDark() = captureRecovery(true)
+
     @Test fun recoveryLight() = captureRecovery(false)
 
     @Test fun providerButtonsKeepTheirInformationDialogs() {

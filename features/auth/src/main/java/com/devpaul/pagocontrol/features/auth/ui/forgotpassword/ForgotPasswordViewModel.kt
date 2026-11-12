@@ -28,6 +28,7 @@ class ForgotPasswordViewModel(
             ForgotPasswordUiIntent.ClearError -> updateState { it.copy(error = null) }
         }
     }
+
     private fun submit() {
         val email = state.value.email.trim()
         if (!email.matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))) {

@@ -23,7 +23,9 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun tearDown() { Dispatchers.resetMain() }
 
     @Test fun validatesAndSavesIdentityForCurrentUser() = runTest {
@@ -107,16 +109,20 @@ class ProfileViewModelTest {
         val preferences = MutableStateFlow(ProfilePreferences())
         var failWrites = false
         var lastUserId: String? = null
+
         override fun observe(userId: String) = preferences
+
         override suspend fun saveIdentity(userId: String, name: String, email: String) {
             if (failWrites) error("Unavailable")
             lastUserId = userId
             preferences.value = preferences.value.copy(name = name, email = email)
         }
+
         override suspend fun setNotifications(userId: String, enabled: Boolean) {
             if (failWrites) error("Unavailable")
             preferences.value = preferences.value.copy(notificationsEnabled = enabled)
         }
+
         override suspend fun saveRating(userId: String, stars: Int, comment: String) {
             if (failWrites) error("Unavailable")
             preferences.value = preferences.value.copy(rating = stars, ratingComment = comment)
@@ -127,7 +133,9 @@ class ProfileViewModelTest {
         override val isDemo = true
         override val session = MutableStateFlow<UserSession?>(UserSession("demo", "Carlos", ""))
         var signOutCount = 0
+
         override suspend fun signIn(email: String, password: String) = SignInResult.Success
+
         override suspend fun signOut() { signOutCount++; session.value = null }
     }
 }

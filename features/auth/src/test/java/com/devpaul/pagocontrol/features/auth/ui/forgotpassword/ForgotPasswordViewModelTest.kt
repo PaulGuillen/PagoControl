@@ -16,8 +16,11 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ForgotPasswordViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun teardown() { Dispatchers.resetMain() }
+
     @Test fun validatesEmailAndAllowsRetryAfterNetworkFailure() = runTest {
         val repository = ControlledAuth()
         val viewModel = ForgotPasswordViewModel(SendPasswordResetUseCase(repository), SavedStateHandle())
@@ -37,6 +40,7 @@ class ForgotPasswordViewModelTest {
     private class ControlledAuth : TestAuthRepository() {
         var calls = 0
         var fail = true
+
         override suspend fun sendPasswordReset(email: String) { calls++; if (fail) throw AuthException(AuthError.NETWORK) }
     }
 }

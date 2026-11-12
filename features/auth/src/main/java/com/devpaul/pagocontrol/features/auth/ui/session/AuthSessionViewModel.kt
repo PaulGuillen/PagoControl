@@ -19,7 +19,9 @@ class AuthSessionViewModel(
 ) : ViewModel() {
     val session = repository.session
     private var refreshJob: Job? = null
+
     fun isAuthenticated(): Boolean = getCurrentUser() != null
+
     fun refreshUser() {
         refreshJob?.cancel()
         if (!isAuthenticated()) return

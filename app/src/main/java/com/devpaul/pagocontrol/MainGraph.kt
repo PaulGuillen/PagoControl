@@ -48,7 +48,11 @@ import com.devpaul.pagocontrol.features.splash.splashGraph
 import com.devpaul.pagocontrol.features.onboarding.onboardingGraph
 
 @Composable
-fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: NavHostController = rememberNavController()) {
+fun MainGraph(
+    themeIndex: Int,
+    onThemeSelected: (Int) -> Unit,
+    navController: NavHostController = rememberNavController()
+) {
     val authSession: AuthSessionViewModel = koinViewModel()
     val signOut: SignOutUseCase = koinInject()
     val session by authSession.session.collectAsStateWithLifecycle()
@@ -68,7 +72,13 @@ fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: Na
     LaunchedEffect(session?.id) { authSession.refreshUser() }
     val controller = navController
     val context = LocalContext.current
-    val version = remember(context) { context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty() }
+    val version = remember(context) {
+        context.packageManager.getPackageInfo(
+            context.packageName,
+            0
+        ).versionName.orEmpty()
+    }
+
     fun navigateTab(route: GraphRoute) {
         controller.navigate(route) {
             popUpTo<HomeRoute.Home> { saveState = true }
@@ -76,6 +86,7 @@ fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: Na
             launchSingleTop = true
         }
     }
+
     var onboardingCompleted by rememberSaveable { mutableStateOf<Boolean?>(null) }
     val currentEntry by controller.currentBackStackEntryAsState()
     LaunchedEffect(currentEntry?.destination) {
@@ -120,7 +131,11 @@ fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: Na
             },
         )
     }
-    LaunchedEffect(key1 = session?.id, key2 = currentEntry?.destination, key3 = onboardingCompleted) {
+    LaunchedEffect(
+        key1 = session?.id,
+        key2 = currentEntry?.destination,
+        key3 = onboardingCompleted
+    ) {
         val destination = currentEntry?.destination ?: return@LaunchedEffect
         val splash = destination.hierarchy.any { it.hasRoute<SplashRoute.Graph>() }
         val onboarding = destination.hierarchy.any { it.hasRoute<OnboardingRoute.Graph>() }
@@ -131,7 +146,8 @@ fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: Na
                 launchSingleTop = true
             }
         } else if (!onboarding) {
-            val correct = destination.hierarchy.any { if (session == null) it.hasRoute<AuthRoute.Graph>() else it.hasRoute<HomeRoute.Graph>() || it.hasRoute<MovementsRoute.Graph>() || it.hasRoute<ProfileRoute.Graph>() || it.hasRoute<ReportsRoute.Graph>() }
+            val correct =
+                destination.hierarchy.any { if (session == null) it.hasRoute<AuthRoute.Graph>() else it.hasRoute<HomeRoute.Graph>() || it.hasRoute<MovementsRoute.Graph>() || it.hasRoute<ProfileRoute.Graph>() || it.hasRoute<ReportsRoute.Graph>() }
             if (!correct) {
                 controller.clearBackStack<MovementsRoute.Graph>()
                 controller.clearBackStack<ProfileRoute.Graph>()
@@ -154,10 +170,18 @@ fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: Na
         authGraph(
             themeIndex = themeIndex, onThemeSelected = onThemeSelected,
             onRegister = { controller.navigate(AuthRoute.Register) { launchSingleTop = true } },
-            onForgotPassword = { controller.navigate(AuthRoute.ForgotPassword) { launchSingleTop = true } },
+            onForgotPassword = {
+                controller.navigate(AuthRoute.ForgotPassword) {
+                    launchSingleTop = true
+                }
+            },
             onLogin = { controller.popBackStack<AuthRoute.Login>(inclusive = false) },
         )
-        homeGraph(name = userName, themeIndex = themeIndex, onThemeSelected = onThemeSelected, authorized = authenticated,
+        homeGraph(
+            name = userName,
+            themeIndex = themeIndex,
+            onThemeSelected = onThemeSelected,
+            authorized = authenticated,
             onMovements = { navigateTab(MovementsRoute.Graph) },
             onProfile = { navigateTab(ProfileRoute.Graph) },
             onReports = { navigateTab(ReportsRoute.Graph) },
@@ -169,7 +193,10 @@ fun MainGraph(themeIndex: Int, onThemeSelected: (Int) -> Unit, navController: Na
             onReports = { navigateTab(ReportsRoute.Graph) },
         )
         profileGraph(
-            authorized = authenticated, themeIndex = themeIndex, version = version, onThemeSelected = onThemeSelected,
+            authorized = authenticated,
+            themeIndex = themeIndex,
+            version = version,
+            onThemeSelected = onThemeSelected,
             onHome = { controller.popBackStack<HomeRoute.Home>(inclusive = false) },
             onMovements = { navigateTab(MovementsRoute.Graph) },
             onHelp = { controller.navigate(ProfileRoute.Help) { launchSingleTop = true } },

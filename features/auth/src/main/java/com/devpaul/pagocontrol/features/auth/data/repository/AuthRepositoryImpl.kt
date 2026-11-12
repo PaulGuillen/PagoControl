@@ -22,6 +22,7 @@ class AuthRepositoryImpl(
     private val attemptLimiter: AuthAttemptLimiter
 ) : AuthRepository {
     override fun currentUser(): AuthUser? = source.session.value?.toDomain()
+
     override suspend fun currentUserProfile(): AuthUser? =
         firebaseCall { source.refreshProfile()?.toDomain() }
 

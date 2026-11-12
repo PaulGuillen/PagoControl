@@ -4,6 +4,7 @@ import java.util.concurrent.CancellationException
 
 interface AnalyticsReporter {
     fun logEvent(name: String, parameters: Map<String, String>)
+
     fun recordError(operation: String, error: Throwable)
 }
 

@@ -13,7 +13,9 @@ import org.koin.android.annotation.KoinViewModel
 class SplashViewModel(private val preferences: StartupPreferences) : BaseViewModel<SplashUiState>(SplashUiState()) {
     private var loading = false
     init { load() }
+
     fun onIntent(intent: SplashUiIntent) { if (intent == SplashUiIntent.Retry) load() }
+
     private fun load() {
         if (loading) return
         loading = true

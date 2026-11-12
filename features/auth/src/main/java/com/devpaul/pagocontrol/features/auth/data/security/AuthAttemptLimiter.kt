@@ -14,6 +14,7 @@ enum class AuthAction {
 
 interface AuthAttemptStore {
     fun read(action: AuthAction): List<Long>
+
     fun write(action: AuthAction, attempts: List<Long>)
 }
 

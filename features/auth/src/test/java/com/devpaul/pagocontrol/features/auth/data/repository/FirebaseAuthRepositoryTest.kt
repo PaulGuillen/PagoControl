@@ -28,6 +28,7 @@ class FirebaseAuthRepositoryTest {
         repository.signOut()
         assertNull(repository.currentUser())
     }
+
     @Test fun preservesTypedFailuresAndCancellation() = runTest {
         val source = FakeSource()
         val repository = AuthRepositoryImpl(source, AuthAttemptLimiter(MemoryAttempts()))
@@ -39,6 +40,7 @@ class FirebaseAuthRepositoryTest {
         try { repository.signIn("paul@example.com", "password") } catch (_: CancellationException) { cancelled = true }
         assertTrue(cancelled)
     }
+
     @Test fun attemptLimitPersistsAcrossLimiterInstances() {
         val store = MemoryAttempts()
         val first = AuthAttemptLimiter(store)
@@ -51,7 +53,9 @@ class FirebaseAuthRepositoryTest {
     }
     private class MemoryAttempts : AuthAttemptStore {
         private val values = mutableMapOf<AuthAction, List<Long>>()
+
         override fun read(action: AuthAction) = values[action].orEmpty()
+
         override fun write(action: AuthAction, attempts: List<Long>) { values[action] = attempts }
     }
     private class FakeSource : AuthRemoteDataSource {
@@ -60,6 +64,7 @@ class FirebaseAuthRepositoryTest {
         var calls = 0
         var lastEmail = ""
         var lastPassword = ""
+
         override suspend fun signIn(email: String, password: String) {
             calls++
             failure?.let { throw it }
@@ -67,9 +72,13 @@ class FirebaseAuthRepositoryTest {
             lastPassword = password
             session.value = UserSession("uid", "Paul", email)
         }
+
         override suspend fun register(name: String, email: String, password: String) {}
+
         override suspend fun sendPasswordReset(email: String) {}
+
         override suspend fun updateName(name: String) {}
+
         override suspend fun signOut() { session.value = null }
     }
 }

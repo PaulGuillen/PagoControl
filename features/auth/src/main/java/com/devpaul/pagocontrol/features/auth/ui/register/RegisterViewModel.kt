@@ -37,6 +37,7 @@ class RegisterViewModel(
             RegisterUiIntent.ClearError -> updateState { it.copy(error = null, validationAttempted = false) }
         }
     }
+
     private fun submit() {
         val current = state.value
         val validEmail = current.email.trim().matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))

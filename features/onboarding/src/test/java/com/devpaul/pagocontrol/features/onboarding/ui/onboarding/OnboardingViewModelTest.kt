@@ -19,7 +19,9 @@ import org.junit.Assert.*
 @OptIn(ExperimentalCoroutinesApi::class)
 class OnboardingViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun teardown() { Dispatchers.resetMain() }
 
     @Test fun keepsPageAndRetriesPreferenceWrite() = runTest {
@@ -59,6 +61,7 @@ class OnboardingViewModelTest {
         override val onboardingCompleted = flowOf(false)
         var writes = 0
         var fail = true
+
         override suspend fun completeOnboarding() {
             writes++
             if (fail) throw IOException()

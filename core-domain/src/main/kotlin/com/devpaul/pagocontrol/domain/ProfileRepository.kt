@@ -12,7 +12,10 @@ data class ProfilePreferences(
 
 interface ProfileRepository {
     fun observe(userId: String): Flow<ProfilePreferences>
+
     suspend fun saveIdentity(userId: String, name: String, email: String)
+
     suspend fun setNotifications(userId: String, enabled: Boolean)
+
     suspend fun saveRating(userId: String, stars: Int, comment: String)
 }

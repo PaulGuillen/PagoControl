@@ -18,8 +18,11 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun teardown() { Dispatchers.resetMain() }
+
     @Test fun emptyFieldsNeverAuthenticate() = runTest {
         val repository = ControlledAuth()
         val viewModel = LoginViewModel(SignInUseCase(repository), SavedStateHandle())
@@ -29,6 +32,7 @@ class LoginViewModelTest {
         assertTrue(viewModel.state.value.passwordInvalid)
         assertEquals(0, repository.calls)
     }
+
     @Test fun duplicateSubmitIsIgnoredAndFailureCanRetryWithoutPersistingPassword() = runTest {
         val repository = ControlledAuth()
         val handle = SavedStateHandle()
@@ -53,6 +57,7 @@ class LoginViewModelTest {
     private class ControlledAuth : TestAuthRepository() {
         var calls = 0
         var response = CompletableDeferred<AuthUser>()
+
         override suspend fun signIn(email: String, password: String): AuthUser { calls++; return response.await() }
     }
 }

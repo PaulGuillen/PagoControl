@@ -13,5 +13,6 @@ class DataStoreStartupPreferences(context: Context) : StartupPreferences {
     private val store = context.applicationContext.startupStore
     private val completedKey = booleanPreferencesKey("onboarding_completed")
     override val onboardingCompleted = store.data.map { it[completedKey] ?: false }
+
     override suspend fun completeOnboarding() { store.edit { it[completedKey] = true } }
 }

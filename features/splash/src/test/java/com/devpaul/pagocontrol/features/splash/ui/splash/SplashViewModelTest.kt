@@ -18,7 +18,9 @@ import org.junit.Assert.*
 @OptIn(ExperimentalCoroutinesApi::class)
 class SplashViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
+
     @After fun teardown() { Dispatchers.resetMain() }
 
     @Test fun retriesStartupReadWithoutDiscardingPreference() = runTest {
@@ -40,6 +42,7 @@ class SplashViewModelTest {
             if (fail) throw IOException()
             emit(true)
         }
+
         override suspend fun completeOnboarding() = Unit
     }
 }

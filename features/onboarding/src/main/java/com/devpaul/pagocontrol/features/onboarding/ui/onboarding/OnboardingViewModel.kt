@@ -24,10 +24,12 @@ class OnboardingViewModel(
             is OnboardingUiIntent.Finish -> finish(intent.destination)
         }
     }
+
     private fun selectPage(page: Int) {
         savedStateHandle["page"] = page
         updateState { it.copy(page = page, failed = false) }
     }
+
     private fun finish(destination: OnboardingDestination) {
         updateState { it.copy(saving = true, failed = false) }
         viewModelScope.launch {
