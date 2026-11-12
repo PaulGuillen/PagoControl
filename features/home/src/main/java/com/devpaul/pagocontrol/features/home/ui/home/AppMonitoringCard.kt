@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -44,9 +45,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,10 +70,15 @@ private data class MonitoredApp(val packageName: String, val label: String, val 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -> Unit) {
+internal fun NotificationControls(
+    state: HomeUiState,
+    onIntent: (HomeUiIntent) -> Unit,
+    showApps: Boolean,
+    onShowAppsChange: (Boolean) -> Unit,
+    onAddPositioned: (Rect) -> Unit,
+) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    var showApps by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
     var apps by remember { mutableStateOf<List<MonitoredApp>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
@@ -112,9 +122,13 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
     val selectedApps = state.notificationSources.sorted().map { packageName ->
         apps.find { it.packageName == packageName } ?: MonitoredApp(packageName = packageName, label = packageName.substringAfterLast('.'))
     }
+    val appsListState = rememberLazyListState()
+    LaunchedEffect(showApps, state.guideStep, selectedApps.size) {
+        if (!showApps && state.guideStep == 1) appsListState.scrollToItem(selectedApps.size)
+    }
     PagoCard(Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth().clickable(role = Role.Button) { showApps = true },
+            modifier = Modifier.fillMaxWidth().clickable(role = Role.Button) { onShowAppsChange(true) },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -125,10 +139,10 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
             )
             Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null)
         }
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        LazyRow(state = appsListState, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(items = selectedApps, key = { it.packageName }) { app ->
                 Column(
-                    modifier = Modifier.width(72.dp).clickable(role = Role.Button) { showApps = true }.padding(vertical = 8.dp),
+                    modifier = Modifier.width(72.dp).clickable(role = Role.Button) { onShowAppsChange(true) }.padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -138,7 +152,9 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
             }
             item {
                 Column(
-                    modifier = Modifier.width(72.dp).clickable(role = Role.Button) { showApps = true }.padding(vertical = 8.dp),
+                    modifier = Modifier.width(72.dp)
+                        .onGloballyPositioned { onAddPositioned(it.boundsInRoot()) }
+                        .clickable(role = Role.Button) { onShowAppsChange(true) }.padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -158,7 +174,7 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
         }
     }
     if (showApps) ModalBottomSheet(
-        onDismissRequest = { showApps = false },
+        onDismissRequest = { onShowAppsChange(false) },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
         Column(
@@ -184,7 +200,7 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
                 items(items = filteredApps, key = { it.packageName }) { app ->
                     val selected = app.packageName in state.notificationSources
                     Row(
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp).testTag("monitored-app-${app.packageName}")
                             .toggleable(value = selected, enabled = !state.savingNotification, role = Role.Checkbox) {
                                 onIntent(HomeUiIntent.SetNotificationSource(packageName = app.packageName, enabled = it))
                             }.padding(vertical = 8.dp),
@@ -198,7 +214,7 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
                 }
             }
             Text(stringResource(R.string.notifications_gmail_separate), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Button(onClick = { showApps = false }, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+            Button(onClick = { onShowAppsChange(false) }, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
                 Text(stringResource(R.string.notifications_done))
             }
         }

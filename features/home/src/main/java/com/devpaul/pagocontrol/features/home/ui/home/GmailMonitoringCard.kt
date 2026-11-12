@@ -36,7 +36,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-internal fun GmailMonitoringCard(state: HomeUiState, onIntent: (HomeUiIntent) -> Unit, access: Boolean) {
+internal fun GmailMonitoringCard(
+    state: HomeUiState,
+    onIntent: (HomeUiIntent) -> Unit,
+    access: Boolean,
+    switchModifier: Modifier = Modifier,
+    onSwitchEnabled: (Boolean) -> Unit = {},
+) {
     val context = LocalContext.current
     var installed by remember { mutableStateOf<Boolean?>(null) }
     var icon by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -56,6 +62,7 @@ internal fun GmailMonitoringCard(state: HomeUiState, onIntent: (HomeUiIntent) ->
         else -> R.string.gmail_paused
     }
     val switchEnabled = installed == true && !state.savingNotification
+    LaunchedEffect(switchEnabled) { onSwitchEnabled(switchEnabled) }
     PagoCard(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             val gmailIcon = icon
@@ -70,7 +77,7 @@ internal fun GmailMonitoringCard(state: HomeUiState, onIntent: (HomeUiIntent) ->
                 checked = state.gmailMonitoring,
                 onCheckedChange = { onIntent(HomeUiIntent.SetGmailMonitoring(it)) },
                 enabled = switchEnabled,
-                modifier = Modifier.semantics { contentDescription = monitoringLabel },
+                modifier = switchModifier.semantics { contentDescription = monitoringLabel },
             )
         }
         Text(stringResource(R.string.gmail_capture_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

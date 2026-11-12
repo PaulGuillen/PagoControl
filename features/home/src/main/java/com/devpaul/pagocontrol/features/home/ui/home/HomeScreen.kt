@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ArrowDownward
@@ -40,6 +42,8 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,7 +86,29 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
     val ready = (if (mail) state.gmailContent else state.content) is HomeContent.Ready
     val pendingCount = if (mail) state.gmailPendingNotifications.size else state.pendingNotifications.size
     val guideTargets = remember(state.section, notificationAccessGranted) { mutableStateMapOf<Int, Rect>() }
-    val guiding = ready && state.guideStep != null
+    val actionTargets = remember(state.section, notificationAccessGranted) { mutableStateMapOf<String, Rect>() }
+    val accessButtonRequester = remember { BringIntoViewRequester() }
+    var showApps by rememberSaveable { mutableStateOf(false) }
+    var gmailSwitchEnabled by remember(state.section) { mutableStateOf(false) }
+    val guiding = ready && state.guideStep != null && !showApps
+    val guideAction = when {
+        state.guideStep == 0 && !notificationAccessGranted -> actionTargets["access"]?.let {
+            HomeGuideAction(bounds = it, label = stringResource(R.string.notifications_access), onClick = activateAccess)
+        }
+        state.guideStep == 1 && mail -> actionTargets["gmail"]?.let {
+            HomeGuideAction(
+                bounds = it,
+                label = stringResource(R.string.gmail_switch),
+                enabled = gmailSwitchEnabled,
+                checked = state.gmailMonitoring,
+                onClick = { onIntent(HomeUiIntent.SetGmailMonitoring(!state.gmailMonitoring)) },
+            )
+        }
+        state.guideStep == 1 -> actionTargets["wallet"]?.let {
+            HomeGuideAction(bounds = it, label = stringResource(R.string.notifications_add_apps), onClick = { showApps = true })
+        }
+        else -> null
+    }
     LaunchedEffect(state.section, state.guideStep, ready, notificationAccessGranted) {
         if (ready && state.guideStep != null) {
             val index = when (state.guideStep) {
@@ -92,6 +118,10 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                 else -> (if (mail) 7 else 6) + pendingCount + if (notificationAccessGranted) 0 else 1
             }
             listState.scrollToItem(index)
+            if (state.guideStep == 0 && !notificationAccessGranted) {
+                withFrameNanos { }
+                accessButtonRequester.bringIntoView()
+            }
         } else if (state.guideStep == null) {
             listState.scrollToItem(0)
         }
@@ -127,6 +157,8 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                                 NotificationAccessCard(
                                     settingsFailed = settingsFailed,
                                     onActivate = activateAccess,
+                                    actionModifier = Modifier.bringIntoViewRequester(accessButtonRequester)
+                                        .onGloballyPositioned { actionTargets["access"] = it.boundsInRoot() },
                                 )
                             }
                         }
@@ -160,7 +192,13 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                                 }
                                 item {
                                     Column(Modifier.onGloballyPositioned { guideTargets[1] = it.boundsInRoot() }) {
-                                        GmailMonitoringCard(state = state, onIntent = onIntent, access = notificationAccessGranted)
+                                        GmailMonitoringCard(
+                                            state = state,
+                                            onIntent = onIntent,
+                                            access = notificationAccessGranted,
+                                            switchModifier = Modifier.onGloballyPositioned { actionTargets["gmail"] = it.boundsInRoot() },
+                                            onSwitchEnabled = { gmailSwitchEnabled = it },
+                                        )
                                     }
                                 }
                             } else {
@@ -171,7 +209,13 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                                 }
                                 item {
                                     Column(Modifier.onGloballyPositioned { guideTargets[1] = it.boundsInRoot() }) {
-                                        NotificationControls(state = state, onIntent = onIntent)
+                                        NotificationControls(
+                                            state = state,
+                                            onIntent = onIntent,
+                                            showApps = showApps,
+                                            onShowAppsChange = { showApps = it },
+                                            onAddPositioned = { actionTargets["wallet"] = it },
+                                        )
                                     }
                                 }
                             }
@@ -201,10 +245,11 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
         if (guiding) {
             HomeGuideOverlay(
                 state = state,
-                target = guideTargets[state.guideStep],
+                target = guideAction?.bounds ?: guideTargets[state.guideStep],
                 onIntent = onIntent,
                 permissionStep = !notificationAccessGranted && state.guideStep == 0,
                 settingsFailed = settingsFailed,
+                action = guideAction,
             )
         }
     }

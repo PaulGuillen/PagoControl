@@ -2,6 +2,8 @@ package com.devpaul.pagocontrol.features.home.ui.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +41,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
@@ -47,6 +51,14 @@ import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.features.home.R
 import kotlin.math.roundToInt
 
+internal data class HomeGuideAction(
+    val bounds: Rect,
+    val label: String,
+    val enabled: Boolean = true,
+    val checked: Boolean? = null,
+    val onClick: () -> Unit,
+)
+
 @Composable
 internal fun HomeGuideOverlay(
     state: HomeUiState,
@@ -54,6 +66,7 @@ internal fun HomeGuideOverlay(
     onIntent: (HomeUiIntent) -> Unit,
     permissionStep: Boolean = false,
     settingsFailed: Boolean = false,
+    action: HomeGuideAction? = null,
 ) {
     val step = state.guideStep ?: return
     val titles = stringArrayResource(R.array.home_guide_titles)
@@ -89,6 +102,32 @@ internal fun HomeGuideOverlay(
                     cornerRadius = CornerRadius(16.dp.toPx()),
                     style = Stroke(width = 3.dp.toPx()),
                 )
+            }
+        }
+        if (action != null) {
+            Layout(
+                modifier = Modifier.fillMaxSize(),
+                content = {
+                    val interaction = if (action.checked != null) {
+                        Modifier.toggleable(value = action.checked, enabled = action.enabled, role = Role.Switch) { action.onClick() }
+                    } else {
+                        Modifier.clickable(enabled = action.enabled, role = Role.Button, onClick = action.onClick)
+                    }
+                    Box(
+                        Modifier.testTag("home-guide-action").semantics { contentDescription = action.label }
+                            .then(interaction),
+                    )
+                },
+            ) { measurables, constraints ->
+                val viewport = Rect(0f, 0f, constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+                val bounds = action.bounds.translate(-origin).intersect(viewport)
+                val control = measurables.single().measure(Constraints.fixed(
+                    width = bounds.width.roundToInt().coerceAtLeast(0),
+                    height = bounds.height.roundToInt().coerceAtLeast(0),
+                ))
+                layout(constraints.maxWidth, constraints.maxHeight) {
+                    control.place(x = bounds.left.roundToInt(), y = bounds.top.roundToInt())
+                }
             }
         }
         Layout(

@@ -68,7 +68,7 @@ class HomeGuideUiTest {
         compose.onNodeWithText("Guía de Inicio · 2 de 4").assertIsDisplayed()
         compose.onNodeWithText("Activa Monitorear Gmail.", substring = true).assertIsDisplayed()
         saveImage("gmail-monitoring-overlay")
-        compose.onNodeWithContentDescription("Monitorear Gmail").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Monitorear Gmail").assertExists()
         compose.onNodeWithText("Elegir apps a monitorear").assertDoesNotExist()
         compose.onNodeWithText("Cancelar").performClick()
         compose.onNodeWithTag("home-guide-overlay").assertDoesNotExist()
