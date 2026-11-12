@@ -15,4 +15,8 @@ data class HomeUiState(
     val notificationError: Boolean = false,
     val savingNotification: Boolean = false,
     val section: HomeSection = HomeSection.Wallets,
+    val gmailContent: HomeContent = HomeContent.Loading,
+    val gmailPendingNotifications: List<PaymentNotification> = emptyList(),
+    val gmailMonitoring: Boolean = false,
+    val gmailError: Boolean = false,
 )

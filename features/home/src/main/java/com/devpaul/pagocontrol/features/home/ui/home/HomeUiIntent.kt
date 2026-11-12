@@ -9,6 +9,7 @@ sealed interface HomeUiIntent {
     data object DismissUpcoming : HomeUiIntent
     data object SignOut : HomeUiIntent
     data class SetNotificationSource(val packageName: String, val enabled: Boolean) : HomeUiIntent
-    data class ConfirmPayment(val id: String, val amountCents: Long) : HomeUiIntent
-    data class DiscardNotification(val id: String) : HomeUiIntent
+    data class ConfirmPayment(val id: String, val amountCents: Long, val mail: Boolean = false) : HomeUiIntent
+    data class DiscardNotification(val id: String, val mail: Boolean = false) : HomeUiIntent
+    data class SetGmailMonitoring(val enabled: Boolean) : HomeUiIntent
 }

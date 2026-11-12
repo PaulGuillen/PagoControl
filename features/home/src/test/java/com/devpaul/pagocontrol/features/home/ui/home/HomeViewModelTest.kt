@@ -4,6 +4,7 @@ import com.devpaul.pagocontrol.session.AuthRepository
 import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
+import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
 import com.devpaul.pagocontrol.session.SignInResult
@@ -32,7 +33,7 @@ class HomeViewModelTest {
 
     @Test fun retriesFailureAndDisplaysEmptyDashboard() = runTest {
         val repository = ControlledHome()
-        val viewModel = HomeViewModel(home = repository, auth = DemoSession(), notifications = ControlledNotifications())
+        val viewModel = HomeViewModel(home = repository, auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail())
         advanceUntilIdle()
         assertEquals(HomeContent.Error, viewModel.state.value.content)
         repository.result = DashboardResult.Success(Dashboard(balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0, weeklyFlow = emptyList(), monthlyFlow = emptyList(), movements = emptyList()))
@@ -46,7 +47,7 @@ class HomeViewModelTest {
 
     @Test fun logoutIsNotDuplicated() = runTest {
         val auth = DemoSession()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = auth, notifications = ControlledNotifications())
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = auth, notifications = ControlledNotifications(), gmail = ControlledGmail())
         viewModel.onIntent(HomeUiIntent.SignOut)
         viewModel.onIntent(HomeUiIntent.SignOut)
         advanceUntilIdle()
@@ -62,7 +63,7 @@ class HomeViewModelTest {
 
     @Test fun observesNotificationsAndPersistsReviewActions() = runTest {
         val notifications = ControlledNotifications()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = notifications)
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = notifications, gmail = ControlledGmail())
         advanceUntilIdle()
         notifications.pending.value = listOf(PaymentNotification(
             id = "payment", packageName = "test.bank", source = "Banco", title = "Pago",
@@ -74,6 +75,38 @@ class HomeViewModelTest {
         advanceUntilIdle()
         assertEquals("payment" to 2500L, notifications.confirmed)
         assertTrue(viewModel.state.value.pendingNotifications.isEmpty())
+    }
+
+    @Test fun keepsGmailMonitoringAndErrorsIndependentFromWallets() = runTest {
+        val gmail = ControlledGmail()
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = gmail)
+        advanceUntilIdle()
+        viewModel.onIntent(HomeUiIntent.SetGmailMonitoring(true))
+        advanceUntilIdle()
+        assertTrue(viewModel.state.value.gmailMonitoring)
+        assertTrue(viewModel.state.value.notificationSources.isEmpty())
+        gmail.fail = true
+        viewModel.onIntent(HomeUiIntent.SetGmailMonitoring(false))
+        advanceUntilIdle()
+        assertTrue(viewModel.state.value.gmailError)
+        assertEquals(false, viewModel.state.value.notificationError)
+        assertEquals(false, viewModel.state.value.savingNotification)
+    }
+
+    private class ControlledGmail : GmailMonitoringRepository {
+        val enabled = MutableStateFlow(false)
+        var fail = false
+
+        override fun observeGmailDashboard() = MutableStateFlow<DashboardResult>(DashboardResult.Unavailable)
+
+        override fun observeGmailPending() = MutableStateFlow<List<PaymentNotification>>(emptyList())
+
+        override fun observeGmailEnabled() = enabled
+
+        override suspend fun setGmailEnabled(enabled: Boolean) {
+            if (fail) error("Gmail storage unavailable")
+            this.enabled.value = enabled
+        }
     }
 
     private class ControlledNotifications : PaymentNotificationRepository {

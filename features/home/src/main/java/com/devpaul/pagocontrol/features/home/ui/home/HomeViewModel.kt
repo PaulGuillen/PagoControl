@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.devpaul.pagocontrol.session.AuthRepository
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
+import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.CancellationException
@@ -16,17 +17,19 @@ class HomeViewModel(
     private val home: HomeRepository,
     private val auth: AuthRepository,
     private val notifications: PaymentNotificationRepository,
+    private val gmail: GmailMonitoringRepository,
 ) : BaseViewModel<HomeUiState>(HomeUiState()) {
     private var dashboardJob: Job? = null
     private var pendingJob: Job? = null
     private var sourcesJob: Job? = null
+    private var gmailJobs: List<Job> = emptyList()
 
-    init { load(); observeNotifications() }
+    init { load(); observeNotifications(); observeGmail() }
 
     fun onIntent(intent: HomeUiIntent) {
         when (intent) {
             is HomeUiIntent.SelectSection -> updateState { it.copy(section = intent.section) }
-            HomeUiIntent.Retry -> { load(); observeNotifications() }
+            HomeUiIntent.Retry -> { load(); observeNotifications(); observeGmail() }
             is HomeUiIntent.SelectPeriod -> updateState {
                 it.copy(monthly = intent.monthly, selectedBar = if (intent.monthly) 0 else 5)
             }
@@ -40,10 +43,11 @@ class HomeViewModel(
             is HomeUiIntent.SetNotificationSource -> saveNotification {
                 notifications.setSource(intent.packageName, intent.enabled)
             }
-            is HomeUiIntent.ConfirmPayment -> saveNotification {
+            is HomeUiIntent.ConfirmPayment -> saveNotification(mail = intent.mail) {
                 notifications.confirm(intent.id, intent.amountCents)
             }
-            is HomeUiIntent.DiscardNotification -> saveNotification { notifications.discard(intent.id) }
+            is HomeUiIntent.DiscardNotification -> saveNotification(mail = intent.mail) { notifications.discard(intent.id) }
+            is HomeUiIntent.SetGmailMonitoring -> saveNotification(mail = true) { gmail.setGmailEnabled(intent.enabled) }
         }
     }
 
@@ -92,16 +96,47 @@ class HomeViewModel(
         }
     }
 
-    private fun saveNotification(operation: suspend () -> Unit) {
+    private fun observeGmail() {
+        gmailJobs.forEach { it.cancel() }
+        updateState { it.copy(gmailError = false) }
+        gmailJobs = listOf(
+            observeGmailFlow {
+                gmail.observeGmailDashboard().collect { result ->
+                    updateState { it.copy(gmailContent = when (result) {
+                        is DashboardResult.Success -> HomeContent.Ready(result.dashboard)
+                        else -> HomeContent.Error
+                    }) }
+                }
+            },
+            observeGmailFlow {
+                gmail.observeGmailPending().collect { pending -> updateState { it.copy(gmailPendingNotifications = pending) } }
+            },
+            observeGmailFlow {
+                gmail.observeGmailEnabled().collect { enabled -> updateState { it.copy(gmailMonitoring = enabled) } }
+            },
+        )
+    }
+
+    private fun observeGmailFlow(operation: suspend () -> Unit): Job = viewModelScope.launch {
+        try {
+            operation()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            updateState { it.copy(gmailError = true, gmailContent = HomeContent.Error) }
+        }
+    }
+
+    private fun saveNotification(mail: Boolean = false, operation: suspend () -> Unit) {
         if (state.value.savingNotification) return
-        updateState { it.copy(savingNotification = true, notificationError = false) }
+        updateState { it.copy(savingNotification = true, notificationError = if (mail) it.notificationError else false, gmailError = if (mail) false else it.gmailError) }
         viewModelScope.launch {
             try {
                 operation()
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
-                updateState { it.copy(notificationError = true) }
+                updateState { if (mail) it.copy(gmailError = true) else it.copy(notificationError = true) }
             } finally {
                 updateState { it.copy(savingNotification = false) }
             }

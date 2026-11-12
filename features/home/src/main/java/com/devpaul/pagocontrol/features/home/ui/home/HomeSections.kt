@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.features.home.R
-import com.devpaul.pagocontrol.designsystem.PagoCard
 
 @Composable
 internal fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> Unit) {
@@ -52,14 +51,5 @@ internal fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> U
                 }
             }
         }
-    }
-}
-
-@Composable
-internal fun MailTransactionsCard() {
-    PagoCard(Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.home_mail_title), style = MaterialTheme.typography.headlineSmall)
-        Text(stringResource(R.string.home_mail_description), style = MaterialTheme.typography.bodyMedium)
-        Text(stringResource(R.string.home_mail_status), style = MaterialTheme.typography.labelLarge)
     }
 }

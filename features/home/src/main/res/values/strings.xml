@@ -12,6 +12,23 @@
     <string name="home_empty">Todavía no hay cobros registrados.</string>
     <string name="home_wallets_tab">Billeteras digitales</string>
     <string name="home_mail_tab">Correo</string>
+    <string name="gmail_name">Gmail</string>
+    <string name="gmail_balance">BALANCE REGISTRADO</string>
+    <string name="gmail_balance_hint">Solo transacciones confirmadas por correo · No es tu saldo bancario</string>
+    <string name="gmail_income">Ingresos</string>
+    <string name="gmail_expense">Egresos</string>
+    <string name="gmail_expense_count">%1$d pagos este mes</string>
+    <string name="gmail_monitoring">Monitoreando Gmail</string>
+    <string name="gmail_paused">Monitoreo desactivado</string>
+    <string name="gmail_permission_pending">Falta activar el acceso a notificaciones</string>
+    <string name="gmail_not_installed">Gmail no está instalado o está deshabilitado</string>
+    <string name="gmail_switch">Monitorear Gmail</string>
+    <string name="gmail_capture_hint">Pagos, cobros y transferencias de nuevas notificaciones. Revisa los avisos antes de registrarlos. No se consulta tu historial de correos.</string>
+    <string name="gmail_pending_count">%1$d avisos de Gmail por revisar</string>
+    <string name="gmail_recent">Transacciones recientes</string>
+    <string name="gmail_empty">Todavía no hay transacciones registradas desde Gmail.</string>
+    <string name="gmail_confirm_expense">Confirmar egreso</string>
+    <string name="gmail_review_hint">Verifica el comprobante, el importe en soles y si el dinero entró o salió. Una transferencia recibida es ingreso y una enviada es egreso. Descarta promociones, recordatorios y mensajes repetidos. El texto de la notificación puede estar incompleto.</string>
     <string name="home_error">No pudimos cargar tu resumen.</string>
     <string name="home_retry">Reintentar</string>
     <string name="home_upcoming_title">Próximamente</string>
@@ -29,7 +46,7 @@
     <string name="notifications_choose_apps">Elegir apps</string>
     <string name="notifications_add_apps">Añadir</string>
     <string name="notifications_search_apps">Buscar apps</string>
-    <string name="notifications_gmail_separate">El flujo de Gmail se implementa por separado.</string>
+    <string name="notifications_gmail_separate">Activa Gmail desde la pestaña Correo. Su monitoreo es independiente.</string>
     <string name="notifications_pending_count">%1$d notificaciones pendientes de revisión</string>
     <string name="notifications_error">No pudimos leer o guardar las notificaciones. Puedes reintentar.</string>
     <string name="notifications_apps_error">No pudimos cargar las apps. Cierra y vuelve a abrir esta lista.</string>
@@ -42,7 +59,4 @@
     <string name="notifications_amount">Importe en S/</string>
     <string name="notifications_income">Confirmar ingreso</string>
     <string name="notifications_cancel">Cancelar</string>
-    <string name="home_mail_title">Transacciones por correo</string>
-    <string name="home_mail_description">Pagos, cobros y transferencias de Gmail.</string>
-    <string name="home_mail_status">Gmail pendiente de implementar</string>
 </resources>

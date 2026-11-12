@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,6 +53,7 @@ import com.devpaul.pagocontrol.domain.Movement
 
 @Composable
 fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit, onMovements: () -> Unit = {}, onProfile: () -> Unit = {}, onReports: () -> Unit = {}) {
+    val mail = state.section == HomeSection.Mail
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { com.devpaul.pagocontrol.designsystem.PagoDock(false, {}, onMovements, onProfile = onProfile, onReports = onReports) },
@@ -71,9 +74,7 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                     }
                 }
                 item { HomeSectionTabs(section = state.section, onIntent = onIntent) }
-                if (state.section == HomeSection.Mail) {
-                    item { MailTransactionsCard() }
-                } else when (val content = state.content) {
+                when (val content = if (mail) state.gmailContent else state.content) {
                     HomeContent.Loading -> item {
                         Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
@@ -87,18 +88,29 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                     }
                     is HomeContent.Ready -> {
                         val dashboard = content.dashboard
-                        item { ReceivedPaymentsCard(dashboard) }
-                        item { NotificationControls(state = state, onIntent = onIntent) }
-                        val pending = state.pendingNotifications
+                        if (mail) {
+                            item { MailBalanceCard(dashboard) }
+                            item {
+                                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    MailSummaryCard(income = true, dashboard = dashboard, modifier = Modifier.weight(1f))
+                                    MailSummaryCard(income = false, dashboard = dashboard, modifier = Modifier.weight(1f))
+                                }
+                            }
+                            item { GmailMonitoringCard(state = state, onIntent = onIntent) }
+                        } else {
+                            item { ReceivedPaymentsCard(dashboard) }
+                            item { NotificationControls(state = state, onIntent = onIntent) }
+                        }
+                        val pending = if (mail) state.gmailPendingNotifications else state.pendingNotifications
                         items(items = pending, key = { "notification-${it.id}" }) { notification ->
-                            PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent)
+                            PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent, mail = mail)
                         }
                         item { FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent) }
                         item {
-                            Text(stringResource(R.string.home_recent), style = MaterialTheme.typography.headlineSmall)
+                            Text(stringResource(if (mail) R.string.gmail_recent else R.string.home_recent), style = MaterialTheme.typography.headlineSmall)
                         }
-                        val movements = dashboard.receivedMovements
-                        if (movements.isEmpty()) item { Text(stringResource(R.string.home_empty)) }
+                        val movements = if (mail) dashboard.movements else dashboard.receivedMovements
+                        if (movements.isEmpty()) item { Text(stringResource(if (mail) R.string.gmail_empty else R.string.home_empty)) }
                         items(items = movements, key = { it.id }) { MovementRow(it) }
                         item { Spacer(Modifier.height(8.dp)) }
                     }
@@ -117,6 +129,30 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun MailBalanceCard(dashboard: Dashboard) {
+    Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
+        Column(modifier = Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text(stringResource(R.string.gmail_balance), style = MaterialTheme.typography.labelLarge)
+            Text(formatSoles(dashboard.balanceCents), style = MaterialTheme.typography.displaySmall)
+            Text(stringResource(R.string.gmail_balance_hint), style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+@Composable
+private fun MailSummaryCard(income: Boolean, dashboard: Dashboard, modifier: Modifier) {
+    val tint = if (income) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
+    val amount = if (income) dashboard.incomeCents else -dashboard.expenseCents
+    val count = if (income) dashboard.incomeCount else dashboard.expenseCount
+    PagoCard(modifier) {
+        Icon(imageVector = if (income) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward, contentDescription = null, tint = tint)
+        Text(stringResource(if (income) R.string.gmail_income else R.string.gmail_expense), style = MaterialTheme.typography.bodySmall)
+        Text(text = formatSoles(amount, signed = true), color = tint, style = MaterialTheme.typography.titleMedium)
+        Text(text = stringResource(if (income) R.string.home_income_count else R.string.gmail_expense_count, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

@@ -31,7 +31,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-internal fun PendingNotificationCard(notification: PaymentNotification, saving: Boolean, onIntent: (HomeUiIntent) -> Unit) {
+internal fun PendingNotificationCard(notification: PaymentNotification, saving: Boolean, onIntent: (HomeUiIntent) -> Unit, mail: Boolean = false) {
     var reviewing by rememberSaveable(notification.id) { mutableStateOf(false) }
     var amount by rememberSaveable(notification.id) {
         mutableStateOf(notification.suggestedAmountCents?.let { BigDecimal.valueOf(it, 2).toPlainString() }.orEmpty())
@@ -45,7 +45,7 @@ internal fun PendingNotificationCard(notification: PaymentNotification, saving: 
         Text(notification.text, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(enabled = !saving, onClick = { reviewing = true }) { Text(stringResource(R.string.notifications_review)) }
-            TextButton(enabled = !saving, onClick = { onIntent(HomeUiIntent.DiscardNotification(id = notification.id)) }) {
+            TextButton(enabled = !saving, onClick = { onIntent(HomeUiIntent.DiscardNotification(id = notification.id, mail = mail)) }) {
                 Text(stringResource(R.string.notifications_discard))
             }
         }
@@ -55,7 +55,7 @@ internal fun PendingNotificationCard(notification: PaymentNotification, saving: 
         title = { Text(stringResource(R.string.notifications_review)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(stringResource(R.string.notifications_review_hint))
+                Text(stringResource(if (mail) R.string.gmail_review_hint else R.string.notifications_review_hint))
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
@@ -66,9 +66,13 @@ internal fun PendingNotificationCard(notification: PaymentNotification, saving: 
                 )
                 val cents = PaymentAmount.parse(amount)
                 Button(enabled = cents != null && !saving, onClick = {
-                    cents?.let { onIntent(HomeUiIntent.ConfirmPayment(id = notification.id, amountCents = it)) }
+                    cents?.let { onIntent(HomeUiIntent.ConfirmPayment(id = notification.id, amountCents = it, mail = mail)) }
                     reviewing = false
                 }) { Text(stringResource(R.string.notifications_income)) }
+                if (mail) Button(enabled = cents != null && !saving, onClick = {
+                    cents?.let { onIntent(HomeUiIntent.ConfirmPayment(id = notification.id, amountCents = -it, mail = true)) }
+                    reviewing = false
+                }) { Text(stringResource(R.string.gmail_confirm_expense)) }
             }
         },
         confirmButton = { TextButton(onClick = { reviewing = false }) { Text(stringResource(R.string.notifications_cancel)) } },

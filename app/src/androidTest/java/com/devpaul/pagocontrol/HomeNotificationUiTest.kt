@@ -35,6 +35,9 @@ class HomeNotificationUiTest {
         var state by mutableStateOf(HomeUiState(content = HomeContent.Ready(Dashboard(
             balanceCents = 2000, incomeCents = 2500, expenseCents = 500, incomeCount = 1, expenseCount = 1,
             weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = emptyList(),
+        )), gmailContent = HomeContent.Ready(Dashboard(
+            balanceCents = 7000, incomeCents = 10000, expenseCents = 3000, incomeCount = 1, expenseCount = 1,
+            weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = emptyList(),
         ))))
         compose.setContent {
             PagoControlTheme(false) {
@@ -49,12 +52,42 @@ class HomeNotificationUiTest {
         compose.onNodeWithText("S/ 25.00").assertIsDisplayed()
         compose.onNodeWithText("Egresos").assertDoesNotExist()
         compose.onNodeWithText("Correo").performClick()
-        compose.onNodeWithText("Gmail pendiente de implementar").assertIsDisplayed()
+        compose.onNodeWithText("BALANCE REGISTRADO").assertIsDisplayed()
+        compose.onNodeWithText("Ingresos").assertIsDisplayed()
+        compose.onNodeWithText("Egresos").assertIsDisplayed()
+        compose.onNodeWithText("S/ 70.00").assertIsDisplayed()
         compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").assertDoesNotExist()
         compose.onNodeWithText("Elegir apps a monitorear").assertDoesNotExist()
         compose.onNodeWithText("Billeteras digitales").performClick()
         compose.onNodeWithText("S/ 25.00").assertIsDisplayed()
         assertEquals(HomeSection.Wallets, state.section)
+    }
+
+    @Test fun reviewsGmailPaymentsAsExpensesWithoutChangingWallets() {
+        val intents = mutableListOf<HomeUiIntent>()
+        val state = HomeUiState(
+            section = HomeSection.Mail,
+            gmailContent = HomeContent.Ready(Dashboard(
+                balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0,
+                weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = emptyList(),
+            )),
+            gmailPendingNotifications = listOf(PaymentNotification(
+                id = "gmail-payment", packageName = "com.google.android.gm", source = "Gmail",
+                title = "Banco", text = "Pago realizado por S/ 25.00", postedAt = 1, suggestedAmountCents = 2500,
+            )),
+        )
+        compose.setContent {
+            PagoControlTheme(false) {
+                HomeScreen(state = state, name = "Prueba", onIntent = { intents.add(it) }, themeIndex = 1, onThemeSelected = {})
+            }
+        }
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
+            .performScrollToNode(hasText("Revisar movimiento"))
+        compose.onNodeWithText("Revisar movimiento").performClick()
+        compose.onNodeWithText("Confirmar egreso").performClick()
+        compose.runOnIdle {
+            assertEquals(listOf(HomeUiIntent.ConfirmPayment(id = "gmail-payment", amountCents = -2500, mail = true)), intents)
+        }
     }
 
     @Test fun requiresExplicitReviewBeforeConfirmingAnIncome() {
