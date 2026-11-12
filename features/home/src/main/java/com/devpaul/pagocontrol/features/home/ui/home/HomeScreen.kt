@@ -1,5 +1,7 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
+import android.content.Intent
+import android.provider.Settings
 import com.devpaul.pagocontrol.features.home.R
 
 import androidx.compose.foundation.background
@@ -35,6 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,20 +66,30 @@ import com.devpaul.pagocontrol.domain.Movement
 
 
 @Composable
-fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit, onMovements: () -> Unit = {}, onProfile: () -> Unit = {}, onReports: () -> Unit = {}) {
+fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit, onMovements: () -> Unit = {}, onProfile: () -> Unit = {}, onReports: () -> Unit = {}, notificationAccessGranted: Boolean = rememberNotificationAccess()) {
+    val context = LocalContext.current
+    var settingsFailed by remember { mutableStateOf(false) }
+    val activateAccess: () -> Unit = {
+        settingsFailed = runCatching { context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }.isFailure
+    }
+    var previousAccess by remember { mutableStateOf(notificationAccessGranted) }
+    LaunchedEffect(notificationAccessGranted) {
+        if (notificationAccessGranted && !previousAccess && state.guideStep == 0) onIntent(HomeUiIntent.NextGuideStep)
+        previousAccess = notificationAccessGranted
+    }
     val mail = state.section == HomeSection.Mail
     val listState = rememberLazyListState()
     val ready = (if (mail) state.gmailContent else state.content) is HomeContent.Ready
     val pendingCount = if (mail) state.gmailPendingNotifications.size else state.pendingNotifications.size
-    val guideTargets = remember(state.section) { mutableStateMapOf<Int, Rect>() }
+    val guideTargets = remember(state.section, notificationAccessGranted) { mutableStateMapOf<Int, Rect>() }
     val guiding = ready && state.guideStep != null
-    LaunchedEffect(state.section, state.guideStep, ready) {
+    LaunchedEffect(state.section, state.guideStep, ready, notificationAccessGranted) {
         if (ready && state.guideStep != null) {
             val index = when (state.guideStep) {
-                0 -> 3
-                1 -> if (mail) 5 else 4
-                2 -> (if (mail) 6 else 5) + pendingCount
-                else -> (if (mail) 7 else 6) + pendingCount
+                0 -> if (notificationAccessGranted) 3 else 2
+                1 -> (if (mail) 5 else 4) + if (notificationAccessGranted) 0 else 1
+                2 -> (if (mail) 6 else 5) + pendingCount + if (notificationAccessGranted) 0 else 1
+                else -> (if (mail) 7 else 6) + pendingCount + if (notificationAccessGranted) 0 else 1
             }
             listState.scrollToItem(index)
         } else if (state.guideStep == null) {
@@ -105,6 +121,16 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                             }
                         }
                     }
+                    if (!notificationAccessGranted) {
+                        item(key = "notification-access") {
+                            Column(Modifier.onGloballyPositioned { guideTargets[0] = it.boundsInRoot() }) {
+                                NotificationAccessCard(
+                                    settingsFailed = settingsFailed,
+                                    onActivate = activateAccess,
+                                )
+                            }
+                        }
+                    }
                     item { HomeSectionTabs(section = state.section, onIntent = onIntent) }
                     when (val content = if (mail) state.gmailContent else state.content) {
                         HomeContent.Loading -> item {
@@ -122,7 +148,7 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                             val dashboard = content.dashboard
                             if (mail) {
                                 item {
-                                    Column(Modifier.onGloballyPositioned { guideTargets[0] = it.boundsInRoot() }) {
+                                    Column(Modifier.onGloballyPositioned { if (notificationAccessGranted) guideTargets[0] = it.boundsInRoot() }) {
                                         MailBalanceCard(dashboard)
                                     }
                                 }
@@ -134,12 +160,12 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                                 }
                                 item {
                                     Column(Modifier.onGloballyPositioned { guideTargets[1] = it.boundsInRoot() }) {
-                                        GmailMonitoringCard(state = state, onIntent = onIntent)
+                                        GmailMonitoringCard(state = state, onIntent = onIntent, access = notificationAccessGranted)
                                     }
                                 }
                             } else {
                                 item {
-                                    Column(Modifier.onGloballyPositioned { guideTargets[0] = it.boundsInRoot() }) {
+                                    Column(Modifier.onGloballyPositioned { if (notificationAccessGranted) guideTargets[0] = it.boundsInRoot() }) {
                                         ReceivedPaymentsCard(dashboard)
                                     }
                                 }
@@ -173,7 +199,13 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
             }
         }
         if (guiding) {
-            HomeGuideOverlay(state = state, target = guideTargets[state.guideStep], onIntent = onIntent)
+            HomeGuideOverlay(
+                state = state,
+                target = guideTargets[state.guideStep],
+                onIntent = onIntent,
+                permissionStep = !notificationAccessGranted && state.guideStep == 0,
+                settingsFailed = settingsFailed,
+            )
         }
     }
     if (state.showUpcoming) {

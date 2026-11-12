@@ -1,7 +1,6 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
 import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +21,8 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -52,7 +51,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -70,17 +68,14 @@ private data class MonitoredApp(val packageName: String, val label: String, val 
 internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -> Unit) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    var enabled by remember { mutableStateOf(false) }
     var showApps by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
     var apps by remember { mutableStateOf<List<MonitoredApp>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var appsFailed by remember { mutableStateOf(false) }
-    var settingsFailed by remember { mutableStateOf(false) }
     var refreshToken by remember { mutableIntStateOf(0) }
     DisposableEffect(owner, context) {
         fun refresh() {
-            enabled = NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
             refreshToken++
         }
         refresh()
@@ -154,13 +149,6 @@ internal fun NotificationControls(state: HomeUiState, onIntent: (HomeUiIntent) -
                 }
             }
         }
-        if (!enabled) {
-            Text(stringResource(R.string.notifications_disabled), style = MaterialTheme.typography.bodySmall)
-            Button(onClick = {
-                settingsFailed = runCatching { context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }.isFailure
-            }) { Text(stringResource(R.string.notifications_access)) }
-        }
-        if (settingsFailed) Text(stringResource(R.string.notifications_settings_error), color = MaterialTheme.colorScheme.error)
         if (state.pendingNotifications.isNotEmpty()) {
             Text(stringResource(R.string.notifications_pending_count, state.pendingNotifications.size), style = MaterialTheme.typography.labelMedium)
         }

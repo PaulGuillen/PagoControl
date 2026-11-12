@@ -13,13 +13,13 @@
     </string-array>
     <string-array name="home_guide_wallets">
         <item>Consulta tus cobros del mes. No es tu saldo bancario; Correo lleva un registro separado.</item>
-        <item>Toca Añadir y elige tu billetera. En Activar monitoreo, permite el acceso de PagoControl. Tu billetera también debe mostrar notificaciones.</item>
+        <item>Toca Añadir y elige tu billetera. Asegúrate de que esa app muestre notificaciones.</item>
         <item>Elige Semana o Mes y toca una barra para ver cuánto recibiste.</item>
         <item>Aquí aparecen tus cobros guardados. Si un aviso queda pendiente, toca Revisar movimiento. Solo se capturan notificaciones nuevas.</item>
     </string-array>
     <string-array name="home_guide_mail">
         <item>Consulta ingresos y egresos confirmados desde Gmail, separados de tus billeteras. El balance no es tu saldo bancario.</item>
-        <item>Activa Monitorear Gmail. En Activar monitoreo, permite el acceso de PagoControl. Habilita también las notificaciones de comprobantes en Gmail.</item>
+        <item>Activa Monitorear Gmail. Habilita también las notificaciones de comprobantes en Gmail.</item>
         <item>Toca una barra para ver tus cobros por Semana o Mes. Los pagos de salida aparecen en Egresos.</item>
         <item>Toca Revisar movimiento y confirma ingreso o egreso. Descarta duplicados. Solo se capturan notificaciones nuevas, no correos antiguos.</item>
     </string-array>
@@ -66,7 +66,11 @@
     <string-array name="home_weeks"><item>1–7</item><item>8–14</item><item>15–21</item><item>22–28</item><item>29–31</item></string-array>
     <string name="notifications_title">Elegir apps a monitorear</string>
     <string name="notifications_disabled">Habilita el acceso para recibir nuevas notificaciones</string>
-    <string name="notifications_access">Activar monitoreo</string>
+    <string name="notifications_access">Activar acceso</string>
+    <string name="notifications_access_title">Activa el acceso a notificaciones</string>
+    <string name="notifications_access_description">Primer paso: permite que PagoControl detecte nuevos movimientos de las apps que elijas.</string>
+    <string name="notifications_access_privacy">Android concede acceso amplio. Tú eliges qué billeteras o Gmail monitorear; los registros quedan en este teléfono.</string>
+    <string name="notifications_access_guide">Primero, habilita PagoControl en los ajustes de Android. Después podrás elegir tus billeteras o activar Gmail.</string>
     <string name="notifications_choose_apps">Elegir apps</string>
     <string name="notifications_add_apps">Añadir</string>
     <string name="notifications_search_apps">Buscar apps</string>

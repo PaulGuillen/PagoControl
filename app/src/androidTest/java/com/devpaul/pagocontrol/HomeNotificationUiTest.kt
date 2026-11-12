@@ -44,7 +44,7 @@ class HomeNotificationUiTest {
                 HomeScreen(
                     state = state, name = "Prueba",
                     onIntent = { intent -> if (intent is HomeUiIntent.SelectSection) state = state.copy(section = intent.section) },
-                    themeIndex = 1, onThemeSelected = {},
+                    themeIndex = 1, onThemeSelected = {}, notificationAccessGranted = true,
                 )
             }
         }
@@ -78,7 +78,7 @@ class HomeNotificationUiTest {
         )
         compose.setContent {
             PagoControlTheme(false) {
-                HomeScreen(state = state, name = "Prueba", onIntent = { intents.add(it) }, themeIndex = 1, onThemeSelected = {})
+                HomeScreen(state = state, name = "Prueba", onIntent = { intents.add(it) }, themeIndex = 1, onThemeSelected = {}, notificationAccessGranted = true)
             }
         }
         compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
@@ -105,7 +105,7 @@ class HomeNotificationUiTest {
         )
         compose.setContent {
             PagoControlTheme(false) {
-                HomeScreen(state = state, name = "Prueba", onIntent = { intents.add(it) }, themeIndex = 1, onThemeSelected = {})
+                HomeScreen(state = state, name = "Prueba", onIntent = { intents.add(it) }, themeIndex = 1, onThemeSelected = {}, notificationAccessGranted = true)
             }
         }
         assertTrue(intents.isEmpty())

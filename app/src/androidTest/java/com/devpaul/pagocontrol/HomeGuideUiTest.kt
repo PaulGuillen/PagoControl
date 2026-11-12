@@ -121,6 +121,7 @@ class HomeGuideUiTest {
                             },
                             themeIndex = 1,
                             onThemeSelected = {},
+                            notificationAccessGranted = true,
                         )
                     }
                 }

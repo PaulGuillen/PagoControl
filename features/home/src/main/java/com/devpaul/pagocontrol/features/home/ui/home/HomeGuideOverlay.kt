@@ -48,7 +48,13 @@ import com.devpaul.pagocontrol.features.home.R
 import kotlin.math.roundToInt
 
 @Composable
-internal fun HomeGuideOverlay(state: HomeUiState, target: Rect?, onIntent: (HomeUiIntent) -> Unit) {
+internal fun HomeGuideOverlay(
+    state: HomeUiState,
+    target: Rect?,
+    onIntent: (HomeUiIntent) -> Unit,
+    permissionStep: Boolean = false,
+    settingsFailed: Boolean = false,
+) {
     val step = state.guideStep ?: return
     val titles = stringArrayResource(R.array.home_guide_titles)
     val descriptions = stringArrayResource(
@@ -97,9 +103,18 @@ internal fun HomeGuideOverlay(state: HomeUiState, target: Rect?, onIntent: (Home
                 ) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(progress, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(titles[step], style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = if (permissionStep) stringResource(R.string.notifications_access_title) else titles[step],
+                            style = MaterialTheme.typography.titleMedium,
+                        )
                         Column(Modifier.weight(1f, fill = false).verticalScroll(descriptionScroll)) {
-                            Text(descriptions[step], style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                text = if (permissionStep) stringResource(R.string.notifications_access_guide) else descriptions[step],
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            if (permissionStep && settingsFailed) {
+                                Text(stringResource(R.string.notifications_settings_error), color = MaterialTheme.colorScheme.error)
+                            }
                         }
                         FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             TextButton(onClick = { onIntent(HomeUiIntent.DismissGuide) }) {
