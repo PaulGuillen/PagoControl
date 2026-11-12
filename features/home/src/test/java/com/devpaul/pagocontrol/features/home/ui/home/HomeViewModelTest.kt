@@ -42,7 +42,9 @@ class HomeViewModelTest {
         assertTrue(viewModel.state.value.content is HomeContent.Ready)
         viewModel.onIntent(HomeUiIntent.SelectPeriod(true))
         viewModel.onIntent(HomeUiIntent.SelectBar(6))
-        assertEquals(0, viewModel.state.value.selectedBar)
+        assertEquals(currentChartBar(monthly = true), viewModel.state.value.selectedBar)
+        viewModel.onIntent(HomeUiIntent.SelectPeriod(false))
+        assertEquals(currentChartBar(monthly = false), viewModel.state.value.selectedBar)
     }
 
     @Test fun logoutIsNotDuplicated() = runTest {
@@ -91,6 +93,13 @@ class HomeViewModelTest {
         assertTrue(viewModel.state.value.gmailError)
         assertEquals(false, viewModel.state.value.notificationError)
         assertEquals(false, viewModel.state.value.savingNotification)
+    }
+
+    @Test fun refreshingSameDatePreservesManualBarSelection() = runTest {
+        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail())
+        viewModel.onIntent(HomeUiIntent.SelectBar(0))
+        viewModel.onIntent(HomeUiIntent.RefreshDate)
+        assertEquals(0, viewModel.state.value.selectedBar)
     }
 
     private class ControlledGmail : GmailMonitoringRepository {

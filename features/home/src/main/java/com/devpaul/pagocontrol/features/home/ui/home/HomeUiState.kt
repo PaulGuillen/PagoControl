@@ -7,7 +7,7 @@ enum class HomeSection { Wallets, Mail }
 data class HomeUiState(
     val content: HomeContent = HomeContent.Loading,
     val monthly: Boolean = false,
-    val selectedBar: Int = 5,
+    val selectedBar: Int = currentChartBar(monthly = false),
     val showUpcoming: Boolean = false,
     val signingOut: Boolean = false,
     val pendingNotifications: List<PaymentNotification> = emptyList(),

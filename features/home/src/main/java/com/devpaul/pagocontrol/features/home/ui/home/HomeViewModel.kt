@@ -19,6 +19,7 @@ class HomeViewModel(
     private val notifications: PaymentNotificationRepository,
     private val gmail: GmailMonitoringRepository,
 ) : BaseViewModel<HomeUiState>(HomeUiState()) {
+    private var chartDate = currentChartDate()
     private var dashboardJob: Job? = null
     private var pendingJob: Job? = null
     private var sourcesJob: Job? = null
@@ -28,10 +29,17 @@ class HomeViewModel(
 
     fun onIntent(intent: HomeUiIntent) {
         when (intent) {
+            HomeUiIntent.RefreshDate -> {
+                val today = currentChartDate()
+                if (today != chartDate) {
+                    chartDate = today
+                    updateState { it.copy(selectedBar = currentChartBar(it.monthly)) }
+                }
+            }
             is HomeUiIntent.SelectSection -> updateState { it.copy(section = intent.section) }
             HomeUiIntent.Retry -> { load(); observeNotifications(); observeGmail() }
             is HomeUiIntent.SelectPeriod -> updateState {
-                it.copy(monthly = intent.monthly, selectedBar = if (intent.monthly) 0 else 5)
+                it.copy(monthly = intent.monthly, selectedBar = currentChartBar(intent.monthly))
             }
             is HomeUiIntent.SelectBar -> {
                 val count = if (state.value.monthly) 5 else 7
