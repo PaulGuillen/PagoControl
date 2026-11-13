@@ -8,6 +8,7 @@ import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.GmailTransactionCandidate
+import com.devpaul.pagocontrol.domain.WalletTransactionCandidate
 import com.devpaul.pagocontrol.domain.Movement
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
@@ -28,7 +29,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
     override fun observeDashboard() = dao.observeConfirmed().map { dashboard(it) }
 
     override fun observePending() = dao.observePending().map { rows ->
-        rows.map { it.toNotification() }
+        rows.map { it.toNotification() }.filter(WalletTransactionCandidate::matches)
     }
 
     override fun observeSources() = dao.observeSources().map { sources -> sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }.toSet() }
@@ -57,6 +58,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
     }
 
     override suspend fun capture(notification: PaymentNotification) {
+        if (notification.packageName != GmailTransactionCandidate.PACKAGE_NAME && !WalletTransactionCandidate.matches(notification)) return
         if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && !AutomaticGmailPayment.isCandidate(notification)) return
         val automaticPayment = AutomaticYapePayment.recognize(notification)
         val automaticMail = AutomaticGmailPayment.recognize(notification)
@@ -64,7 +66,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
         dao.captureIfEnabled(NotificationEntity(
             id = notification.id, packageName = notification.packageName, source = notification.source,
             title = notification.title, text = notification.text, postedAt = notification.postedAt,
-            suggestedAmountCents = if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME) AutomaticGmailPayment.suggestedAmount(notification) else notification.suggestedAmountCents,
+            suggestedAmountCents = if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME) AutomaticGmailPayment.suggestedAmount(notification) else WalletTransactionCandidate.suggestedAmount(notification),
             amountCents = automaticAmount,
             status = if (automaticAmount != null) "automatic" else "pending",
         ))
