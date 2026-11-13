@@ -79,7 +79,7 @@ internal fun NotificationControls(
 ) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    var query by rememberSaveable { mutableStateOf("") }
+    var query by rememberSaveable(showApps) { mutableStateOf("") }
     var apps by remember { mutableStateOf<List<MonitoredApp>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var appsFailed by remember { mutableStateOf(false) }
