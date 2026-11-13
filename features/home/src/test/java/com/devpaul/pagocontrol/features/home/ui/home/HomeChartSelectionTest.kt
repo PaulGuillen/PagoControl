@@ -12,7 +12,7 @@ class HomeChartSelectionTest {
         val date = date(day = 12)
         assertEquals(Calendar.THURSDAY, date.get(Calendar.DAY_OF_WEEK))
         assertEquals(3, currentChartBar(monthly = false, date = date))
-        assertEquals(1, currentChartBar(monthly = true, date = date))
+        assertEquals(Calendar.NOVEMBER, currentChartBar(monthly = true, date = date))
     }
 
     @Test fun weekStartsOnMondayAndEndsOnSunday() {
@@ -20,9 +20,12 @@ class HomeChartSelectionTest {
         assertEquals(6, currentChartBar(monthly = false, date = date(day = 15)))
     }
 
-    @Test fun monthUsesTheSameSevenDayBucketsAsTheDashboard() {
-        listOf(1 to 0, 7 to 0, 8 to 1, 14 to 1, 15 to 2, 21 to 2, 22 to 3, 28 to 3, 29 to 4, 30 to 4).forEach { (day, expected) ->
-            assertEquals(expected, currentChartBar(monthly = true, date = date(day)))
+    @Test fun monthlySelectionUsesCalendarMonthRegardlessOfDay() {
+        for (month in Calendar.JANUARY..Calendar.DECEMBER) {
+            listOf(1, 14, 28).forEach { day ->
+                val calendar = date(day).apply { set(Calendar.MONTH, month) }
+                assertEquals(month, currentChartBar(monthly = true, date = calendar))
+            }
         }
     }
 

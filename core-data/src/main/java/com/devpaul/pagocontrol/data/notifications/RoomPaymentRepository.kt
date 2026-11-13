@@ -92,9 +92,9 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
             add(Calendar.DAY_OF_MONTH, -((get(Calendar.DAY_OF_WEEK) + 5) % 7))
         }
         val weekly = MutableList(7) { 0L }
-        val monthly = MutableList(5) { 0L }
+        val monthly = MutableList(12) { 0L }
         val weeklyIncome = MutableList(7) { 0L }
-        val monthlyIncome = MutableList(5) { 0L }
+        val monthlyIncome = MutableList(12) { 0L }
         rows.forEach { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
             val end = (weekStart.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 7) }
@@ -104,10 +104,13 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
                 weeklyIncome[index] += (row.amountCents ?: 0).coerceAtLeast(0)
             }
         }
-        monthRows.forEach { row ->
+        rows.forEach { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
-            monthly[(date.get(Calendar.DAY_OF_MONTH) - 1) / 7] += row.amountCents ?: 0
-            monthlyIncome[(date.get(Calendar.DAY_OF_MONTH) - 1) / 7] += (row.amountCents ?: 0).coerceAtLeast(0)
+            if (date.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
+                val index = date.get(Calendar.MONTH)
+                monthly[index] += row.amountCents ?: 0
+                monthlyIncome[index] += (row.amountCents ?: 0).coerceAtLeast(0)
+            }
         }
         val formatter = SimpleDateFormat("dd MMM, HH:mm", Locale.forLanguageTag("es-PE"))
         return DashboardResult.Success(Dashboard(

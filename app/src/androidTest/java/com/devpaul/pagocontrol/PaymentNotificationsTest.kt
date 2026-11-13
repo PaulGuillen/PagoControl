@@ -16,6 +16,27 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PaymentNotificationsTest {
+    @Test fun monthlyChartGroupsCurrentYearByMonthAndExcludesPriorYears() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            suspend fun insert(id: String, targetYear: Int, month: Int, amount: Long) {
+                val time = java.util.Calendar.getInstance().apply { clear(); set(targetYear, month, 14, 12, 0) }.timeInMillis
+                database.notifications().insert(NotificationEntity(id, "com.google.android.gm", "Gmail", "Banco", "Operacion", time, null, amount, "confirmed"))
+            }
+            insert("january", year, 0, 10000)
+            insert("november", year, 10, -656)
+            insert("prior-year", year - 1, 0, 50000)
+            val dashboard = RoomPaymentRepository(database).observeGmailDashboard().first().dashboard
+            assertEquals(12, dashboard.monthlyFlow.size)
+            assertEquals(10000L, dashboard.monthlyFlow[0])
+            assertEquals(-656L, dashboard.monthlyFlow[10])
+            assertEquals(10000L, dashboard.monthlyIncomeFlow.sum())
+            assertEquals(9344L, dashboard.monthlyFlow.sum())
+        } finally { database.close() }
+    }
+
     @Test fun keepsUnknownExistingGmailPendingUntilConfirmed() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()

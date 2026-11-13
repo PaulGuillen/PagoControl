@@ -261,7 +261,7 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                             }
                             item {
                                 Column(Modifier.onGloballyPositioned { guideTargets[2] = it.boundsInRoot() }) {
-                                    FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent)
+                                    FlowCard(dashboard = dashboard, monthly = state.monthly, selected = state.selectedBar, onIntent = onIntent, mail = mail)
                                 }
                             }
                             item {
@@ -367,11 +367,20 @@ private fun ReceivedPaymentsCard(dashboard: Dashboard) {
 }
 
 @Composable
-private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIntent: (HomeUiIntent) -> Unit) {
+private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIntent: (HomeUiIntent) -> Unit, mail: Boolean = false) {
     val values = if (monthly) dashboard.monthlyIncomeFlow else dashboard.weeklyIncomeFlow
-    val labels = stringArrayResource(if (monthly) R.array.home_weeks else R.array.home_days)
+    val netValues = if (monthly) dashboard.monthlyFlow else dashboard.weeklyFlow
+    val expenses = values.mapIndexed { index, income -> (income - netValues.getOrElse(index) { 0L }).coerceAtLeast(0) }
+    val incomeLabel = stringResource(R.string.gmail_income)
+    val expenseLabel = stringResource(R.string.gmail_expense)
+    val labels = stringArrayResource(if (monthly) R.array.home_months else R.array.home_days)
+    val monthScroll = rememberScrollState()
+    val monthCellWidth = with(LocalDensity.current) { 56.dp.roundToPx() }
+    LaunchedEffect(monthly, selected) {
+        if (monthly) monthScroll.animateScrollTo((selected - 2).coerceAtLeast(0) * monthCellWidth)
+    }
     PagoCard(Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.home_flow), style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(if (mail) R.string.gmail_flow else R.string.home_flow), style = MaterialTheme.typography.headlineSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(false, true).forEach { isMonthly ->
                 Surface(
@@ -385,17 +394,25 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                 }
             }
         }
-        Text(
-            text = "${labels.getOrElse(selected) { "" }} · ${formatSoles(values.getOrElse(selected) { 0 }, signed = true)}",
-            style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary,
-        )
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
-            val maximum = (values.maxOfOrNull { kotlin.math.abs(it) } ?: 1L).coerceAtLeast(1L)
+        if (monthly) Text(stringResource(R.string.home_chart_year, java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)), style = MaterialTheme.typography.labelMedium)
+        if (mail) {
+            Text(labels.getOrElse(selected) { "" }, style = MaterialTheme.typography.labelMedium)
+            Text("$incomeLabel: ${formatSoles(values.getOrElse(selected) { 0L })}", color = MaterialTheme.colorScheme.secondary, style = MaterialTheme.typography.labelMedium)
+            Text("$expenseLabel: ${formatSoles(expenses.getOrElse(selected) { 0L })}", color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.labelMedium)
+        } else {
+            Text(
+                text = "${labels.getOrElse(selected) { "" }} \u00b7 ${formatSoles(values.getOrElse(selected) { 0 }, signed = true)}",
+                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary,
+            )
+        }
+        Row(modifier = if (monthly) Modifier.fillMaxWidth().horizontalScroll(monthScroll) else Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
+            val maximum = ((values + if (mail) expenses else emptyList()).maxOrNull() ?: 1L).coerceAtLeast(1L)
             values.forEachIndexed { index, amount ->
                 val label = labels.getOrElse(index) { "" }
-                val description = "$label: ${formatSoles(amount)}"
+                val expense = expenses.getOrElse(index) { 0L }
+                val description = if (mail) "$label: $incomeLabel ${formatSoles(amount)}, $expenseLabel ${formatSoles(expense)}" else "$label: ${formatSoles(amount)}"
                 Column(
-                    modifier = Modifier.weight(1f).clip(MaterialTheme.shapes.small)
+                    modifier = (if (monthly) Modifier.width(48.dp) else Modifier.weight(1f)).clip(MaterialTheme.shapes.small)
                         .clickable(role = Role.Button) { onIntent(HomeUiIntent.SelectBar(index)) }
                         .semantics(mergeDescendants = true) {
                             contentDescription = description
@@ -405,14 +422,24 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.BottomCenter) {
-                        Box(
-                            Modifier.fillMaxWidth(0.8f).height((24 + 96 * kotlin.math.abs(amount).toFloat() / maximum).dp)
-                                .clip(MaterialTheme.shapes.small)
-                                .background(if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh),
-                        )
+                    if (mail) {
+                        Row(Modifier.fillMaxWidth().height(120.dp), horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.Bottom) {
+                            Box(Modifier.weight(1f).height((120 * amount.toFloat() / maximum).dp)
+                                .clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.secondary))
+                            Box(Modifier.weight(1f).height((120 * expense.toFloat() / maximum).dp)
+                                .clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.tertiary))
+                        }
+                    } else {
+                        Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.BottomCenter) {
+                            Box(
+                                Modifier.fillMaxWidth(0.8f).height((24 + 96 * kotlin.math.abs(amount).toFloat() / maximum).dp)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .background(if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh),
+                            )
+                        }
                     }
-                    Text(label, style = MaterialTheme.typography.labelSmall)
+                    Text(label, style = MaterialTheme.typography.labelSmall,
+                        color = if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

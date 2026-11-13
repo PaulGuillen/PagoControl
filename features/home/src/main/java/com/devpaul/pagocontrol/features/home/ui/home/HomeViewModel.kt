@@ -71,7 +71,7 @@ class HomeViewModel(
                 it.copy(monthly = intent.monthly, selectedBar = currentChartBar(intent.monthly))
             }
             is HomeUiIntent.SelectBar -> {
-                val count = if (state.value.monthly) 5 else 7
+                val count = if (state.value.monthly) 12 else 7
                 if (intent.index in 0 until count) updateState { it.copy(selectedBar = intent.index) }
             }
             HomeUiIntent.Upcoming -> updateState { it.copy(showUpcoming = true) }

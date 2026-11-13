@@ -33,6 +33,34 @@ import org.junit.runner.RunWith
 class HomeNotificationUiTest {
     @get:Rule val compose = createComposeRule()
 
+    @Test fun mailChartShowsExpensesAndUpdatesForWeeklyAndMonthlyChanges() {
+        val initial = Dashboard(
+            balanceCents = -656, incomeCents = 0, expenseCents = 656, incomeCount = 0, expenseCount = 1,
+            weeklyFlow = listOf(-656, 0, 0, 0, 0, 0, 0), monthlyFlow = listOf(-656, 0, 0, 0, 0),
+            weeklyIncomeFlow = List(7) { 0 }, monthlyIncomeFlow = List(5) { 0 }, movements = emptyList(),
+        )
+        var state by mutableStateOf(HomeUiState(section = HomeSection.Mail, gmailContent = HomeContent.Ready(initial), selectedBar = 0))
+        compose.setContent {
+            PagoControlTheme(false) {
+                HomeScreen(state, "Prueba", { intent ->
+                    if (intent is HomeUiIntent.SelectPeriod) state = state.copy(monthly = intent.monthly, selectedBar = 0)
+                }, 1, {}, notificationAccessGranted = true)
+            }
+        }
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
+            .performScrollToNode(hasText("Ingresos y egresos por semana / mes"))
+        compose.onNodeWithText("Egresos: S/ 6.56").assertIsDisplayed()
+        compose.runOnIdle {
+            state = state.copy(gmailContent = HomeContent.Ready(initial.copy(
+                weeklyFlow = listOf(-900, 0, 0, 0, 0, 0, 0), monthlyFlow = listOf(-1250, 0, 0, 0, 0),
+            )))
+        }
+        compose.onNodeWithText("Egresos: S/ 9.00").assertIsDisplayed()
+        compose.onNodeWithText("Mes").performClick()
+        compose.onNodeWithText("Egresos: S/ 12.50").assertIsDisplayed()
+        compose.onNodeWithText("Ingresos: S/ 0.00").assertIsDisplayed()
+    }
+
     @Test fun mailReviewOpensSeparateScreenAndMessageOnlyInDialog() {
         val intents = mutableListOf<HomeUiIntent>()
         val state = HomeUiState(

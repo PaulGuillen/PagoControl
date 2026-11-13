@@ -42,8 +42,10 @@ class HomeViewModelTest {
         advanceUntilIdle()
         assertTrue(viewModel.state.value.content is HomeContent.Ready)
         viewModel.onIntent(HomeUiIntent.SelectPeriod(true))
-        viewModel.onIntent(HomeUiIntent.SelectBar(6))
-        assertEquals(currentChartBar(monthly = true), viewModel.state.value.selectedBar)
+        viewModel.onIntent(HomeUiIntent.SelectBar(11))
+        assertEquals(11, viewModel.state.value.selectedBar)
+        viewModel.onIntent(HomeUiIntent.SelectBar(12))
+        assertEquals(11, viewModel.state.value.selectedBar)
         viewModel.onIntent(HomeUiIntent.SelectPeriod(false))
         assertEquals(currentChartBar(monthly = false), viewModel.state.value.selectedBar)
     }
