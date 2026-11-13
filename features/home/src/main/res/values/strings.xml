@@ -21,7 +21,7 @@
         <item>Consulta ingresos y egresos confirmados desde Gmail, separados de tus billeteras. El balance no es tu saldo bancario.</item>
         <item>Activa Monitorear Gmail. Habilita también las notificaciones de comprobantes en Gmail.</item>
         <item>Toca una barra para ver tus cobros por Semana o Mes. Los pagos de salida aparecen en Egresos.</item>
-        <item>Toca Revisar movimiento y confirma ingreso o egreso. Descarta duplicados. Solo se capturan notificaciones nuevas, no correos antiguos.</item>
+        <item>Los movimientos detectados en Gmail con importe en soles se registran automáticamente. Puedes eliminarlos desde la lista; el resumen se actualiza al confirmar. Solo se capturan notificaciones nuevas, no correos antiguos.</item>
     </string-array>
     <string name="home_title">Inicio</string>
     <string name="home_sign_out">Cerrar sesión</string>
@@ -47,7 +47,11 @@
     <string name="gmail_permission_pending">Falta activar el acceso a notificaciones</string>
     <string name="gmail_not_installed">Gmail no está instalado o está deshabilitado</string>
     <string name="gmail_switch">Monitorear Gmail</string>
-    <string name="gmail_capture_hint">Pagos, cobros y transferencias de nuevas notificaciones. Revisa los avisos antes de registrarlos. No se consulta tu historial de correos.</string>
+    <string name="gmail_capture_hint">Los movimientos detectados en Gmail con importe en soles se registran automáticamente como ingresos o egresos. Puedes eliminarlos desde la lista. No se consulta tu historial de correos.</string>
+    <string name="gmail_delete_action">Eliminar movimiento: %1$s</string>
+    <string name="gmail_delete_title">Eliminar movimiento</string>
+    <string name="gmail_delete_message">¿Estás seguro de eliminar este movimiento: %1$s? El balance y los gráficos se actualizarán automáticamente.</string>
+    <string name="gmail_delete_confirm">Eliminar</string>
     <string name="gmail_pending_count">%1$d avisos de Gmail por revisar</string>
     <string name="gmail_recent">Transacciones recientes</string>
     <string name="gmail_empty">Todavía no hay transacciones registradas desde Gmail.</string>

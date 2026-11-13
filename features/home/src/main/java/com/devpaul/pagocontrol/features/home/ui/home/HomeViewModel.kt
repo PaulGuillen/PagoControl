@@ -85,6 +85,7 @@ class HomeViewModel(
             }
             is HomeUiIntent.DiscardNotification -> saveNotification(mail = intent.mail) { notifications.discard(intent.id) }
             is HomeUiIntent.SetGmailMonitoring -> saveNotification(mail = true) { gmail.setGmailEnabled(intent.enabled) }
+            is HomeUiIntent.DeleteGmailMovement -> saveNotification(mail = true) { notifications.discard(intent.id) }
         }
     }
 

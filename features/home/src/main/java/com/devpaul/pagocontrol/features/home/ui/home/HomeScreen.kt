@@ -26,6 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -84,7 +86,9 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
     val mail = state.section == HomeSection.Mail
     val listState = rememberLazyListState()
     val ready = (if (mail) state.gmailContent else state.content) is HomeContent.Ready
-    val pendingCount = if (mail) state.gmailPendingNotifications.size else state.pendingNotifications.size
+    val pendingCount = if (mail) 0 else state.pendingNotifications.size
+    var deletingId by rememberSaveable { mutableStateOf<String?>(null) }
+    var deletingTitle by rememberSaveable { mutableStateOf("") }
     val guideTargets = remember(state.section, notificationAccessGranted) { mutableStateMapOf<Int, Rect>() }
     val actionTargets = remember(state.section, notificationAccessGranted) { mutableStateMapOf<String, Rect>() }
     val accessButtonRequester = remember { BringIntoViewRequester() }
@@ -219,7 +223,7 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                                     }
                                 }
                             }
-                            val pending = if (mail) state.gmailPendingNotifications else state.pendingNotifications
+                            val pending = if (mail) emptyList() else state.pendingNotifications
                             items(items = pending, key = { "notification-${it.id}" }) { notification ->
                                 PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent, mail = mail)
                             }
@@ -235,7 +239,16 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                             }
                             val movements = if (mail) dashboard.movements else dashboard.receivedMovements
                             if (movements.isEmpty()) item { Text(stringResource(if (mail) R.string.gmail_empty else R.string.home_empty)) }
-                            items(items = movements, key = { it.id }) { MovementRow(it) }
+                            items(items = movements, key = { it.id }) { movement ->
+                                MovementRow(
+                                    movement = movement,
+                                    deleting = state.savingNotification,
+                                    onDelete = if (mail) ({
+                                        deletingId = movement.id
+                                        deletingTitle = movement.title
+                                    }) else null,
+                                )
+                            }
                             item { Spacer(Modifier.height(8.dp)) }
                         }
                     }
@@ -252,6 +265,22 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                 action = guideAction,
             )
         }
+    }
+    deletingId?.let { id ->
+        AlertDialog(
+            onDismissRequest = { deletingId = null },
+            title = { Text(stringResource(R.string.gmail_delete_title)) },
+            text = { Text(stringResource(R.string.gmail_delete_message, deletingTitle)) },
+            confirmButton = {
+                TextButton(enabled = !state.savingNotification, onClick = {
+                    onIntent(HomeUiIntent.DeleteGmailMovement(id))
+                    deletingId = null
+                }) { Text(stringResource(R.string.gmail_delete_confirm), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingId = null }) { Text(stringResource(R.string.notifications_cancel)) }
+            },
+        )
     }
     if (state.showUpcoming) {
         AlertDialog(
@@ -359,7 +388,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
 }
 
 @Composable
-private fun MovementRow(movement: Movement) {
+private fun MovementRow(movement: Movement, deleting: Boolean = false, onDelete: (() -> Unit)? = null) {
     PagoCard(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             InstitutionAvatar(movement.source)
@@ -373,6 +402,11 @@ private fun MovementRow(movement: Movement) {
                     text = formatSoles(movement.amountCents, signed = true), style = MaterialTheme.typography.titleMedium,
                     color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
                 )
+            }
+            if (onDelete != null) {
+                IconButton(onClick = onDelete, enabled = !deleting) {
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.gmail_delete_action, movement.title))
+                }
             }
         }
     }

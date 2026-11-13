@@ -3,6 +3,7 @@ package com.devpaul.pagocontrol
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.SemanticsMatcher
@@ -12,6 +13,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.domain.Dashboard
+import com.devpaul.pagocontrol.domain.Movement
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.features.home.ui.home.HomeContent
 import com.devpaul.pagocontrol.features.home.ui.home.HomeScreen
@@ -63,13 +65,15 @@ class HomeNotificationUiTest {
         assertEquals(HomeSection.Wallets, state.section)
     }
 
-    @Test fun reviewsGmailPaymentsAsExpensesWithoutChangingWallets() {
+    @Test fun asksBeforeDeletingGmailMovementAndAllowsCancellation() {
         val intents = mutableListOf<HomeUiIntent>()
         val state = HomeUiState(
             section = HomeSection.Mail,
             gmailContent = HomeContent.Ready(Dashboard(
                 balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0,
-                weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = emptyList(),
+                weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = listOf(
+                    Movement(id = "gmail-payment", title = "Compra de prueba", detail = "Hoy", source = "Gmail", amountCents = -2500, automatic = true),
+                ),
             )),
             gmailPendingNotifications = listOf(PaymentNotification(
                 id = "gmail-payment", packageName = "com.google.android.gm", source = "Gmail",
@@ -82,11 +86,17 @@ class HomeNotificationUiTest {
             }
         }
         compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
-            .performScrollToNode(hasText("Revisar movimiento"))
-        compose.onNodeWithText("Revisar movimiento").performClick()
-        compose.onNodeWithText("Confirmar egreso").performClick()
+            .performScrollToNode(hasText("Compra de prueba"))
+        compose.onNodeWithText("Revisar movimiento").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Eliminar movimiento: Compra de prueba").performClick()
+        compose.onNodeWithText("Eliminar movimiento").assertIsDisplayed()
+        assertTrue(intents.isEmpty())
+        compose.onNodeWithText("Cancelar").performClick()
+        assertTrue(intents.isEmpty())
+        compose.onNodeWithContentDescription("Eliminar movimiento: Compra de prueba").performClick()
+        compose.onNodeWithText("Eliminar").performClick()
         compose.runOnIdle {
-            assertEquals(listOf(HomeUiIntent.ConfirmPayment(id = "gmail-payment", amountCents = -2500, mail = true)), intents)
+            assertEquals(listOf(HomeUiIntent.DeleteGmailMovement(id = "gmail-payment")), intents)
         }
     }
 

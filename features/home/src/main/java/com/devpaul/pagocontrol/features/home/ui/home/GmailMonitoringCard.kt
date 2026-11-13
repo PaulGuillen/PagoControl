@@ -81,7 +81,6 @@ internal fun GmailMonitoringCard(
             )
         }
         Text(stringResource(R.string.gmail_capture_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (state.gmailPendingNotifications.isNotEmpty()) Text(stringResource(R.string.gmail_pending_count, state.gmailPendingNotifications.size))
         if (state.gmailError) {
             Text(stringResource(R.string.notifications_error), color = MaterialTheme.colorScheme.error)
             TextButton(onClick = { onIntent(HomeUiIntent.Retry) }) { Text(stringResource(R.string.home_retry)) }

@@ -17,4 +17,5 @@ sealed interface HomeUiIntent {
     data class ConfirmPayment(val id: String, val amountCents: Long, val mail: Boolean = false) : HomeUiIntent
     data class DiscardNotification(val id: String, val mail: Boolean = false) : HomeUiIntent
     data class SetGmailMonitoring(val enabled: Boolean) : HomeUiIntent
+    data class DeleteGmailMovement(val id: String) : HomeUiIntent
 }
