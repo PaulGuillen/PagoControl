@@ -39,6 +39,12 @@ class AutomaticBcpExpenseTest {
         assertEquals(-2578L, AutomaticBcpExpense.recognize(notification.copy(suggestedAmountCents = 99999))?.amountCents)
     }
 
+    @Test fun merchantTitleStopsBeforeBcpReceiptDetailsWithoutSecurityIntroduction() {
+        val text = "Realizaste un consumo de S/ 6.56 con tu Tarjeta de D\u00e9bito BCP en WL *STEAM PURCHASE.\u00a0\nMonto\nTotal del consumo\nS/ 6.56\nDatos de la operaci\u00f3n\nEmpresa\nWL *STEAM PURCHASE"
+        assertEquals(AutomaticBcpExpense("WL *STEAM PURCHASE", -656), AutomaticBcpExpense.recognize(notification.copy(text = text)))
+        assertEquals("WL *STEAM PURCHASE", AutomaticGmailPayment.recognize(notification.copy(text = text))?.title)
+    }
+
     @Test fun recognizesConsumptionWithoutEnglishTransactionWords() {
         val consumption = notification.copy(text = "Realizaste un consumo de S/ 10.00 con tu Tarjeta de Débito BCP en TIENDA.")
         assertTrue(GmailTransactionCandidate.matches(consumption))

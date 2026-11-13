@@ -2,6 +2,7 @@ package com.devpaul.pagocontrol.data.notifications
 
 import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.AutomaticYapePayment
+import com.devpaul.pagocontrol.domain.AutomaticBcpExpense
 import com.devpaul.pagocontrol.domain.AutomaticGmailPayment
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
@@ -120,7 +121,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
     }
 
     private fun NotificationEntity.toMovement(formatter: SimpleDateFormat) = Movement(
-        id = id, title = if (status == "automatic") {
+        id = id, title = AutomaticBcpExpense.recognize(toNotification())?.let { "BCP - ${it.merchant}" } ?: if (status == "automatic") {
             AutomaticYapePayment.recognize(toNotification())?.sender
                 ?: AutomaticGmailPayment.recognize(toNotification())?.title ?: title
         } else title.ifBlank { source },

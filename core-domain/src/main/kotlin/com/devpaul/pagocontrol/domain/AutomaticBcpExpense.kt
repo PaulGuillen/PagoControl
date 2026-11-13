@@ -16,7 +16,7 @@ data class AutomaticBcpExpense(val merchant: String, val amountCents: Long) {
             val match = consumption.find(notification.text) ?: return null
             val amount = PaymentAmount.parse(match.groupValues[1]) ?: return null
             if (amounts.findAll(notification.text).any { PaymentAmount.parse(it.groupValues[1]) != amount }) return null
-            val merchant = match.groupValues[2].trim().removeSuffix(".").trim()
+            val merchant = match.groupValues[2].lineSequence().first().trim().removeSuffix(".").trim()
             if (merchant.isBlank()) return null
             return AutomaticBcpExpense(merchant = merchant, amountCents = -amount)
         }

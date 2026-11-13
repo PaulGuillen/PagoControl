@@ -68,7 +68,7 @@ class PaymentNotificationsTest {
             assertEquals(2578L, dashboard.expenseCents)
             assertEquals(1, dashboard.expenseCount)
             assertTrue(dashboard.movements.single().automatic)
-            assertEquals("WL *STEAM PURCHASE", dashboard.movements.single().title)
+            assertEquals("BCP - WL *STEAM PURCHASE", dashboard.movements.single().title)
             assertEquals(0L, repository.loadDashboard().dashboard.balanceCents)
             repository.capture(notification.copy(id = "another", text = "Compra realizada por S/ 10.00"))
             assertTrue(repository.observeGmailPending().first().isEmpty())
