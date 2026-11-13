@@ -7,7 +7,7 @@ import org.junit.Test
 class AutomaticGmailPaymentTest {
     private fun notification(text: String) = PaymentNotification(
         id = "mail", packageName = GmailTransactionCandidate.PACKAGE_NAME, source = "Gmail",
-        title = "Banco", text = text, postedAt = 1, suggestedAmountCents = null,
+        title = "Interbank", text = text, postedAt = 1, suggestedAmountCents = null,
     )
 
     @Test fun automaticallyClassifiesIncomeAndExpensesFromDifferentSenders() {
@@ -17,9 +17,30 @@ class AutomaticGmailPaymentTest {
             .forEach { assertEquals(it, -2578L, AutomaticGmailPayment.recognize(notification(it))?.amountCents) }
     }
 
-    @Test fun acceptsRepeatedAmountsAndUsesTransactionAmountBeforeBalance() {
+    @Test fun acceptsRepeatedAmountsAndLeavesConflictingAmountsForReview() {
         assertEquals(-2578L, AutomaticGmailPayment.recognize(notification("Compra S/ 25.78. Total S/ 25.78"))?.amountCents)
-        assertEquals(10000L, AutomaticGmailPayment.recognize(notification("Transferencia recibida S/ 100.00. Saldo S/ 500.00"))?.amountCents)
+        assertNull(AutomaticGmailPayment.recognize(notification("Transferencia recibida S/ 100.00. Saldo S/ 500.00")))
+    }
+
+    @Test fun merchantsAndUnknownBanksStayPending() {
+        listOf("Steam", "H&M", "Banco").forEach { title ->
+            val mail = notification("Compra S/ 25.00").copy(title = title)
+            assertNull(AutomaticGmailPayment.recognize(mail))
+        }
+        listOf("BCP", "Interbank", "Scotiabank", "BBVA", "Caja Arequipa", "Caja Huancayo").forEach { title ->
+            assertEquals(-2500L, AutomaticGmailPayment.recognize(notification("Compra S/ 25.00").copy(title = title))?.amountCents)
+        }
+        assertNull(AutomaticGmailPayment.recognize(notification("Pago S/ 25.00")))
+        assertNull(AutomaticGmailPayment.recognize(notification("Compra S/ 25.00 y abono S/ 25.00")))
+    }
+
+    @Test fun detectsPossibleDuplicatesWithoutHidingOppositeOrDistantMovements() {
+        val bank = notification("Compra S/ 25.00")
+        val merchant = bank.copy(id = "steam", title = "Steam", text = "Receipt S/ 25.00")
+        org.junit.Assert.assertTrue(AutomaticGmailPayment.possibleDuplicate(merchant, bank, -2500))
+        org.junit.Assert.assertFalse(AutomaticGmailPayment.possibleDuplicate(merchant, bank, -3000))
+        org.junit.Assert.assertFalse(AutomaticGmailPayment.possibleDuplicate(bank.copy(text = "Abono S/ 25.00"), bank, -2500))
+        org.junit.Assert.assertFalse(AutomaticGmailPayment.possibleDuplicate(merchant.copy(postedAt = 86400002), bank, -2500))
     }
 
     @Test fun doesNotInventAmountsOrRegisterPromotionsAndFailedPayments() {

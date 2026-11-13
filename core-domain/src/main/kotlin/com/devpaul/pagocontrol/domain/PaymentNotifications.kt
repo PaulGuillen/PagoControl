@@ -10,6 +10,7 @@ data class PaymentNotification(
     val text: String,
     val postedAt: Long,
     val suggestedAmountCents: Long?,
+    val possibleDuplicate: Boolean = false,
 )
 
 interface PaymentNotificationRepository {

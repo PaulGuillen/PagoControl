@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PaymentNotificationsTest {
-    @Test fun automaticallyProcessesExistingGmailPendingAndKeepsAllMovementsDeletable() = runBlocking {
+    @Test fun keepsUnknownExistingGmailPendingUntilConfirmed() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
         try {
@@ -28,10 +28,13 @@ class PaymentNotificationsTest {
                     postedAt = System.currentTimeMillis(), suggestedAmountCents = 1000,
                 ))
             }
+            assertTrue(repository.observeGmailDashboard().first().dashboard.movements.isEmpty())
+            assertEquals(21, repository.observeGmailPending().first().size)
+            repeat(21) { repository.confirm("old-$it", 1000) }
             val dashboard = repository.observeGmailDashboard().first().dashboard
             assertEquals(21, dashboard.movements.size)
             assertEquals(21000L, dashboard.balanceCents)
-            assertTrue(dashboard.movements.all { it.automatic })
+            assertTrue(dashboard.movements.none { it.automatic })
             assertTrue(repository.observeGmailPending().first().isEmpty())
             repository.discard("old-0")
             val updated = repository.observeGmailDashboard().first().dashboard
@@ -42,6 +45,32 @@ class PaymentNotificationsTest {
         } finally {
             database.close()
         }
+    }
+
+    @Test fun bankAndMerchantReceiptsNeverAutomaticallyCountTwice() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val repository = RoomPaymentRepository(database)
+            repository.setGmailEnabled(true)
+            val bank = PaymentNotification("bank", "com.google.android.gm", "Gmail", "BCP", "Compra S/ 25.00", System.currentTimeMillis(), null)
+            val merchant = bank.copy(id = "merchant", title = "Steam", text = "Receipt S/ 25.00")
+            repository.capture(merchant)
+            assertEquals(1, repository.observeGmailPending().first().size)
+            repository.capture(bank)
+            assertEquals(-2500L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            assertTrue(repository.observeGmailPending().first().single().possibleDuplicate)
+            repository.discard(merchant.id)
+            repository.capture(bank.copy(id = "bank-repeat"))
+            assertTrue(repository.observeGmailPending().first().single().possibleDuplicate)
+            assertEquals(-2500L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            // A manually confirmed merchant receipt arriving before the bank also prevents automatic double counting.
+            repository.capture(merchant.copy(id = "merchant-2", text = "Receipt S/ 30.00"))
+            repository.confirm("merchant-2", -3000)
+            repository.capture(bank.copy(id = "bank-2", text = "Compra S/ 30.00"))
+            assertEquals(-5500L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            assertEquals(2, repository.observeGmailPending().first().size)
+        } finally { database.close() }
     }
 
     @Test fun recordsBcpConsumptionAsAutomaticExpenseWhenGmailIsEnabled() = runBlocking {
@@ -96,7 +125,7 @@ class PaymentNotificationsTest {
             var repository = RoomPaymentRepository(database)
             val notification = PaymentNotification(
                 id = "gmail-transfer", packageName = "com.google.android.gm", source = "Gmail",
-                title = "Banco", text = "Transferencia recibida S/ 100.00", postedAt = System.currentTimeMillis(), suggestedAmountCents = 10000,
+                title = "BBVA", text = "Transferencia recibida S/ 100.00", postedAt = System.currentTimeMillis(), suggestedAmountCents = 10000,
             )
             repository.capture(notification)
             assertTrue(repository.observeGmailPending().first().isEmpty())

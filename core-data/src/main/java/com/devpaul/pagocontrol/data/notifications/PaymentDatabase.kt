@@ -55,7 +55,13 @@ interface PaymentNotificationDao {
 
     @Transaction
     suspend fun captureIfEnabled(notification: NotificationEntity) {
-        if (isEnabled(notification.packageName)) insert(notification)
+        if (!isEnabled(notification.packageName)) return
+        val mail = notification.packageName == "com.google.android.gm"
+        val duplicate = mail && confirmed(mail = true).any {
+            com.devpaul.pagocontrol.domain.AutomaticGmailPayment.possibleDuplicate(
+                notification.asPaymentNotification(), it.asPaymentNotification(), it.amountCents)
+        }
+        insert(if (duplicate) notification.copy(status = "pending", amountCents = null) else notification)
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -75,3 +81,7 @@ interface PaymentNotificationDao {
 abstract class PaymentDatabase : RoomDatabase() {
     abstract fun notifications(): PaymentNotificationDao
 }
+
+internal fun NotificationEntity.asPaymentNotification() = com.devpaul.pagocontrol.domain.PaymentNotification(
+    id, packageName, source, title, text, postedAt, suggestedAmountCents,
+)

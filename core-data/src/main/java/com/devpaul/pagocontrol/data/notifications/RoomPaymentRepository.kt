@@ -16,8 +16,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.combine
 import org.koin.core.annotation.Single
 
 @Single(binds = [HomeRepository::class, PaymentNotificationRepository::class, GmailMonitoringRepository::class])
@@ -34,14 +33,16 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     override fun observeSources() = dao.observeSources().map { sources -> sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }.toSet() }
 
-    override fun observeGmailDashboard() = flow {
-        dao.pendingGmail().forEach { row ->
-            AutomaticGmailPayment.recognize(row.toNotification())?.let { dao.recordAutomatic(row.id, it.amountCents) }
-        }
-        emitAll(dao.observeConfirmed(mail = true).map { dashboard(it, allMovements = true) })
-    }
+    override fun observeGmailDashboard() =
+        dao.observeConfirmed(mail = true).map { dashboard(it, allMovements = true) }
 
-    override fun observeGmailPending() = dao.observePending(mail = true).map { rows -> rows.map { it.toNotification() } }
+    override fun observeGmailPending() = combine(dao.observePending(mail = true), dao.observeConfirmed(mail = true)) { rows, recorded ->
+        rows.map { row ->
+            row.toNotification().copy(possibleDuplicate = recorded.any {
+                AutomaticGmailPayment.possibleDuplicate(row.toNotification(), it.toNotification(), it.amountCents)
+            })
+        }
+    }
 
     override fun observeGmailEnabled() = dao.observeSources().map { GmailTransactionCandidate.PACKAGE_NAME in it }
 
@@ -56,15 +57,14 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
     }
 
     override suspend fun capture(notification: PaymentNotification) {
-        if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && !GmailTransactionCandidate.matches(notification)) return
+        if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && !AutomaticGmailPayment.isCandidate(notification)) return
         val automaticPayment = AutomaticYapePayment.recognize(notification)
         val automaticMail = AutomaticGmailPayment.recognize(notification)
-        if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && automaticMail == null) return
         val automaticAmount = automaticPayment?.amountCents ?: automaticMail?.amountCents
         dao.captureIfEnabled(NotificationEntity(
             id = notification.id, packageName = notification.packageName, source = notification.source,
             title = notification.title, text = notification.text, postedAt = notification.postedAt,
-            suggestedAmountCents = notification.suggestedAmountCents,
+            suggestedAmountCents = if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME) AutomaticGmailPayment.suggestedAmount(notification) else notification.suggestedAmountCents,
             amountCents = automaticAmount,
             status = if (automaticAmount != null) "automatic" else "pending",
         ))
@@ -131,6 +131,6 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     private fun NotificationEntity.toNotification() = PaymentNotification(
         id = id, packageName = packageName, source = source, title = title,
-        text = text, postedAt = postedAt, suggestedAmountCents = suggestedAmountCents,
+        text = text, postedAt = postedAt, suggestedAmountCents = suggestedAmountCents ?: AutomaticGmailPayment.suggestedAmount(asPaymentNotification()),
     )
 }
