@@ -33,6 +33,45 @@ import org.junit.runner.RunWith
 class HomeNotificationUiTest {
     @get:Rule val compose = createComposeRule()
 
+    @Test fun mailReviewOpensSeparateScreenAndMessageOnlyInDialog() {
+        val intents = mutableListOf<HomeUiIntent>()
+        val state = HomeUiState(
+            section = HomeSection.Mail,
+            gmailContent = HomeContent.Ready(Dashboard(
+                balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0,
+                weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = emptyList(),
+            )),
+            gmailPendingNotifications = listOf(PaymentNotification(
+                id = "steam", packageName = "com.google.android.gm", source = "Gmail",
+                title = "Steam Support", text = "Gracias por tu compra. Total: S/ 25.00", postedAt = 1,
+                suggestedAmountCents = 2500, possibleDuplicate = true,
+            )),
+        )
+        compose.setContent {
+            PagoControlTheme(false) {
+                HomeScreen(state, "Prueba", { intents.add(it) }, 1, {}, notificationAccessGranted = true)
+            }
+        }
+        compose.onNodeWithText("Steam Support").assertDoesNotExist()
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
+            .performScrollToNode(hasText("Revisar movimiento"))
+        compose.onNodeWithText("Revisar movimiento").performClick()
+        compose.onNodeWithContentDescription("Volver a Inicio").assertIsDisplayed()
+        compose.onNodeWithText("Transacciones recientes").assertDoesNotExist()
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
+            .performScrollToNode(hasText("Steam Support"))
+        compose.onNodeWithText("Gracias por tu compra. Total: S/ 25.00").assertDoesNotExist()
+        compose.onNodeWithText("Steam Support").performClick()
+        compose.onNodeWithText("Mensaje del correo").assertIsDisplayed()
+        compose.onNodeWithText("Gracias por tu compra. Total: S/ 25.00").assertIsDisplayed()
+        compose.onNodeWithText("25.00").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Ya registrado").performScrollTo().performClick()
+        compose.runOnIdle { assertEquals(listOf(HomeUiIntent.DiscardNotification("steam", mail = true)), intents) }
+        compose.onNodeWithText("Mensaje del correo").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Volver a Inicio").performClick()
+        compose.onNodeWithContentDescription("Volver a Inicio").assertDoesNotExist()
+    }
+
     @Test fun separatesWalletReceiptsFromMailAndDoesNotPresentAnExpenseAsZeroSpending() {
         var state by mutableStateOf(HomeUiState(content = HomeContent.Ready(Dashboard(
             balanceCents = 2000, incomeCents = 2500, expenseCents = 500, incomeCount = 1, expenseCount = 1,
@@ -87,7 +126,7 @@ class HomeNotificationUiTest {
         }
         compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToNode(hasText("Compra de prueba"))
-        compose.onNodeWithText("Revisar movimiento").assertDoesNotExist()
+        compose.onNodeWithText("Mensaje del correo").assertDoesNotExist()
         compose.onNodeWithContentDescription("Eliminar movimiento: Compra de prueba").performClick()
         compose.onNodeWithText("Eliminar movimiento").assertIsDisplayed()
         assertTrue(intents.isEmpty())
@@ -122,6 +161,9 @@ class HomeNotificationUiTest {
         compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToNode(hasText("Revisar movimiento"))
         compose.onNodeWithText("Revisar movimiento").performClick()
+        compose.onNodeWithContentDescription("Volver a Inicio").assertIsDisplayed()
+        compose.onNodeWithText("25.00").assertDoesNotExist()
+        compose.onNodeWithText("Pago recibido").performClick()
         compose.onNodeWithText("25.00").assertIsDisplayed()
         compose.onNodeWithText("Confirmar ingreso").performClick()
         compose.runOnIdle {

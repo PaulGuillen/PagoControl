@@ -52,7 +52,7 @@
     <string name="gmail_delete_title">Eliminar movimiento</string>
     <string name="gmail_delete_message">¿Estás seguro de eliminar este movimiento: %1$s? El balance y los gráficos se actualizarán automáticamente.</string>
     <string name="gmail_delete_confirm">Eliminar</string>
-    <string name="gmail_pending_count">%1$d avisos de Gmail por revisar</string>
+    <string name="gmail_pending_count">Por confirmar · %1$d avisos</string>
     <string name="gmail_recent">Transacciones recientes</string>
     <string name="gmail_empty">Todavía no hay transacciones registradas desde Gmail.</string>
     <string name="gmail_confirm_expense">Confirmar egreso</string>
@@ -91,4 +91,19 @@
     <string name="notifications_amount">Importe en S/</string>
     <string name="notifications_income">Confirmar ingreso</string>
     <string name="notifications_cancel">Cancelar</string>
+    <string name="gmail_duplicate_hint">Posible duplicado: ya hay un movimiento del mismo importe y sentido en un plazo de 24 horas. Revisa antes de agregarlo.</string>
+    <string name="gmail_already_recorded">Ya registrado</string>
+    <string name="gmail_review_count">%1$d pendientes de confirmar</string>
+    <string name="gmail_review_show">Ver lista</string>
+    <string name="gmail_review_hide">Ocultar</string>
+    <string name="gmail_review_detail">Ver detalle</string>
+    <string name="gmail_duplicate_short">Posible duplicado</string>
+    <string name="gmail_review_no_amount">Importe por completar</string>
+    <string name="gmail_review_message">Mensaje del correo</string>
+    <string name="gmail_review_brief">Revisa el mensaje y completa el importe en soles. Confirma si fue ingreso o egreso.</string>
+    <string name="gmail_review_new">Nuevo</string>
+    <string name="gmail_review_back">Volver a Inicio</string>
+    <string name="gmail_review_list_hint">Selecciona un aviso para revisar el mensaje y confirmar el movimiento.</string>
+    <string name="gmail_review_empty">No tienes movimientos pendientes de revisar.</string>
+    <string name="notifications_review_message">Mensaje de la notificaci&#243;n</string>
 </resources>

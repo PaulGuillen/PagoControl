@@ -4,6 +4,8 @@ import android.content.Intent
 import android.provider.Settings
 import com.devpaul.pagocontrol.features.home.R
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,6 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +66,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.InstitutionAvatar
@@ -86,7 +91,16 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
     val mail = state.section == HomeSection.Mail
     val listState = rememberLazyListState()
     val ready = (if (mail) state.gmailContent else state.content) is HomeContent.Ready
-    val pendingCount = if (mail) 0 else state.pendingNotifications.size
+    var showMovementReview by rememberSaveable(state.section) { mutableStateOf(false) }
+    var reviewedIds by rememberSaveable(state.section) { mutableStateOf(arrayListOf<String>()) }
+    val pendingNotifications = if (mail) state.gmailPendingNotifications else state.pendingNotifications
+    val pendingIds = pendingNotifications.map { it.id }
+    val hasNewMovement = pendingIds.any { it !in reviewedIds }
+    LaunchedEffect(pendingIds, showMovementReview) {
+        if (showMovementReview) reviewedIds = ArrayList(pendingIds)
+    }
+    val reviewCount = pendingNotifications.size
+    val pendingCount = if (reviewCount > 0) 1 else 0
     var deletingId by rememberSaveable { mutableStateOf<String?>(null) }
     var deletingTitle by rememberSaveable { mutableStateOf("") }
     val guideTargets = remember(state.section, notificationAccessGranted) { mutableStateMapOf<Int, Rect>() }
@@ -118,8 +132,8 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
             val index = when (state.guideStep) {
                 0 -> if (notificationAccessGranted) 3 else 2
                 1 -> (if (mail) 5 else 4) + if (notificationAccessGranted) 0 else 1
-                2 -> (if (mail) 6 else 5) + pendingCount + if (notificationAccessGranted) 0 else 1
-                else -> (if (mail) 7 else 6) + pendingCount + if (notificationAccessGranted) 0 else 1
+                2 -> (if (mail) 6 else 5) + pendingCount + (if (notificationAccessGranted) 0 else 1)
+                else -> (if (mail) 7 else 6) + pendingCount + (if (notificationAccessGranted) 0 else 1)
             }
             listState.scrollToItem(index)
             if (state.guideStep == 0 && !notificationAccessGranted) {
@@ -129,6 +143,17 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
         } else if (state.guideStep == null) {
             listState.scrollToItem(0)
         }
+    }
+    if (showMovementReview) {
+        NotificationReviewScreen(
+            notifications = pendingNotifications,
+            saving = state.savingNotification,
+            error = if (mail) state.gmailError else state.notificationError,
+            mail = mail,
+            onIntent = onIntent,
+            onBack = { showMovementReview = false },
+        )
+        return
     }
     Box(Modifier.fillMaxSize()) {
         Scaffold(
@@ -223,9 +248,16 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
                                     }
                                 }
                             }
-                            val pending = if (mail) emptyList() else state.pendingNotifications
-                            items(items = pending, key = { "notification-${it.id}" }) { notification ->
-                                PendingNotificationCard(notification = notification, saving = state.savingNotification, onIntent = onIntent, mail = mail)
+                            if (reviewCount > 0) item {
+                                PagoCard(Modifier.fillMaxWidth().clickable(role = Role.Button) { showMovementReview = true }) {
+                                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                        Column(Modifier.weight(1f)) {
+                                            MailReviewTitle(pulsing = hasNewMovement && !showMovementReview)
+                                            Text(stringResource(R.string.gmail_review_count, reviewCount), style = MaterialTheme.typography.bodySmall)
+                                        }
+                                        Text(stringResource(R.string.gmail_review_show), color = MaterialTheme.colorScheme.primary)
+                                    }
+                                }
                             }
                             item {
                                 Column(Modifier.onGloballyPositioned { guideTargets[2] = it.boundsInRoot() }) {
@@ -389,25 +421,28 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
 
 @Composable
 private fun MovementRow(movement: Movement, deleting: Boolean = false, onDelete: (() -> Unit)? = null) {
+    val title = movement.title.lineSequence().firstOrNull { it.isNotBlank() }?.trim().orEmpty()
     PagoCard(Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             InstitutionAvatar(movement.source)
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(movement.title, style = MaterialTheme.typography.titleMedium)
+                Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 Text(text = movement.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                InstitutionBadge(movement.source)
-            }
-            Column(horizontalAlignment = Alignment.End, modifier = Modifier.widthIn(max = 130.dp)) {
-                Text(
-                    text = formatSoles(movement.amountCents, signed = true), style = MaterialTheme.typography.titleMedium,
-                    color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                )
             }
             if (onDelete != null) {
                 IconButton(onClick = onDelete, enabled = !deleting) {
                     Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.gmail_delete_action, movement.title))
                 }
             }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                InstitutionBadge(movement.source)
+            }
+            Text(
+                text = formatSoles(movement.amountCents, signed = true), style = MaterialTheme.typography.titleMedium,
+                color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

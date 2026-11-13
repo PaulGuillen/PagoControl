@@ -165,9 +165,6 @@ internal fun NotificationControls(
                 }
             }
         }
-        if (state.pendingNotifications.isNotEmpty()) {
-            Text(stringResource(R.string.notifications_pending_count, state.pendingNotifications.size), style = MaterialTheme.typography.labelMedium)
-        }
         if (state.notificationError) {
             Text(stringResource(R.string.notifications_error), color = MaterialTheme.colorScheme.error)
             TextButton(onClick = { onIntent(HomeUiIntent.Retry) }) { Text(stringResource(R.string.home_retry)) }
