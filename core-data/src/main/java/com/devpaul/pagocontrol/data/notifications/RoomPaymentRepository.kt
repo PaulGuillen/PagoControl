@@ -2,6 +2,7 @@ package com.devpaul.pagocontrol.data.notifications
 
 import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.AutomaticYapePayment
+import com.devpaul.pagocontrol.domain.AutomaticGmailPayment
 import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
@@ -14,6 +15,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.emitAll
 import org.koin.core.annotation.Single
 
 @Single(binds = [HomeRepository::class, PaymentNotificationRepository::class, GmailMonitoringRepository::class])
@@ -22,7 +25,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     override suspend fun loadDashboard() = dashboard(dao.confirmed())
 
-    override fun observeDashboard() = dao.observeConfirmed().map(::dashboard)
+    override fun observeDashboard() = dao.observeConfirmed().map { dashboard(it) }
 
     override fun observePending() = dao.observePending().map { rows ->
         rows.map { it.toNotification() }
@@ -30,7 +33,12 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     override fun observeSources() = dao.observeSources().map { sources -> sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }.toSet() }
 
-    override fun observeGmailDashboard() = dao.observeConfirmed(mail = true).map(::dashboard)
+    override fun observeGmailDashboard() = flow {
+        dao.pendingGmail().forEach { row ->
+            AutomaticGmailPayment.recognize(row.toNotification())?.let { dao.recordAutomatic(row.id, it.amountCents) }
+        }
+        emitAll(dao.observeConfirmed(mail = true).map { dashboard(it, allMovements = true) })
+    }
 
     override fun observeGmailPending() = dao.observePending(mail = true).map { rows -> rows.map { it.toNotification() } }
 
@@ -49,12 +57,15 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
     override suspend fun capture(notification: PaymentNotification) {
         if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && !GmailTransactionCandidate.matches(notification)) return
         val automaticPayment = AutomaticYapePayment.recognize(notification)
+        val automaticMail = AutomaticGmailPayment.recognize(notification)
+        if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && automaticMail == null) return
+        val automaticAmount = automaticPayment?.amountCents ?: automaticMail?.amountCents
         dao.captureIfEnabled(NotificationEntity(
             id = notification.id, packageName = notification.packageName, source = notification.source,
             title = notification.title, text = notification.text, postedAt = notification.postedAt,
             suggestedAmountCents = notification.suggestedAmountCents,
-            amountCents = automaticPayment?.amountCents,
-            status = if (automaticPayment != null) "automatic" else "pending",
+            amountCents = automaticAmount,
+            status = if (automaticAmount != null) "automatic" else "pending",
         ))
     }
 
@@ -65,7 +76,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     override suspend fun discard(id: String) = dao.discard(id)
 
-    private fun dashboard(rows: List<NotificationEntity>): DashboardResult.Success {
+    private fun dashboard(rows: List<NotificationEntity>, allMovements: Boolean = false): DashboardResult.Success {
         val now = Calendar.getInstance()
         val monthRows = rows.filter { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
@@ -102,7 +113,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
             expenseCents = -expenses.sumOf { it.amountCents ?: 0 },
             incomeCount = income.size, expenseCount = expenses.size,
             weeklyFlow = weekly, monthlyFlow = monthly,
-            movements = rows.take(20).map { it.toMovement(formatter) },
+            movements = (if (allMovements) rows else rows.take(20)).map { it.toMovement(formatter) },
             weeklyIncomeFlow = weeklyIncome, monthlyIncomeFlow = monthlyIncome,
             receivedMovements = rows.filter { (it.amountCents ?: 0) > 0 }.take(20).map { it.toMovement(formatter) },
         ))
@@ -110,7 +121,8 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     private fun NotificationEntity.toMovement(formatter: SimpleDateFormat) = Movement(
         id = id, title = if (status == "automatic") {
-            AutomaticYapePayment.recognize(toNotification())?.sender ?: title
+            AutomaticYapePayment.recognize(toNotification())?.sender
+                ?: AutomaticGmailPayment.recognize(toNotification())?.title ?: title
         } else title.ifBlank { source },
         detail = formatter.format(Date(postedAt)), source = source,
         amountCents = amountCents ?: 0, automatic = status == "automatic",

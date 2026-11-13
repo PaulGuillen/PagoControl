@@ -41,6 +41,12 @@ interface PaymentNotificationDao {
     @Query("SELECT packageName FROM notification_sources")
     fun observeSources(): Flow<List<String>>
 
+    @Query("SELECT * FROM payment_notifications WHERE packageName = 'com.google.android.gm' AND status = 'pending'")
+    suspend fun pendingGmail(): List<NotificationEntity>
+
+    @Query("UPDATE payment_notifications SET status = 'automatic', amountCents = :amountCents WHERE id = :id AND status = 'pending'")
+    suspend fun recordAutomatic(id: String, amountCents: Long)
+
     @Query("SELECT EXISTS(SELECT 1 FROM notification_sources WHERE packageName = :packageName)")
     suspend fun isEnabled(packageName: String): Boolean
 
@@ -61,7 +67,7 @@ interface PaymentNotificationDao {
     @Query("UPDATE payment_notifications SET status = 'confirmed', amountCents = :amountCents WHERE id = :id AND status = 'pending'")
     suspend fun confirm(id: String, amountCents: Long)
 
-    @Query("UPDATE payment_notifications SET status = 'discarded', title = '', text = '' WHERE id = :id AND status = 'pending'")
+    @Query("UPDATE payment_notifications SET status = 'discarded', title = '', text = '' WHERE id = :id AND (status = 'pending' OR (packageName = 'com.google.android.gm' AND status IN ('confirmed', 'automatic')))")
     suspend fun discard(id: String)
 }
 

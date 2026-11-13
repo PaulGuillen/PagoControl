@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.devpaul.pagocontrol.data.notifications.PaymentDatabase
+import com.devpaul.pagocontrol.data.notifications.NotificationEntity
 import com.devpaul.pagocontrol.data.notifications.RoomPaymentRepository
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,78 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PaymentNotificationsTest {
+    @Test fun automaticallyProcessesExistingGmailPendingAndKeepsAllMovementsDeletable() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val repository = RoomPaymentRepository(database)
+            repeat(21) { index ->
+                database.notifications().insert(NotificationEntity(
+                    id = "old-$index", packageName = "com.google.android.gm", source = "Gmail",
+                    title = "Banco", text = "Transferencia recibida S/ 10.00",
+                    postedAt = System.currentTimeMillis(), suggestedAmountCents = 1000,
+                ))
+            }
+            val dashboard = repository.observeGmailDashboard().first().dashboard
+            assertEquals(21, dashboard.movements.size)
+            assertEquals(21000L, dashboard.balanceCents)
+            assertTrue(dashboard.movements.all { it.automatic })
+            assertTrue(repository.observeGmailPending().first().isEmpty())
+            repository.discard("old-0")
+            val updated = repository.observeGmailDashboard().first().dashboard
+            assertEquals(20000L, updated.incomeCents)
+            assertEquals(20, updated.incomeCount)
+            assertEquals(20000L, updated.weeklyIncomeFlow.sum())
+            assertEquals(20000L, updated.monthlyIncomeFlow.sum())
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test fun recordsBcpConsumptionAsAutomaticExpenseWhenGmailIsEnabled() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val repository = RoomPaymentRepository(database)
+            val notification = PaymentNotification(
+                id = "automatic-bcp", packageName = "com.google.android.gm", source = "Gmail",
+                title = "BCP Notificaciones",
+                text = "Realizaste un consumo de S/ 25.78 con tu Tarjeta de Débito BCP en WL *STEAM PURCHASE.\nPor tu seguridad, te enviamos los datos de tu operación.\nTotal del consumo\nS/ 25.78",
+                postedAt = System.currentTimeMillis(), suggestedAmountCents = null,
+            )
+            repository.capture(notification)
+            assertTrue(repository.observeGmailPending().first().isEmpty())
+            assertEquals(0L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            repository.setGmailEnabled(true)
+            repository.capture(notification)
+            repository.capture(notification)
+            repository.confirm(notification.id, 9999)
+            assertTrue(repository.observeGmailPending().first().isEmpty())
+            val dashboard = repository.observeGmailDashboard().first().dashboard
+            assertEquals(-2578L, dashboard.balanceCents)
+            assertEquals(2578L, dashboard.expenseCents)
+            assertEquals(1, dashboard.expenseCount)
+            assertTrue(dashboard.movements.single().automatic)
+            assertEquals("WL *STEAM PURCHASE", dashboard.movements.single().title)
+            assertEquals(0L, repository.loadDashboard().dashboard.balanceCents)
+            repository.capture(notification.copy(id = "another", text = "Compra realizada por S/ 10.00"))
+            assertTrue(repository.observeGmailPending().first().isEmpty())
+            assertEquals(-3578L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            repository.discard("another")
+            repository.capture(notification.copy(id = "another", text = "Compra realizada por S/ 10.00"))
+            assertEquals(-2578L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            repository.discard(notification.id)
+            val deleted = repository.observeGmailDashboard().first().dashboard
+            assertEquals(0L, deleted.balanceCents)
+            assertEquals(0, deleted.expenseCount)
+            assertTrue(deleted.movements.isEmpty())
+            assertEquals(0L, deleted.weeklyFlow.sum())
+            assertEquals(0L, deleted.monthlyFlow.sum())
+        } finally {
+            database.close()
+        }
+    }
+
     @Test fun persistsGmailOptInAndSeparatesItsPaymentsFromWallets() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val databaseName = "gmail-test-${System.nanoTime()}.db"
@@ -31,7 +104,7 @@ class PaymentNotificationsTest {
             repository.capture(notification)
             repository.capture(notification)
             repository.capture(notification.copy(id = "unrelated", text = "Reunión del equipo mañana"))
-            assertEquals(1, repository.observeGmailPending().first().size)
+            assertEquals(0, repository.observeGmailPending().first().size)
             assertTrue(repository.observePending().first().isEmpty())
             assertTrue(repository.observeSources().first().isEmpty())
             repository.confirm(id = notification.id, amountCents = 10000)
