@@ -1,5 +1,6 @@
 package com.devpaul.pagocontrol.features.movements.ui.movements
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -10,8 +11,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.automirrored.outlined.ManageSearch
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,8 +24,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,9 +62,9 @@ fun MovementsScreen(state: MovementsUiState, onIntent: (MovementsUiIntent) -> Un
                         IconButton(onClick = { focus.requestFocus() }) { Icon(Icons.Outlined.Search, stringResource(R.string.search)) }
                         IconButton(onClick = {
                             val report = visible.joinToString("\n") { "${it.title} • ${it.source} • ${formatSoles(it.amountCents, signed = it.kind != "transfer")}" }
-                            context.startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                            context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
-                                putExtra(android.content.Intent.EXTRA_TEXT, "PagoControl · Movimientos de ejemplo\n$report")
+                                putExtra(Intent.EXTRA_TEXT, "PagoControl · Movimientos de ejemplo\n$report")
                             }, exportLabel))
                         }) { Icon(Icons.Outlined.IosShare, stringResource(R.string.export)) }
                     }

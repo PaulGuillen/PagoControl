@@ -2,6 +2,7 @@ package com.devpaul.pagocontrol.domain
 
 import java.text.Normalizer
 import java.util.Locale
+import kotlin.math.abs
 
 data class AutomaticGmailPayment(val title: String, val amountCents: Long) {
     companion object {
@@ -20,8 +21,8 @@ data class AutomaticGmailPayment(val title: String, val amountCents: Long) {
 
         fun possibleDuplicate(first: PaymentNotification, second: PaymentNotification, recordedAmount: Long? = null): Boolean {
             val amount = suggestedAmount(first) ?: return false
-            if (amount != (recordedAmount?.let { kotlin.math.abs(it) } ?: suggestedAmount(second))) return false
-            if (kotlin.math.abs(first.postedAt - second.postedAt) > 24 * 60 * 60 * 1000L) return false
+            if (amount != (recordedAmount?.let { abs(it) } ?: suggestedAmount(second))) return false
+            if (abs(first.postedAt - second.postedAt) > 24 * 60 * 60 * 1000L) return false
             val firstDirection = direction(first)
             val secondDirection = recordedAmount?.compareTo(0L) ?: direction(second)
             return firstDirection == null || secondDirection == null || firstDirection == secondDirection

@@ -3,10 +3,11 @@ package com.devpaul.pagocontrol
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.devpaul.pagocontrol.data.notifications.PaymentDatabase
 import com.devpaul.pagocontrol.data.notifications.NotificationEntity
+import com.devpaul.pagocontrol.data.notifications.PaymentDatabase
 import com.devpaul.pagocontrol.data.notifications.RoomPaymentRepository
 import com.devpaul.pagocontrol.domain.PaymentNotification
+import java.util.Calendar
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -20,9 +21,9 @@ class PaymentNotificationsTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
         try {
-            val year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            val year = Calendar.getInstance().get(Calendar.YEAR)
             suspend fun insert(id: String, targetYear: Int, month: Int, amount: Long) {
-                val time = java.util.Calendar.getInstance().apply { clear(); set(targetYear, month, 14, 12, 0) }.timeInMillis
+                val time = Calendar.getInstance().apply { clear(); set(targetYear, month, 14, 12, 0) }.timeInMillis
                 database.notifications().insert(NotificationEntity(id, "com.google.android.gm", "Gmail", "Banco", "Operacion", time, null, amount, "confirmed"))
             }
             insert("january", year, 0, 10000)

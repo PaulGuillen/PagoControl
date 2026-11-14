@@ -3,6 +3,7 @@ package com.devpaul.pagocontrol.features.reports.export
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import com.devpaul.pagocontrol.features.reports.R
@@ -60,10 +61,10 @@ class AndroidReportExporter(private val context: Context) : ReportExporter {
             page.canvas.drawRect(0f, 0f, 595f, 90f, paint)
             paint.color = Color.rgb(23, 26, 22)
             paint.textSize = 22f
-            paint.typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
+            paint.typeface = Typeface.create("sans-serif", Typeface.BOLD)
             page.canvas.drawText(context.getString(R.string.reports_title), 32f, 54f, paint)
             paint.textSize = 11f
-            paint.typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
+            paint.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
             rows.forEachIndexed { index, row ->
                 val baseline = 120f + index * 23f
                 page.canvas.drawText(row[0], 32f, baseline, paint)

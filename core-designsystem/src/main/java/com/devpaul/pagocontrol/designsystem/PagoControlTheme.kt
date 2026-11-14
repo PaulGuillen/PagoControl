@@ -9,6 +9,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -49,7 +50,7 @@ private val DarkColors = darkColorScheme(
     error = Color(0xFFFFB4AB), onError = Color(0xFF690005),
 )
 
-@OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
+@OptIn(ExperimentalTextApi::class)
 private fun manropeFont(weight: FontWeight) = Font(
     resId = R.font.manrope, weight = weight,
     variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight)),

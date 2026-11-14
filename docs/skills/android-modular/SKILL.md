@@ -104,3 +104,7 @@ LoginScreen(
     onForgotPassword = onForgotPassword,
 )
 ```
+
+## Imports Kotlin
+
+Declara las referencias a clases, funciones, anotaciones y propiedades externas mediante imports explicitos al inicio del archivo, despues de package. Usa nombres simples en el cuerpo del codigo, incluidas pantallas, previews y pruebas; evita llamadas con paquetes completos como `com.devpaul.pagocontrol.designsystem.PagoHeader(...)` o `androidx.compose.foundation.layout.PaddingValues(...)`. Ante nombres en conflicto, usa un alias de import descriptivo (`import otro.paquete.R as FeatureR`). Ordena los imports, evita duplicados y no uses comodines. Conserva los nombres de paquete que sean datos en strings, SQL, manifiestos y configuracion Gradle. Al revisar esta regla, abarca todos los modulos de producto y sus pruebas, excluyendo fuentes generadas y plantillas de referencia salvo pedido explicito.

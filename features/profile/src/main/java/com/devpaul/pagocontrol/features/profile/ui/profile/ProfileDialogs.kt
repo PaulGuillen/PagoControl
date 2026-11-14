@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -25,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.devpaul.pagocontrol.domain.LoginValidation
 import com.devpaul.pagocontrol.features.profile.R
 
 @Composable
@@ -53,8 +56,8 @@ internal fun ProfileDialogs(state: ProfileUiState, themeIndex: Int, onThemeSelec
                                 state.draftEmail, { onIntent(ProfileUiIntent.Email(it)) },
                                 label = { Text(stringResource(R.string.email)) }, singleLine = true,
                                 enabled = !state.saving, readOnly = !state.emailEditable, modifier = Modifier.fillMaxWidth(),
-                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Email),
-                                isError = state.draftEmail.isNotBlank() && !com.devpaul.pagocontrol.domain.LoginValidation.validEmail(state.draftEmail),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                                isError = state.draftEmail.isNotBlank() && !LoginValidation.validEmail(state.draftEmail),
                             )
                         }
                         ProfileDialog.Appearance -> listOf(R.string.theme_system, R.string.theme_light, R.string.theme_dark).forEachIndexed { index, label ->

@@ -1,5 +1,7 @@
 package com.devpaul.pagocontrol.features.profile.ui.profile
 
+import com.devpaul.pagocontrol.domain.LoginValidation
+
 enum class ProfileDialog { Edit, Appearance, Language, Rating, SignOut, Notifications }
 enum class ProfileNotice { SavedRating, SaveError, LoadError, Upcoming }
 
@@ -19,5 +21,5 @@ data class ProfileUiState(
 ) {
     val canSaveIdentity: Boolean
         get() = draftName.trim().length in 2..80 &&
-            (draftEmail.isBlank() || com.devpaul.pagocontrol.domain.LoginValidation.validEmail(draftEmail))
+            (draftEmail.isBlank() || LoginValidation.validEmail(draftEmail))
 }

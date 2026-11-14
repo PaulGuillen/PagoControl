@@ -3,6 +3,7 @@ package com.devpaul.pagocontrol.notifications
 import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import com.devpaul.pagocontrol.domain.PaymentAmount
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
@@ -46,7 +47,7 @@ class PaymentNotificationListener : NotificationListenerService(), KoinComponent
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
-                android.util.Log.e("PaymentNotifications", "No se pudo guardar la notificación local")
+                Log.e("PaymentNotifications", "No se pudo guardar la notificación local")
             }
         }
     }

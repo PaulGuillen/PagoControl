@@ -2,15 +2,13 @@ package com.devpaul.pagocontrol.features.home.ui.home
 
 import android.content.Intent
 import android.provider.Settings
-import com.devpaul.pagocontrol.features.home.R
-
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,16 +23,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -42,38 +41,43 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.style.TextOverflow
-import com.devpaul.pagocontrol.designsystem.PagoCard
-import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.InstitutionAvatar
 import com.devpaul.pagocontrol.designsystem.InstitutionBadge
+import com.devpaul.pagocontrol.designsystem.PagoCard
+import com.devpaul.pagocontrol.designsystem.PagoControlTheme
+import com.devpaul.pagocontrol.designsystem.PagoDock
+import com.devpaul.pagocontrol.designsystem.PagoHeader
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.Movement
+import com.devpaul.pagocontrol.features.home.R
+import java.util.Calendar
+import kotlin.math.abs
 
 
 @Composable
@@ -159,17 +163,17 @@ fun HomeScreen(state: HomeUiState, name: String, onIntent: (HomeUiIntent) -> Uni
         Scaffold(
             modifier = if (guiding) Modifier.clearAndSetSemantics {} else Modifier,
             containerColor = MaterialTheme.colorScheme.background,
-            bottomBar = { com.devpaul.pagocontrol.designsystem.PagoDock(false, {}, onMovements, onProfile = onProfile, onReports = onReports) },
+            bottomBar = { PagoDock(false, {}, onMovements, onProfile = onProfile, onReports = onReports) },
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.widthIn(max = 840.dp).fillMaxSize(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                    contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     item {
-                        com.devpaul.pagocontrol.designsystem.PagoHeader(stringResource(R.string.home_title), { onIntent(HomeUiIntent.Upcoming) })
+                        PagoHeader(stringResource(R.string.home_title), { onIntent(HomeUiIntent.Upcoming) })
                     }
                     item {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -394,7 +398,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                 }
             }
         }
-        if (monthly) Text(stringResource(R.string.home_chart_year, java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)), style = MaterialTheme.typography.labelMedium)
+        if (monthly) Text(stringResource(R.string.home_chart_year, Calendar.getInstance().get(Calendar.YEAR)), style = MaterialTheme.typography.labelMedium)
         if (mail) {
             Text(labels.getOrElse(selected) { "" }, style = MaterialTheme.typography.labelMedium)
             Text("$incomeLabel: ${formatSoles(values.getOrElse(selected) { 0L })}", color = MaterialTheme.colorScheme.secondary, style = MaterialTheme.typography.labelMedium)
@@ -432,7 +436,7 @@ private fun FlowCard(dashboard: Dashboard, monthly: Boolean, selected: Int, onIn
                     } else {
                         Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.BottomCenter) {
                             Box(
-                                Modifier.fillMaxWidth(0.8f).height((24 + 96 * kotlin.math.abs(amount).toFloat() / maximum).dp)
+                                Modifier.fillMaxWidth(0.8f).height((24 + 96 * abs(amount).toFloat() / maximum).dp)
                                     .clip(MaterialTheme.shapes.small)
                                     .background(if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh),
                             )

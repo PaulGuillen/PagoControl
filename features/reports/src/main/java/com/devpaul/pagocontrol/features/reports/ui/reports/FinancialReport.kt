@@ -1,6 +1,7 @@
 package com.devpaul.pagocontrol.features.reports.ui.reports
 
 import com.devpaul.pagocontrol.features.reports.R
+import kotlin.math.abs
 
 enum class ReportPeriod { Month, Quarter, Year, Custom }
 internal val demoSubscriptions = listOf("Netflix" to 4490L, "Spotify" to 2090L, "Google One" to 650L, "Entel" to 7990L, "Claro Hogar" to 13330L)
@@ -28,7 +29,7 @@ data class FinancialReport(
 ) {
     val net: Long get() = income - expense
     val savingsRate: Double get() = if (income == 0L) 0.0 else net * 100.0 / income
-    val change: Double? get() = previousNet?.takeIf { it != 0L }?.let { (net - it) * 100.0 / kotlin.math.abs(it) }
+    val change: Double? get() = previousNet?.takeIf { it != 0L }?.let { (net - it) * 100.0 / abs(it) }
     val weekly: Boolean get() = firstMonth == lastMonth
 }
 

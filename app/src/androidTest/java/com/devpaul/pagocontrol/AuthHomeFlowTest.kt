@@ -1,40 +1,41 @@
 package com.devpaul.pagocontrol
 
+import android.content.Context
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onLast
-import androidx.compose.ui.test.isToggleable
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
-import androidx.compose.ui.test.hasScrollAction
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.performScrollToNode
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.state.ToggleableState
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Before
-import org.junit.Assume.assumeTrue
-import org.junit.Assert.assertEquals
-import kotlinx.coroutines.runBlocking
-import org.koin.core.context.GlobalContext
+import com.devpaul.pagocontrol.features.auth.BuildConfig as AuthBuildConfig
+import com.devpaul.pagocontrol.features.auth.R as AuthResources
+import com.devpaul.pagocontrol.features.onboarding.R as OnboardingResources
 import com.devpaul.pagocontrol.session.AccountRepository
 import com.devpaul.pagocontrol.session.AccountResult
 import com.devpaul.pagocontrol.session.AuthRepository
-import com.devpaul.pagocontrol.features.auth.BuildConfig as AuthBuildConfig
-import androidx.compose.ui.test.isDisplayed
-import com.devpaul.pagocontrol.features.auth.R as AuthResources
-import com.devpaul.pagocontrol.features.onboarding.R as OnboardingResources
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assume.assumeTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.GlobalContext
 
 @RunWith(AndroidJUnit4::class)
 class AuthHomeFlowTest {
@@ -44,7 +45,7 @@ class AuthHomeFlowTest {
 
     @Before fun enterLogin() {
         assumeTrue("Requires Firebase emulators", AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
-        compose.activity.getSharedPreferences("auth_attempt_limits", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        compose.activity.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE).edit().clear().commit()
         runBlocking {
             val auth = GlobalContext.get().get<AuthRepository>()
             auth.signOut()
@@ -64,7 +65,7 @@ class AuthHomeFlowTest {
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
         compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
         compose.waitUntil(5_000) {
-            compose.onAllNodes(androidx.compose.ui.test.hasText("COBROS RECIBIDOS ESTE MES")).fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodes(hasText("COBROS RECIBIDOS ESTE MES")).fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").assertIsDisplayed()
         listOf("Inicio", "Movimientos", "Reportes", "Perfil").forEach { tab ->

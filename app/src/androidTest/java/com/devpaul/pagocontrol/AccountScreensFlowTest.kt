@@ -1,5 +1,6 @@
 package com.devpaul.pagocontrol
 
+import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -11,24 +12,24 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.devpaul.pagocontrol.features.auth.BuildConfig as AuthBuildConfig
 import com.devpaul.pagocontrol.features.auth.R as AuthResources
 import com.devpaul.pagocontrol.features.onboarding.R as OnboardingResources
+import com.devpaul.pagocontrol.session.AuthRepository
+import kotlinx.coroutines.runBlocking
+import org.junit.Assume.assumeTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.Before
-import org.junit.Assume.assumeTrue
-import kotlinx.coroutines.runBlocking
-import org.koin.core.context.GlobalContext
-import com.devpaul.pagocontrol.session.AuthRepository
-import com.devpaul.pagocontrol.features.auth.BuildConfig as AuthBuildConfig
 import org.junit.runner.RunWith
+import org.koin.core.context.GlobalContext
 
 @RunWith(AndroidJUnit4::class)
 class AccountScreensFlowTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
     @Before fun requireEmulators() {
         assumeTrue("Requires Firebase emulators", AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
-        compose.activity.getSharedPreferences("auth_attempt_limits", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        compose.activity.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE).edit().clear().commit()
         runBlocking { GlobalContext.get().get<AuthRepository>().signOut() }
     }
 

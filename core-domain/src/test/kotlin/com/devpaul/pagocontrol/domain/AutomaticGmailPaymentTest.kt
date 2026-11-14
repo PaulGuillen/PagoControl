@@ -1,7 +1,9 @@
 package com.devpaul.pagocontrol.domain
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AutomaticGmailPaymentTest {
@@ -37,10 +39,10 @@ class AutomaticGmailPaymentTest {
     @Test fun detectsPossibleDuplicatesWithoutHidingOppositeOrDistantMovements() {
         val bank = notification("Compra S/ 25.00")
         val merchant = bank.copy(id = "steam", title = "Steam", text = "Receipt S/ 25.00")
-        org.junit.Assert.assertTrue(AutomaticGmailPayment.possibleDuplicate(merchant, bank, -2500))
-        org.junit.Assert.assertFalse(AutomaticGmailPayment.possibleDuplicate(merchant, bank, -3000))
-        org.junit.Assert.assertFalse(AutomaticGmailPayment.possibleDuplicate(bank.copy(text = "Abono S/ 25.00"), bank, -2500))
-        org.junit.Assert.assertFalse(AutomaticGmailPayment.possibleDuplicate(merchant.copy(postedAt = 86400002), bank, -2500))
+        assertTrue(AutomaticGmailPayment.possibleDuplicate(merchant, bank, -2500))
+        assertFalse(AutomaticGmailPayment.possibleDuplicate(merchant, bank, -3000))
+        assertFalse(AutomaticGmailPayment.possibleDuplicate(bank.copy(text = "Abono S/ 25.00"), bank, -2500))
+        assertFalse(AutomaticGmailPayment.possibleDuplicate(merchant.copy(postedAt = 86400002), bank, -2500))
     }
 
     @Test fun doesNotInventAmountsOrRegisterPromotionsAndFailedPayments() {

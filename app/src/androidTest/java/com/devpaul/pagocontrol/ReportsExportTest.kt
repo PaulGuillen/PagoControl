@@ -7,6 +7,7 @@ import com.devpaul.pagocontrol.features.reports.export.AndroidReportExporter
 import com.devpaul.pagocontrol.features.reports.ui.reports.ReportExport
 import com.devpaul.pagocontrol.features.reports.ui.reports.ReportFormat
 import com.devpaul.pagocontrol.features.reports.ui.reports.ReportsUiState
+import java.io.File
 import java.util.zip.ZipFile
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlinx.coroutines.runBlocking
@@ -21,7 +22,7 @@ class ReportsExportTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val exporter = AndroidReportExporter(context)
         ReportFormat.entries.forEach { format ->
-            val file = java.io.File(context.cacheDir, "reports-export-test.${format.extension}")
+            val file = File(context.cacheDir, "reports-export-test.${format.extension}")
             try {
                 exporter.write(Uri.fromFile(file).toString(), ReportExport(ReportsUiState().report, format))
                 assertTrue(file.length() > 100)
