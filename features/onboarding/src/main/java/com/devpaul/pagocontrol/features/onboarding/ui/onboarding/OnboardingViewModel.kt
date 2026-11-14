@@ -12,7 +12,11 @@ import org.koin.android.annotation.KoinViewModel
 class OnboardingViewModel(
     private val preferences: StartupPreferences,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<OnboardingUiState>(OnboardingUiState(page = (savedStateHandle.get<Int>("page") ?: 0).coerceIn(0, 2))) {
+) : BaseViewModel<OnboardingUiState>(
+    OnboardingUiState(
+        page = (savedStateHandle.get<Int>("page") ?: 0).coerceIn(0, 2)
+    )
+) {
     fun onIntent(intent: OnboardingUiIntent) {
         if (state.value.saving || state.value.destination != null) return
         when (intent) {
@@ -20,6 +24,7 @@ class OnboardingViewModel(
                 if (state.value.page == 2) finish(OnboardingDestination.Login)
                 else selectPage(state.value.page + 1)
             }
+
             OnboardingUiIntent.Back -> selectPage((state.value.page - 1).coerceAtLeast(0))
             is OnboardingUiIntent.Finish -> finish(intent.destination)
         }

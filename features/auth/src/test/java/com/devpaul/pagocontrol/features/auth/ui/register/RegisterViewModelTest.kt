@@ -17,11 +17,18 @@ import org.junit.Test
 class RegisterViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun teardown() { Dispatchers.resetMain() }
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun validatesConsentAndIgnoresDuplicateSubmit() = runTest {
+    @Test
+    fun validatesConsentAndIgnoresDuplicateSubmit() = runTest {
         val repository = ControlledAuth()
         val handle = SavedStateHandle()
         val viewModel = RegisterViewModel(RegisterUseCase(repository), handle)
@@ -44,10 +51,13 @@ class RegisterViewModelTest {
         assertEquals("", viewModel.state.value.password)
         assertFalse(handle.contains("password"))
     }
+
     private class ControlledAuth : TestAuthRepository() {
         var calls = 0
         val response = CompletableDeferred<AuthUser>()
 
-        override suspend fun register(name: String, email: String, password: String): AuthUser { calls++; return response.await() }
+        override suspend fun register(name: String, email: String, password: String): AuthUser {
+            calls++; return response.await()
+        }
     }
 }

@@ -13,10 +13,12 @@ data class MovementsUiState(
     val visible: List<HistoryMovement>
         get() = movements.filter { movement ->
             month == "Noviembre 2023" &&
-                (filter == "all" || movement.kind == filter || filter == "pending" && movement.pending) &&
-                (source == "Todas" || movement.source == source) &&
-                (status == "Todos" || if (status == "Pendientes") movement.pending else !movement.pending) &&
-                (query.isBlank() || listOf(movement.title, movement.detail, movement.source,
-                    (movement.amountCents / 100.0).toString()).any { it.contains(query.trim(), ignoreCase = true) })
+                    (filter == "all" || movement.kind == filter || filter == "pending" && movement.pending) &&
+                    (source == "Todas" || movement.source == source) &&
+                    (status == "Todos" || if (status == "Pendientes") movement.pending else !movement.pending) &&
+                    (query.isBlank() || listOf(
+                        movement.title, movement.detail, movement.source,
+                        (movement.amountCents / 100.0).toString()
+                    ).any { it.contains(query.trim(), ignoreCase = true) })
         }
 }

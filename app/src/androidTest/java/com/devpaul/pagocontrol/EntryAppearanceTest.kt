@@ -32,31 +32,49 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class EntryAppearanceTest {
-    @get:Rule val compose = createComposeRule()
+    @get:Rule
+    val compose = createComposeRule()
 
-    @Test fun splashDark() = captureSplash(true)
+    @Test
+    fun splashDark() = captureSplash(true)
 
-    @Test fun splashLight() = captureSplash(false)
+    @Test
+    fun splashLight() = captureSplash(false)
 
-    @Test fun onboardingDark() = captureOnboarding(true)
+    @Test
+    fun onboardingDark() = captureOnboarding(true)
 
-    @Test fun onboardingLight() = captureOnboarding(false)
+    @Test
+    fun onboardingLight() = captureOnboarding(false)
 
-    @Test fun privacyDark() = captureOnboarding(dark = true, page = 1)
+    @Test
+    fun privacyDark() = captureOnboarding(dark = true, page = 1)
 
-    @Test fun privacyLight() = captureOnboarding(dark = false, page = 1)
+    @Test
+    fun privacyLight() = captureOnboarding(dark = false, page = 1)
 
-    @Test fun controlDark() = captureOnboarding(dark = true, page = 2)
+    @Test
+    fun controlDark() = captureOnboarding(dark = true, page = 2)
 
-    @Test fun controlLight() = captureOnboarding(dark = false, page = 2)
+    @Test
+    fun controlLight() = captureOnboarding(dark = false, page = 2)
 
-    @Test fun providerColorsSupportWhiteLabels() {
-        listOf(EntryColors.Purple, EntryColors.Cyan, EntryColors.Green, EntryColors.Blue, EntryColors.Red, EntryColors.Amber).forEach { color ->
+    @Test
+    fun providerColorsSupportWhiteLabels() {
+        listOf(
+            EntryColors.Purple,
+            EntryColors.Cyan,
+            EntryColors.Green,
+            EntryColors.Blue,
+            EntryColors.Red,
+            EntryColors.Amber
+        ).forEach { color ->
             assertTrue(1.05f / (color.luminance() + 0.05f) >= 4.5f)
         }
     }
 
-    @Test fun finishingAllStepsNavigatesToLogin() {
+    @Test
+    fun finishingAllStepsNavigatesToLogin() {
         compose.setContent {
             PagoControlTheme(false) {
                 val controller = rememberNavController()
@@ -89,14 +107,22 @@ class EntryAppearanceTest {
     }
 
     private fun captureOnboarding(dark: Boolean, page: Int = 0) {
-        compose.setContent { PagoControlTheme(dark) { OnboardingScreen(OnboardingUiState(page = page), {}) } }
+        compose.setContent {
+            PagoControlTheme(dark) {
+                OnboardingScreen(
+                    OnboardingUiState(page = page),
+                    {})
+            }
+        }
         val visibleLabel = when (page) {
             1 -> "BCP / BBVA"
             2 -> "TOTAL DISPONIBLE"
             else -> "Carlos M."
         }
         compose.onNodeWithText(visibleLabel).assertIsDisplayed()
-        val screen = when (page) { 1 -> "privacy"; 2 -> "control"; else -> "onboarding" }
+        val screen = when (page) {
+            1 -> "privacy"; 2 -> "control"; else -> "onboarding"
+        }
         saveImage("$screen-${if (dark) "dark" else "light"}")
     }
 
@@ -104,7 +130,8 @@ class EntryAppearanceTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val directory = File(context.getExternalFilesDir(null), "entry-previews").apply { mkdirs() }
         File(directory, "$name.png").outputStream().use { output ->
-            compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, output)
+            compose.onRoot().captureToImage().asAndroidBitmap()
+                .compress(Bitmap.CompressFormat.PNG, 100, output)
         }
     }
 }

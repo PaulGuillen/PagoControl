@@ -21,7 +21,10 @@ class AndroidApplication : Application() {
                 environment = BuildConfig.ENVIRONMENT,
             ),
         )
-        AppCheckProviderInstaller.install(this, useEmulators = BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
+        AppCheckProviderInstaller.install(
+            this,
+            useEmulators = BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()
+        )
         koinInitializer()
     }
 

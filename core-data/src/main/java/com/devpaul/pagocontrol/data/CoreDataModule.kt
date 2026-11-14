@@ -20,13 +20,15 @@ import org.koin.core.annotation.Single
 @ComponentScan
 class CoreDataModule {
     @Single
-    fun homeGuidePreferences(context: Context): HomeGuidePreferences = DataStoreHomeGuidePreferences(context)
+    fun homeGuidePreferences(context: Context): HomeGuidePreferences =
+        DataStoreHomeGuidePreferences(context)
 
     @Single
     fun profileRepository(context: Context): ProfileRepository = DataStoreProfileRepository(context)
 
     @Single
-    fun startupPreferences(context: Context): StartupPreferences = DataStoreStartupPreferences(context)
+    fun startupPreferences(context: Context): StartupPreferences =
+        DataStoreStartupPreferences(context)
 
     @Single
     fun paymentDatabase(context: Context): PaymentDatabase = Room.databaseBuilder(
@@ -36,5 +38,6 @@ class CoreDataModule {
     ).build()
 
     @Single
-    fun appearanceRepository(context: Context): AppearanceRepository = DataStoreAppearanceRepository(context)
+    fun appearanceRepository(context: Context): AppearanceRepository =
+        DataStoreAppearanceRepository(context)
 }

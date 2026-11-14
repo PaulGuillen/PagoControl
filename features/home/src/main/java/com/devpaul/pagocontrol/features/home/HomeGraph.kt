@@ -18,7 +18,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
 
-fun NavGraphBuilder.homeGraph(name: String, themeIndex: Int, onThemeSelected: (Int) -> Unit, authorized: Boolean, onMovements: () -> Unit = {}, onProfile: () -> Unit = {}, onReports: () -> Unit = {}) {
+fun NavGraphBuilder.homeGraph(
+    name: String,
+    themeIndex: Int,
+    onThemeSelected: (Int) -> Unit,
+    authorized: Boolean,
+    onMovements: () -> Unit = {},
+    onProfile: () -> Unit = {},
+    onReports: () -> Unit = {}
+) {
     navigation<HomeRoute.Graph>(startDestination = HomeRoute.Home) {
         composable<HomeRoute.Home> {
             if (authorized) {

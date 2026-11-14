@@ -9,6 +9,7 @@ object AppCheckProviderInstaller {
     fun install(context: Context, useEmulators: Boolean) {
         FirebaseApp.initializeApp(context)
         if (useEmulators) return
-        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
+        FirebaseAppCheck.getInstance()
+            .installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
     }
 }

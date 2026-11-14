@@ -38,36 +38,60 @@ fun RegisterScreen(
     var providerInfo by rememberSaveable { mutableStateOf(false) }
     var legalInfo by rememberSaveable { mutableStateOf(false) }
     AuthLayout(onBack = onLogin, themeIndex = themeIndex, onThemeSelected = onThemeSelected) {
-        AuthHeading(stringResource(R.string.flow_register_title), stringResource(R.string.flow_register_description))
+        AuthHeading(
+            stringResource(R.string.flow_register_title),
+            stringResource(R.string.flow_register_description)
+        )
         if (state.completed) {
             Text(stringResource(R.string.flow_register_success))
-            AuthPrimaryButton(text = stringResource(R.string.flow_back_login), loading = false, onClick = onLogin)
+            AuthPrimaryButton(
+                text = stringResource(R.string.flow_back_login),
+                loading = false,
+                onClick = onLogin
+            )
         } else {
             AuthProviderButton { providerInfo = true }
             AuthDivider(stringResource(R.string.flow_register_separator))
             AuthField(
-                value = state.name, onValueChange = { onIntent(RegisterUiIntent.NameChanged(it)) }, label = stringResource(R.string.flow_name),
-                error = state.validationAttempted && state.name.trim().length < 2, enabled = !state.loading,
+                value = state.name,
+                onValueChange = { onIntent(RegisterUiIntent.NameChanged(it)) },
+                label = stringResource(R.string.flow_name),
+                error = state.validationAttempted && state.name.trim().length < 2,
+                enabled = !state.loading,
             )
             AuthField(
-                value = state.email, onValueChange = { onIntent(RegisterUiIntent.EmailChanged(it)) }, label = stringResource(R.string.flow_email),
-                error = state.validationAttempted && !state.email.trim().matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")),
-                enabled = !state.loading, keyboardType = KeyboardType.Email,
+                value = state.email,
+                onValueChange = { onIntent(RegisterUiIntent.EmailChanged(it)) },
+                label = stringResource(R.string.flow_email),
+                error = state.validationAttempted && !state.email.trim()
+                    .matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")),
+                enabled = !state.loading,
+                keyboardType = KeyboardType.Email,
             )
             AuthField(
-                value = state.password, onValueChange = { onIntent(RegisterUiIntent.PasswordChanged(it)) }, label = stringResource(R.string.flow_password),
-                error = state.validationAttempted && state.password.length < 8, enabled = !state.loading,
-                password = true, visible = state.passwordVisible,
+                value = state.password,
+                onValueChange = { onIntent(RegisterUiIntent.PasswordChanged(it)) },
+                label = stringResource(R.string.flow_password),
+                error = state.validationAttempted && state.password.length < 8,
+                enabled = !state.loading,
+                password = true,
+                visible = state.passwordVisible,
                 onToggleVisibility = { onIntent(RegisterUiIntent.TogglePassword) },
                 onSubmit = { onIntent(RegisterUiIntent.Submit) },
             )
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                val strength = listOf(state.password.length >= 8, state.password.any(Char::isUpperCase), state.password.any(Char::isDigit), state.password.any { !it.isLetterOrDigit() }).count { it }
+                val strength = listOf(
+                    state.password.length >= 8,
+                    state.password.any(Char::isUpperCase),
+                    state.password.any(Char::isDigit),
+                    state.password.any { !it.isLetterOrDigit() }).count { it }
                 repeat(4) { index ->
-                    Box(Modifier.weight(1f).height(4.dp).background(
-                        if (index < strength) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant,
-                        MaterialTheme.shapes.small,
-                    ))
+                    Box(
+                        Modifier.weight(1f).height(4.dp).background(
+                            if (index < strength) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant,
+                            MaterialTheme.shapes.small,
+                        )
+                    )
                 }
             }
             Row(
@@ -80,26 +104,44 @@ fun RegisterScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Checkbox(checked = state.termsAccepted, onCheckedChange = null, enabled = !state.loading)
+                Checkbox(
+                    checked = state.termsAccepted,
+                    onCheckedChange = null,
+                    enabled = !state.loading
+                )
                 Text(
                     text = stringResource(R.string.flow_accept_terms),
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            TextButton(onClick = { legalInfo = true }) { Text(stringResource(R.string.flow_terms_link), color = MaterialTheme.colorScheme.onSurface) }
-            state.error?.let { error ->
-                Text(stringResource(when (error) {
-                    RegisterError.InvalidInput -> R.string.flow_register_invalid
-                    RegisterError.TermsRequired -> R.string.flow_terms_required
-                    RegisterError.Network -> R.string.flow_network_error
-                    RegisterError.Unavailable -> R.string.flow_unavailable
-                    RegisterError.EmailAlreadyInUse -> R.string.flow_email_in_use
-                    RegisterError.TooManyRequests -> R.string.flow_too_many_requests
-                    RegisterError.ProfileIncomplete -> R.string.flow_profile_incomplete
-                }), color = MaterialTheme.colorScheme.error)
+            TextButton(onClick = {
+                legalInfo = true
+            }) {
+                Text(
+                    stringResource(R.string.flow_terms_link),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
-            AuthPrimaryButton(text = stringResource(R.string.flow_create_account), loading = state.loading) { onIntent(RegisterUiIntent.Submit) }
+            state.error?.let { error ->
+                Text(
+                    stringResource(
+                        when (error) {
+                            RegisterError.InvalidInput -> R.string.flow_register_invalid
+                            RegisterError.TermsRequired -> R.string.flow_terms_required
+                            RegisterError.Network -> R.string.flow_network_error
+                            RegisterError.Unavailable -> R.string.flow_unavailable
+                            RegisterError.EmailAlreadyInUse -> R.string.flow_email_in_use
+                            RegisterError.TooManyRequests -> R.string.flow_too_many_requests
+                            RegisterError.ProfileIncomplete -> R.string.flow_profile_incomplete
+                        }
+                    ), color = MaterialTheme.colorScheme.error
+                )
+            }
+            AuthPrimaryButton(
+                text = stringResource(R.string.flow_create_account),
+                loading = state.loading
+            ) { onIntent(RegisterUiIntent.Submit) }
             AccountLink(
                 text = stringResource(R.string.flow_already_account),
                 action = stringResource(R.string.flow_login_button),
@@ -109,14 +151,30 @@ fun RegisterScreen(
             )
         }
     }
-    if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) { providerInfo = false }
+    if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) {
+        providerInfo = false
+    }
     if (legalInfo) AuthInfoDialog(stringResource(R.string.flow_terms_info)) { legalInfo = false }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun RegisterLightPreview() { PagoControlTheme(false) { RegisterScreen(state = RegisterUiState(), onIntent = {}, onLogin = {}) } }
+private fun RegisterLightPreview() {
+    PagoControlTheme(false) {
+        RegisterScreen(
+            state = RegisterUiState(),
+            onIntent = {},
+            onLogin = {})
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
-private fun RegisterDarkPreview() { PagoControlTheme(true) { RegisterScreen(state = RegisterUiState(), onIntent = {}, onLogin = {}) } }
+private fun RegisterDarkPreview() {
+    PagoControlTheme(true) {
+        RegisterScreen(
+            state = RegisterUiState(),
+            onIntent = {},
+            onLogin = {})
+    }
+}

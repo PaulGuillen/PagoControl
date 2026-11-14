@@ -21,7 +21,8 @@ import kotlinx.coroutines.flow.combine
 import org.koin.core.annotation.Single
 
 @Single(binds = [HomeRepository::class, PaymentNotificationRepository::class, GmailMonitoringRepository::class])
-class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, PaymentNotificationRepository, GmailMonitoringRepository {
+class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository,
+    PaymentNotificationRepository, GmailMonitoringRepository {
     private val dao = database.notifications()
 
     override suspend fun loadDashboard() = dashboard(dao.confirmed())
@@ -32,20 +33,30 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
         rows.map { it.toNotification() }.filter(WalletTransactionCandidate::matches)
     }
 
-    override fun observeSources() = dao.observeSources().map { sources -> sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }.toSet() }
+    override fun observeSources() = dao.observeSources().map { sources ->
+        sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }.toSet()
+    }
 
     override fun observeGmailDashboard() =
         dao.observeConfirmed(mail = true).map { dashboard(it, allMovements = true) }
 
-    override fun observeGmailPending() = combine(dao.observePending(mail = true), dao.observeConfirmed(mail = true)) { rows, recorded ->
+    override fun observeGmailPending() = combine(
+        dao.observePending(mail = true),
+        dao.observeConfirmed(mail = true)
+    ) { rows, recorded ->
         rows.map { row ->
             row.toNotification().copy(possibleDuplicate = recorded.any {
-                AutomaticGmailPayment.possibleDuplicate(row.toNotification(), it.toNotification(), it.amountCents)
+                AutomaticGmailPayment.possibleDuplicate(
+                    row.toNotification(),
+                    it.toNotification(),
+                    it.amountCents
+                )
             })
         }
     }
 
-    override fun observeGmailEnabled() = dao.observeSources().map { GmailTransactionCandidate.PACKAGE_NAME in it }
+    override fun observeGmailEnabled() =
+        dao.observeSources().map { GmailTransactionCandidate.PACKAGE_NAME in it }
 
     override suspend fun setGmailEnabled(enabled: Boolean) {
         if (enabled) dao.enable(NotificationSourceEntity(GmailTransactionCandidate.PACKAGE_NAME))
@@ -58,18 +69,32 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
     }
 
     override suspend fun capture(notification: PaymentNotification) {
-        if (notification.packageName != GmailTransactionCandidate.PACKAGE_NAME && !WalletTransactionCandidate.matches(notification)) return
-        if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && !AutomaticGmailPayment.isCandidate(notification)) return
+        if (notification.packageName != GmailTransactionCandidate.PACKAGE_NAME && !WalletTransactionCandidate.matches(
+                notification
+            )
+        ) return
+        if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME && !AutomaticGmailPayment.isCandidate(
+                notification
+            )
+        ) return
         val automaticPayment = AutomaticYapePayment.recognize(notification)
         val automaticMail = AutomaticGmailPayment.recognize(notification)
         val automaticAmount = automaticPayment?.amountCents ?: automaticMail?.amountCents
-        dao.captureIfEnabled(NotificationEntity(
-            id = notification.id, packageName = notification.packageName, source = notification.source,
-            title = notification.title, text = notification.text, postedAt = notification.postedAt,
-            suggestedAmountCents = if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME) AutomaticGmailPayment.suggestedAmount(notification) else WalletTransactionCandidate.suggestedAmount(notification),
-            amountCents = automaticAmount,
-            status = if (automaticAmount != null) "automatic" else "pending",
-        ))
+        dao.captureIfEnabled(
+            NotificationEntity(
+                id = notification.id,
+                packageName = notification.packageName,
+                source = notification.source,
+                title = notification.title,
+                text = notification.text,
+                postedAt = notification.postedAt,
+                suggestedAmountCents = if (notification.packageName == GmailTransactionCandidate.PACKAGE_NAME) AutomaticGmailPayment.suggestedAmount(
+                    notification
+                ) else WalletTransactionCandidate.suggestedAmount(notification),
+                amountCents = automaticAmount,
+                status = if (automaticAmount != null) "automatic" else "pending",
+            )
+        )
     }
 
     override suspend fun confirm(id: String, amountCents: Long) {
@@ -79,16 +104,24 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
 
     override suspend fun discard(id: String) = dao.discard(id)
 
-    private fun dashboard(rows: List<NotificationEntity>, allMovements: Boolean = false): DashboardResult.Success {
+    private fun dashboard(
+        rows: List<NotificationEntity>,
+        allMovements: Boolean = false
+    ): DashboardResult.Success {
         val now = Calendar.getInstance()
         val monthRows = rows.filter { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
-            date.get(Calendar.YEAR) == now.get(Calendar.YEAR) && date.get(Calendar.MONTH) == now.get(Calendar.MONTH)
+            date.get(Calendar.YEAR) == now.get(Calendar.YEAR) && date.get(Calendar.MONTH) == now.get(
+                Calendar.MONTH
+            )
         }
         val income = monthRows.filter { (it.amountCents ?: 0) > 0 }
         val expenses = monthRows.filter { (it.amountCents ?: 0) < 0 }
         val weekStart = (now.clone() as Calendar).apply {
-            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(
+            Calendar.MILLISECOND,
+            0
+        )
             add(Calendar.DAY_OF_MONTH, -((get(Calendar.DAY_OF_WEEK) + 5) % 7))
         }
         val weekly = MutableList(7) { 0L }
@@ -113,29 +146,45 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository, Payment
             }
         }
         val formatter = SimpleDateFormat("dd MMM, HH:mm", Locale.forLanguageTag("es-PE"))
-        return DashboardResult.Success(Dashboard(
-            balanceCents = rows.sumOf { it.amountCents ?: 0 },
-            incomeCents = income.sumOf { it.amountCents ?: 0 },
-            expenseCents = -expenses.sumOf { it.amountCents ?: 0 },
-            incomeCount = income.size, expenseCount = expenses.size,
-            weeklyFlow = weekly, monthlyFlow = monthly,
-            movements = (if (allMovements) rows else rows.take(20)).map { it.toMovement(formatter) },
-            weeklyIncomeFlow = weeklyIncome, monthlyIncomeFlow = monthlyIncome,
-            receivedMovements = rows.filter { (it.amountCents ?: 0) > 0 }.take(20).map { it.toMovement(formatter) },
-        ))
+        return DashboardResult.Success(
+            Dashboard(
+                balanceCents = rows.sumOf { it.amountCents ?: 0 },
+                incomeCents = income.sumOf { it.amountCents ?: 0 },
+                expenseCents = -expenses.sumOf { it.amountCents ?: 0 },
+                incomeCount = income.size, expenseCount = expenses.size,
+                weeklyFlow = weekly, monthlyFlow = monthly,
+                movements = (if (allMovements) rows else rows.take(20)).map {
+                    it.toMovement(
+                        formatter
+                    )
+                },
+                weeklyIncomeFlow = weeklyIncome, monthlyIncomeFlow = monthlyIncome,
+                receivedMovements = rows.filter { (it.amountCents ?: 0) > 0 }.take(20)
+                    .map { it.toMovement(formatter) },
+            )
+        )
     }
 
     private fun NotificationEntity.toMovement(formatter: SimpleDateFormat) = Movement(
-        id = id, title = AutomaticBcpExpense.recognize(toNotification())?.let { "BCP - ${it.merchant}" } ?: if (status == "automatic") {
-            AutomaticYapePayment.recognize(toNotification())?.sender
-                ?: AutomaticGmailPayment.recognize(toNotification())?.title ?: title
-        } else title.ifBlank { source },
+        id = id,
+        title = AutomaticBcpExpense.recognize(toNotification())?.let { "BCP - ${it.merchant}" }
+            ?: if (status == "automatic") {
+                AutomaticYapePayment.recognize(toNotification())?.sender
+                    ?: AutomaticGmailPayment.recognize(toNotification())?.title ?: title
+            } else title.ifBlank { source },
         detail = formatter.format(Date(postedAt)), source = source,
         amountCents = amountCents ?: 0, automatic = status == "automatic",
     )
 
     private fun NotificationEntity.toNotification() = PaymentNotification(
-        id = id, packageName = packageName, source = source, title = title,
-        text = text, postedAt = postedAt, suggestedAmountCents = suggestedAmountCents ?: AutomaticGmailPayment.suggestedAmount(asPaymentNotification()),
+        id = id,
+        packageName = packageName,
+        source = source,
+        title = title,
+        text = text,
+        postedAt = postedAt,
+        suggestedAmountCents = suggestedAmountCents ?: AutomaticGmailPayment.suggestedAmount(
+            asPaymentNotification()
+        ),
     )
 }

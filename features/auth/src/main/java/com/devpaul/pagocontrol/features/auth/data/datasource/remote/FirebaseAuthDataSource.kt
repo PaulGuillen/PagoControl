@@ -26,7 +26,8 @@ class FirebaseAuthDataSource(
     private val mutableSession = MutableStateFlow(auth.currentUser?.toSession())
     override val session = mutableSession.asStateFlow()
     private val mutex = Mutex()
-    @Volatile private var changingUser = false
+    @Volatile
+    private var changingUser = false
 
     init {
         auth.addAuthStateListener { instance ->
@@ -41,45 +42,50 @@ class FirebaseAuthDataSource(
     override suspend fun register(name: String, email: String, password: String) = authenticate {
         val user = requireNotNull(auth.createUserWithEmailAndPassword(email, password).await().user)
         try {
-            user.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build()).await()
+            user.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())
+                .await()
         } catch (error: Exception) {
             throw ProfileSetupException(error)
         }
         user
     }
 
-    private suspend fun authenticate(operation: suspend () -> FirebaseUser) = withContext(NonCancellable) {
-        mutex.withLock {
-            changingUser = true
-            try {
-                val user = operation()
-                val name = try {
-                    withTimeout(15_000) { ensureProfile(user) }
+    private suspend fun authenticate(operation: suspend () -> FirebaseUser) =
+        withContext(NonCancellable) {
+            mutex.withLock {
+                changingUser = true
+                try {
+                    val user = operation()
+                    val name = try {
+                        withTimeout(15_000) { ensureProfile(user) }
+                    } catch (error: Exception) {
+                        throw ProfileSetupException(error)
+                    }
+                    mutableSession.value = user.toSession().copy(name = name)
                 } catch (error: Exception) {
-                    throw ProfileSetupException(error)
+                    auth.signOut()
+                    mutableSession.value = null
+                    throw error
+                } finally {
+                    changingUser = false
                 }
-                mutableSession.value = user.toSession().copy(name = name)
-            } catch (error: Exception) {
-                auth.signOut()
-                mutableSession.value = null
-                throw error
-            } finally {
-                changingUser = false
             }
         }
-    }
 
     private suspend fun ensureProfile(user: FirebaseUser): String {
         val document = firestore.collection("users").document(user.uid)
         val existing = document.get().await()
-        if (existing.exists()) return existing.getString("name")?.takeIf { it.isNotBlank() } ?: user.toSession().name
+        if (existing.exists()) return existing.getString("name")?.takeIf { it.isNotBlank() }
+            ?: user.toSession().name
         val name = user.toSession().name
-        document.set(mapOf(
-            "userID" to user.uid,
-            "name" to name,
-            "email" to user.email.orEmpty(),
-            "createdAt" to FieldValue.serverTimestamp(),
-        )).await()
+        document.set(
+            mapOf(
+                "userID" to user.uid,
+                "name" to name,
+                "email" to user.email.orEmpty(),
+                "createdAt" to FieldValue.serverTimestamp(),
+            )
+        ).await()
         return name
     }
 
@@ -92,7 +98,8 @@ class FirebaseAuthDataSource(
         val name = withTimeout(15_000) {
             firestore.collection("users").document(user.uid).get().await().getString("name")
         }
-        val refreshed = user.toSession().copy(name = name?.takeIf { it.isNotBlank() } ?: user.toSession().name)
+        val refreshed =
+            user.toSession().copy(name = name?.takeIf { it.isNotBlank() } ?: user.toSession().name)
         if (auth.currentUser?.uid == user.uid && !changingUser) mutableSession.value = refreshed
         return refreshed.takeIf { auth.currentUser?.uid == user.uid }
     }
@@ -104,7 +111,8 @@ class FirebaseAuthDataSource(
                 firestore.collection("users").document(user.uid)
                     .set(mapOf("name" to name), SetOptions.merge()).await()
             }
-            user.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build()).await()
+            user.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())
+                .await()
             mutableSession.value = user.toSession()
         }
     }

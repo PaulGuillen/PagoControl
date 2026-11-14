@@ -18,26 +18,34 @@ class AuthModule {
     fun firebaseApp(context: Context): FirebaseApp {
         if (BuildConfig.FIREBASE_EMULATOR_HOST.isBlank()) return FirebaseApp.getInstance()
         val name = "pagocontrol-emulators"
-        return FirebaseApp.getApps(context).firstOrNull { it.name == name } ?: FirebaseApp.initializeApp(
-            context,
-            FirebaseOptions.Builder(FirebaseApp.getInstance().options)
-                .setProjectId("demo-pagocontrol")
-                .setApiKey("fake-api-key")
-                .build(),
-            name,
-        )
+        return FirebaseApp.getApps(context).firstOrNull { it.name == name }
+            ?: FirebaseApp.initializeApp(
+                context,
+                FirebaseOptions.Builder(FirebaseApp.getInstance().options)
+                    .setProjectId("demo-pagocontrol")
+                    .setApiKey("fake-api-key")
+                    .build(),
+                name,
+            )
     }
 
     @Single
     fun firebaseAuth(app: FirebaseApp): FirebaseAuth = FirebaseAuth.getInstance(app).apply {
         setLanguageCode("es")
-        if (BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()) useEmulator(BuildConfig.FIREBASE_EMULATOR_HOST, 9099)
+        if (BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()) useEmulator(
+            BuildConfig.FIREBASE_EMULATOR_HOST,
+            9099
+        )
     }
 
     @Single
-    fun firebaseFirestore(app: FirebaseApp): FirebaseFirestore = FirebaseFirestore.getInstance(app).apply {
-        firestoreSettings = FirebaseFirestoreSettings.Builder()
-            .setLocalCacheSettings(MemoryCacheSettings.newBuilder().build()).build()
-        if (BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()) useEmulator(BuildConfig.FIREBASE_EMULATOR_HOST, 8080)
-    }
+    fun firebaseFirestore(app: FirebaseApp): FirebaseFirestore =
+        FirebaseFirestore.getInstance(app).apply {
+            firestoreSettings = FirebaseFirestoreSettings.Builder()
+                .setLocalCacheSettings(MemoryCacheSettings.newBuilder().build()).build()
+            if (BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()) useEmulator(
+                BuildConfig.FIREBASE_EMULATOR_HOST,
+                8080
+            )
+        }
 }

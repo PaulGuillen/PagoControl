@@ -43,17 +43,39 @@ import com.devpaul.pagocontrol.designsystem.PagoHeader
 import com.devpaul.pagocontrol.features.reports.R
 
 @Composable
-fun ReportsScreen(state: ReportsUiState, onIntent: (ReportsUiIntent) -> Unit, onHome: () -> Unit, onMovements: () -> Unit, onProfile: () -> Unit) {
+fun ReportsScreen(
+    state: ReportsUiState,
+    onIntent: (ReportsUiIntent) -> Unit,
+    onHome: () -> Unit,
+    onMovements: () -> Unit,
+    onProfile: () -> Unit
+) {
     val report = state.report
     val months = stringArrayResource(R.array.reports_months)
-    val range = if (report.firstMonth == report.lastMonth) stringResource(R.string.reports_single_month, months[report.firstMonth - 1])
-        else stringResource(R.string.reports_range, months[report.firstMonth - 1], months[report.lastMonth - 1])
-    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(state.format.mimeType)) { uri ->
-        onIntent(ReportsUiIntent.Export(uri?.toString()))
-    }
+    val range = if (report.firstMonth == report.lastMonth) stringResource(
+        R.string.reports_single_month,
+        months[report.firstMonth - 1]
+    )
+    else stringResource(
+        R.string.reports_range,
+        months[report.firstMonth - 1],
+        months[report.lastMonth - 1]
+    )
+    val exportLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(state.format.mimeType)) { uri ->
+            onIntent(ReportsUiIntent.Export(uri?.toString()))
+        }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { PagoDock(false, onHome, onMovements, onProfile = onProfile, reportsSelected = true) },
+        bottomBar = {
+            PagoDock(
+                false,
+                onHome,
+                onMovements,
+                onProfile = onProfile,
+                reportsSelected = true
+            )
+        },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
             LazyColumn(
@@ -61,9 +83,16 @@ fun ReportsScreen(state: ReportsUiState, onIntent: (ReportsUiIntent) -> Unit, on
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                item { PagoHeader(stringResource(R.string.reports_title), { onIntent(ReportsUiIntent.Notifications) }) }
                 item {
-                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PagoHeader(
+                        stringResource(R.string.reports_title),
+                        { onIntent(ReportsUiIntent.Notifications) })
+                }
+                item {
+                    Row(
+                        Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         ReportPeriod.entries.forEach { period ->
                             val label = when (period) {
                                 ReportPeriod.Month -> R.string.reports_this_month
@@ -74,8 +103,14 @@ fun ReportsScreen(state: ReportsUiState, onIntent: (ReportsUiIntent) -> Unit, on
                             FilterChip(
                                 selected = state.period == period,
                                 onClick = { onIntent(ReportsUiIntent.Period(period)) },
-                                label = { Text(stringResource(label)) }, shape = CircleShape, border = null,
-                                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = MaterialTheme.colorScheme.primaryContainer, selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer, containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                                label = { Text(stringResource(label)) },
+                                shape = CircleShape,
+                                border = null,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                ),
                             )
                         }
                     }
@@ -83,26 +118,56 @@ fun ReportsScreen(state: ReportsUiState, onIntent: (ReportsUiIntent) -> Unit, on
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(range, style = MaterialTheme.typography.labelMedium)
-                        Text(stringResource(R.string.reports_demo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            stringResource(R.string.reports_demo),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
                 item { ReportBalanceCard(report) }
-                item { ReportFlowCard(report, state.selectedPoint) { onIntent(ReportsUiIntent.Point(it)) } }
+                item {
+                    ReportFlowCard(report, state.selectedPoint) {
+                        onIntent(
+                            ReportsUiIntent.Point(
+                                it
+                            )
+                        )
+                    }
+                }
                 item { ReportCategoriesCard(report) }
                 item { ReportChannelsCard(report) }
                 item { ReportSubscriptionsCard(report) }
                 item {
                     ReportCard {
-                        Text(stringResource(R.string.reports_export_title), style = MaterialTheme.typography.titleMedium)
-                        Text(stringResource(R.string.reports_export_detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            stringResource(R.string.reports_export_title),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            stringResource(R.string.reports_export_detail),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             ReportFormat.entries.forEach { format ->
                                 FilterChip(
                                     selected = state.format == format,
                                     onClick = { onIntent(ReportsUiIntent.Format(format)) },
                                     modifier = Modifier.weight(1f),
                                     enabled = !state.exporting && state.pendingExport == null,
-                                    label = { Text(stringResource(when (format) { ReportFormat.Pdf -> R.string.reports_format_pdf; ReportFormat.Excel -> R.string.reports_format_excel; ReportFormat.Csv -> R.string.reports_format_csv }), style = MaterialTheme.typography.labelSmall) },
+                                    label = {
+                                        Text(
+                                            stringResource(
+                                                when (format) {
+                                                    ReportFormat.Pdf -> R.string.reports_format_pdf; ReportFormat.Excel -> R.string.reports_format_excel; ReportFormat.Csv -> R.string.reports_format_csv
+                                                }
+                                            ), style = MaterialTheme.typography.labelSmall
+                                        )
+                                    },
                                 )
                             }
                         }
@@ -112,51 +177,98 @@ fun ReportsScreen(state: ReportsUiState, onIntent: (ReportsUiIntent) -> Unit, on
                                 exportLauncher.launch("PagoControl-2023-${state.firstMonth}-${state.lastMonth}.${state.format.extension}")
                             },
                             enabled = !state.exporting && state.pendingExport == null,
-                            modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(16.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(16.dp),
                         ) {
                             Icon(Icons.Outlined.Download, null)
-                            Text(stringResource(if (state.exporting) R.string.reports_exporting else R.string.reports_download), Modifier.padding(start = 8.dp))
+                            Text(
+                                stringResource(if (state.exporting) R.string.reports_exporting else R.string.reports_download),
+                                Modifier.padding(start = 8.dp)
+                            )
                         }
-                        Text(stringResource(R.string.reports_export_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            stringResource(R.string.reports_export_note),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
         }
     }
-    if (state.customDialog) CustomRangeDialog(state.firstMonth, state.lastMonth, { first, last -> onIntent(ReportsUiIntent.CustomRange(first, last)) }) { onIntent(ReportsUiIntent.Dismiss) }
+    if (state.customDialog) CustomRangeDialog(
+        state.firstMonth,
+        state.lastMonth,
+        { first, last -> onIntent(ReportsUiIntent.CustomRange(first, last)) }) {
+        onIntent(
+            ReportsUiIntent.Dismiss
+        )
+    }
     state.notice?.let { notice ->
         AlertDialog(
             onDismissRequest = { onIntent(ReportsUiIntent.Dismiss) },
             title = { Text(stringResource(R.string.reports_title)) },
-            text = { Text(stringResource(when (notice) { ReportsNotice.Notifications -> R.string.reports_notifications_notice; ReportsNotice.ExportSaved -> R.string.reports_export_saved; ReportsNotice.ExportError -> R.string.reports_export_error })) },
-            confirmButton = { TextButton(onClick = { onIntent(ReportsUiIntent.Dismiss) }) { Text(stringResource(R.string.reports_close)) } },
+            text = {
+                Text(
+                    stringResource(
+                        when (notice) {
+                            ReportsNotice.Notifications -> R.string.reports_notifications_notice; ReportsNotice.ExportSaved -> R.string.reports_export_saved; ReportsNotice.ExportError -> R.string.reports_export_error
+                        }
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { onIntent(ReportsUiIntent.Dismiss) }) {
+                    Text(
+                        stringResource(R.string.reports_close)
+                    )
+                }
+            },
         )
     }
 }
 
 @Composable
-private fun CustomRangeDialog(firstMonth: Int, lastMonth: Int, onApply: (Int, Int) -> Unit, onDismiss: () -> Unit) {
+private fun CustomRangeDialog(
+    firstMonth: Int,
+    lastMonth: Int,
+    onApply: (Int, Int) -> Unit,
+    onDismiss: () -> Unit
+) {
     var first by rememberSaveable { mutableIntStateOf(firstMonth) }
     var last by rememberSaveable { mutableIntStateOf(lastMonth) }
     AlertDialog(
-        onDismissRequest = onDismiss, title = { Text(stringResource(R.string.reports_custom_title)) },
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.reports_custom_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(stringResource(R.string.reports_custom_detail))
                 ReportMonthMenu(stringResource(R.string.reports_first_month), first) { first = it }
                 ReportMonthMenu(stringResource(R.string.reports_last_month), last) { last = it }
-                if (first > last) Text(stringResource(R.string.reports_invalid_range), color = MaterialTheme.colorScheme.error)
+                if (first > last) Text(
+                    stringResource(R.string.reports_invalid_range),
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         },
-        confirmButton = { Button(onClick = { onApply(first, last) }, enabled = first <= last) { Text(stringResource(R.string.reports_apply)) } },
+        confirmButton = {
+            Button(
+                onClick = { onApply(first, last) },
+                enabled = first <= last
+            ) { Text(stringResource(R.string.reports_apply)) }
+        },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.reports_cancel)) } },
     )
 }
 
 @Preview(name = "Reportes claro", showBackground = true)
 @Composable
-private fun ReportsLightPreview() { PagoControlTheme(false) { ReportsScreen(ReportsUiState(), {}, {}, {}, {}) } }
+private fun ReportsLightPreview() {
+    PagoControlTheme(false) { ReportsScreen(ReportsUiState(), {}, {}, {}, {}) }
+}
 
 @Preview(name = "Reportes oscuro", showBackground = true)
 @Composable
-private fun ReportsDarkPreview() { PagoControlTheme(true) { ReportsScreen(ReportsUiState(), {}, {}, {}, {}) } }
+private fun ReportsDarkPreview() {
+    PagoControlTheme(true) { ReportsScreen(ReportsUiState(), {}, {}, {}, {}) }
+}

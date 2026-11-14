@@ -42,11 +42,13 @@ object AppAnalytics {
 
     fun error(operation: String, error: Throwable? = null, code: String = "unknown") {
         if (error is CancellationException) return
-        send("app_error", mapOf(
-            "operation" to operation,
-            "error_type" to (error?.javaClass?.simpleName ?: "HandledError"),
-            "error_code" to code,
-        ))
+        send(
+            "app_error", mapOf(
+                "operation" to operation,
+                "error_type" to (error?.javaClass?.simpleName ?: "HandledError"),
+                "error_code" to code,
+            )
+        )
         if (error != null) {
             try {
                 reporter?.recordError(operation, error)

@@ -27,8 +27,15 @@ fun BrandMark(modifier: Modifier = Modifier, large: Boolean = false) {
         contentColor = MaterialTheme.colorScheme.onPrimary,
         shape = RoundedCornerShape(if (large) 32.dp else 24.dp),
     ) {
-        Box(modifier = Modifier.padding(if (large) 28.dp else 18.dp), contentAlignment = Alignment.Center) {
-            Icon(imageVector = Icons.Outlined.AccountBalanceWallet, contentDescription = null, modifier = Modifier.size(if (large) 64.dp else 36.dp))
+        Box(
+            modifier = Modifier.padding(if (large) 28.dp else 18.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.AccountBalanceWallet,
+                contentDescription = null,
+                modifier = Modifier.size(if (large) 64.dp else 36.dp)
+            )
         }
     }
 }
@@ -37,10 +44,16 @@ fun BrandMark(modifier: Modifier = Modifier, large: Boolean = false) {
 fun AmbientSurface(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
     val colors = MaterialTheme.colorScheme
     Box(
-        modifier.background(Brush.radialGradient(
-            colors = listOf(colors.primary.copy(alpha = 0.14f), colors.background, colors.secondary.copy(alpha = 0.07f)),
-            radius = 1200f,
-        )),
+        modifier.background(
+            Brush.radialGradient(
+                colors = listOf(
+                    colors.primary.copy(alpha = 0.14f),
+                    colors.background,
+                    colors.secondary.copy(alpha = 0.07f)
+                ),
+                radius = 1200f,
+            )
+        ),
         content = content,
     )
 }
@@ -57,12 +70,18 @@ fun SplashSurface(modifier: Modifier = Modifier, content: @Composable BoxScope.(
                 radius = size.maxDimension * 0.65f,
             )
             val green = Brush.radialGradient(
-                colors = listOf(EntryColors.Mint.copy(alpha = if (dark) 0.16f else 0.12f), Color.Transparent),
+                colors = listOf(
+                    EntryColors.Mint.copy(alpha = if (dark) 0.16f else 0.12f),
+                    Color.Transparent
+                ),
                 center = Offset(size.width * 0.95f, size.height * 0.48f),
                 radius = size.maxDimension * 0.52f,
             )
             val bottom = Brush.radialGradient(
-                colors = listOf(EntryColors.Gold.copy(alpha = if (dark) 0.12f else 0.1f), Color.Transparent),
+                colors = listOf(
+                    EntryColors.Gold.copy(alpha = if (dark) 0.12f else 0.1f),
+                    Color.Transparent
+                ),
                 center = Offset(size.width * 0.5f, size.height * 1.02f),
                 radius = size.maxDimension * 0.5f,
             )

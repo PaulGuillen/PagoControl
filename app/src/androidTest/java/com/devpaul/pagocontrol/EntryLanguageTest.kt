@@ -22,10 +22,19 @@ class EntryLanguageTest {
         }
         val context = application.createConfigurationContext(configuration)
 
-        assertEquals("SINCRONIZACIÓN INTELIGENTE", context.getString(SplashResources.string.splash_badge))
+        assertEquals(
+            "SINCRONIZACIÓN INTELIGENTE",
+            context.getString(SplashResources.string.splash_badge)
+        )
         assertEquals("Omitir", context.getString(OnboardingResources.string.onboarding_skip))
-        assertEquals("Bienvenido de nuevo", context.getString(AuthResources.string.flow_login_title))
+        assertEquals(
+            "Bienvenido de nuevo",
+            context.getString(AuthResources.string.flow_login_title)
+        )
         assertEquals("Crea tu cuenta", context.getString(AuthResources.string.flow_register_title))
-        assertEquals("¿Olvidaste tu contraseña?", context.getString(AuthResources.string.flow_forgot_title))
+        assertEquals(
+            "¿Olvidaste tu contraseña?",
+            context.getString(AuthResources.string.flow_forgot_title)
+        )
     }
 }

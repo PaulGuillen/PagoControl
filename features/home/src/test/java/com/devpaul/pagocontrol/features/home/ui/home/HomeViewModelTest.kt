@@ -28,16 +28,40 @@ import org.junit.Test
 class HomeViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun tearDown() { Dispatchers.resetMain() }
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun retriesFailureAndDisplaysEmptyDashboard() = runTest {
+    @Test
+    fun retriesFailureAndDisplaysEmptyDashboard() = runTest {
         val repository = ControlledHome()
-        val viewModel = HomeViewModel(home = repository, auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = ControlledGuides())
+        val viewModel = HomeViewModel(
+            home = repository,
+            auth = DemoSession(),
+            notifications = ControlledNotifications(),
+            gmail = ControlledGmail(),
+            guides = ControlledGuides()
+        )
         advanceUntilIdle()
         assertEquals(HomeContent.Error, viewModel.state.value.content)
-        repository.result = DashboardResult.Success(Dashboard(balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0, weeklyFlow = emptyList(), monthlyFlow = emptyList(), movements = emptyList()))
+        repository.result = DashboardResult.Success(
+            Dashboard(
+                balanceCents = 0,
+                incomeCents = 0,
+                expenseCents = 0,
+                incomeCount = 0,
+                expenseCount = 0,
+                weeklyFlow = emptyList(),
+                monthlyFlow = emptyList(),
+                movements = emptyList()
+            )
+        )
         viewModel.onIntent(HomeUiIntent.Retry)
         advanceUntilIdle()
         assertTrue(viewModel.state.value.content is HomeContent.Ready)
@@ -50,9 +74,16 @@ class HomeViewModelTest {
         assertEquals(currentChartBar(monthly = false), viewModel.state.value.selectedBar)
     }
 
-    @Test fun logoutIsNotDuplicated() = runTest {
+    @Test
+    fun logoutIsNotDuplicated() = runTest {
         val auth = DemoSession()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = auth, notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = ControlledGuides())
+        val viewModel = HomeViewModel(
+            home = ControlledHome(),
+            auth = auth,
+            notifications = ControlledNotifications(),
+            gmail = ControlledGmail(),
+            guides = ControlledGuides()
+        )
         viewModel.onIntent(HomeUiIntent.SignOut)
         viewModel.onIntent(HomeUiIntent.SignOut)
         advanceUntilIdle()
@@ -66,14 +97,23 @@ class HomeViewModelTest {
         override suspend fun loadDashboard() = result
     }
 
-    @Test fun observesNotificationsAndPersistsReviewActions() = runTest {
+    @Test
+    fun observesNotificationsAndPersistsReviewActions() = runTest {
         val notifications = ControlledNotifications()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = notifications, gmail = ControlledGmail(), guides = ControlledGuides())
+        val viewModel = HomeViewModel(
+            home = ControlledHome(),
+            auth = DemoSession(),
+            notifications = notifications,
+            gmail = ControlledGmail(),
+            guides = ControlledGuides()
+        )
         advanceUntilIdle()
-        notifications.pending.value = listOf(PaymentNotification(
-            id = "payment", packageName = "test.bank", source = "Banco", title = "Pago",
-            text = "Recibiste S/ 25.00", postedAt = 1L, suggestedAmountCents = 2500L,
-        ))
+        notifications.pending.value = listOf(
+            PaymentNotification(
+                id = "payment", packageName = "test.bank", source = "Banco", title = "Pago",
+                text = "Recibiste S/ 25.00", postedAt = 1L, suggestedAmountCents = 2500L,
+            )
+        )
         advanceUntilIdle()
         assertEquals(1, viewModel.state.value.pendingNotifications.size)
         viewModel.onIntent(HomeUiIntent.ConfirmPayment(id = "payment", amountCents = 2500L))
@@ -82,9 +122,16 @@ class HomeViewModelTest {
         assertTrue(viewModel.state.value.pendingNotifications.isEmpty())
     }
 
-    @Test fun keepsGmailMonitoringAndErrorsIndependentFromWallets() = runTest {
+    @Test
+    fun keepsGmailMonitoringAndErrorsIndependentFromWallets() = runTest {
         val gmail = ControlledGmail()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = gmail, guides = ControlledGuides())
+        val viewModel = HomeViewModel(
+            home = ControlledHome(),
+            auth = DemoSession(),
+            notifications = ControlledNotifications(),
+            gmail = gmail,
+            guides = ControlledGuides()
+        )
         advanceUntilIdle()
         viewModel.onIntent(HomeUiIntent.SetGmailMonitoring(true))
         advanceUntilIdle()
@@ -98,9 +145,16 @@ class HomeViewModelTest {
         assertEquals(false, viewModel.state.value.savingNotification)
     }
 
-    @Test fun guidesAreIndependentPersistedAndReplayable() = runTest {
+    @Test
+    fun guidesAreIndependentPersistedAndReplayable() = runTest {
         val guides = ControlledGuides()
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = guides)
+        val viewModel = HomeViewModel(
+            home = ControlledHome(),
+            auth = DemoSession(),
+            notifications = ControlledNotifications(),
+            gmail = ControlledGmail(),
+            guides = guides
+        )
         advanceUntilIdle()
         assertEquals(0, viewModel.state.value.guideStep)
         viewModel.onIntent(HomeUiIntent.NextGuideStep)
@@ -120,13 +174,26 @@ class HomeViewModelTest {
         assertEquals(null, viewModel.state.value.guideStep)
         viewModel.onIntent(HomeUiIntent.ShowGuide)
         assertEquals(0, viewModel.state.value.guideStep)
-        val reopened = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = guides)
+        val reopened = HomeViewModel(
+            home = ControlledHome(),
+            auth = DemoSession(),
+            notifications = ControlledNotifications(),
+            gmail = ControlledGmail(),
+            guides = guides
+        )
         advanceUntilIdle()
         assertEquals(null, reopened.state.value.guideStep)
     }
 
-    @Test fun refreshingSameDatePreservesManualBarSelection() = runTest {
-        val viewModel = HomeViewModel(home = ControlledHome(), auth = DemoSession(), notifications = ControlledNotifications(), gmail = ControlledGmail(), guides = ControlledGuides())
+    @Test
+    fun refreshingSameDatePreservesManualBarSelection() = runTest {
+        val viewModel = HomeViewModel(
+            home = ControlledHome(),
+            auth = DemoSession(),
+            notifications = ControlledNotifications(),
+            gmail = ControlledGmail(),
+            guides = ControlledGuides()
+        )
         viewModel.onIntent(HomeUiIntent.SelectBar(0))
         viewModel.onIntent(HomeUiIntent.RefreshDate)
         assertEquals(0, viewModel.state.value.selectedBar)
@@ -144,9 +211,11 @@ class HomeViewModelTest {
         val enabled = MutableStateFlow(false)
         var fail = false
 
-        override fun observeGmailDashboard() = MutableStateFlow<DashboardResult>(DashboardResult.Unavailable)
+        override fun observeGmailDashboard() =
+            MutableStateFlow<DashboardResult>(DashboardResult.Unavailable)
 
-        override fun observeGmailPending() = MutableStateFlow<List<PaymentNotification>>(emptyList())
+        override fun observeGmailPending() =
+            MutableStateFlow<List<PaymentNotification>>(emptyList())
 
         override fun observeGmailEnabled() = enabled
 
@@ -166,25 +235,38 @@ class HomeViewModelTest {
         override fun observeSources() = sources
 
         override suspend fun setSource(packageName: String, enabled: Boolean) {
-            sources.value = if (enabled) sources.value + packageName else sources.value - packageName
+            sources.value =
+                if (enabled) sources.value + packageName else sources.value - packageName
         }
 
-        override suspend fun capture(notification: PaymentNotification) { pending.value += notification }
+        override suspend fun capture(notification: PaymentNotification) {
+            pending.value += notification
+        }
 
         override suspend fun confirm(id: String, amountCents: Long) {
             confirmed = id to amountCents
             pending.value = pending.value.filterNot { it.id == id }
         }
 
-        override suspend fun discard(id: String) { pending.value = pending.value.filterNot { it.id == id } }
+        override suspend fun discard(id: String) {
+            pending.value = pending.value.filterNot { it.id == id }
+        }
     }
 
     private class DemoSession : AuthRepository {
-        override val session = MutableStateFlow<UserSession?>(UserSession(id = "demo", name = "Carlos", email = "demo@pagocontrol.pe"))
+        override val session = MutableStateFlow<UserSession?>(
+            UserSession(
+                id = "demo",
+                name = "Carlos",
+                email = "demo@pagocontrol.pe"
+            )
+        )
         var signOutCount = 0
 
         override suspend fun signIn(email: String, password: String) = SignInResult.Success
 
-        override suspend fun signOut() { signOutCount++; session.value = null }
+        override suspend fun signOut() {
+            signOutCount++; session.value = null
+        }
     }
 }

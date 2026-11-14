@@ -7,7 +7,11 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
-class FirebaseAnalyticsReporter(context: Context, private val enabled: Boolean, environment: String) : AnalyticsReporter {
+class FirebaseAnalyticsReporter(
+    context: Context,
+    private val enabled: Boolean,
+    environment: String
+) : AnalyticsReporter {
     private val analytics = FirebaseAnalytics.getInstance(context.applicationContext)
     private val crashlytics = FirebaseCrashlytics.getInstance()
 
@@ -28,7 +32,10 @@ class FirebaseAnalyticsReporter(context: Context, private val enabled: Boolean, 
         val bundle = Bundle()
         parameters.forEach { (key, value) -> bundle.putString(key, value.take(100)) }
         analytics.logEvent(name, bundle)
-        if (name == FirebaseAnalytics.Event.SCREEN_VIEW) crashlytics.setCustomKey("screen_name", parameters["screen_name"].orEmpty())
+        if (name == FirebaseAnalytics.Event.SCREEN_VIEW) crashlytics.setCustomKey(
+            "screen_name",
+            parameters["screen_name"].orEmpty()
+        )
     }
 
     override fun recordError(operation: String, error: Throwable) {
@@ -37,4 +44,6 @@ class FirebaseAnalyticsReporter(context: Context, private val enabled: Boolean, 
 }
 
 internal fun sanitizedAnalyticsError(operation: String, error: Throwable): Throwable =
-    RuntimeException("$operation: ${error.javaClass.simpleName}").apply { stackTrace = error.stackTrace }
+    RuntimeException("$operation: ${error.javaClass.simpleName}").apply {
+        stackTrace = error.stackTrace
+    }

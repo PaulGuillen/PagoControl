@@ -62,44 +62,107 @@ fun ProfileSupportScreen(privacy: Boolean, onBack: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.back)) }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                Icons.AutoMirrored.Outlined.ArrowBack,
+                                stringResource(R.string.back)
+                            )
+                        }
                         Text(title, style = MaterialTheme.typography.headlineMedium)
                     }
                 }
                 item {
-                    Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.22f)) {
-                        Column(Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            Icon(if (privacy) Icons.Outlined.Shield else Icons.AutoMirrored.Outlined.HelpOutline, null, Modifier.size(32.dp))
-                            Text(stringResource(if (privacy) R.string.privacy_intro_title else R.string.help_intro_title), style = MaterialTheme.typography.headlineMedium)
-                            Text(stringResource(if (privacy) R.string.privacy_intro_body else R.string.help_intro_body), style = MaterialTheme.typography.bodyMedium)
+                    Surface(
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.22f)
+                    ) {
+                        Column(
+                            Modifier.fillMaxWidth().padding(24.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Icon(
+                                if (privacy) Icons.Outlined.Shield else Icons.AutoMirrored.Outlined.HelpOutline,
+                                null,
+                                Modifier.size(32.dp)
+                            )
+                            Text(
+                                stringResource(if (privacy) R.string.privacy_intro_title else R.string.help_intro_title),
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Text(
+                                stringResource(if (privacy) R.string.privacy_intro_body else R.string.help_intro_body),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }
-                if (!privacy) item { Text(stringResource(R.string.faq), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                if (!privacy) item {
+                    Text(
+                        stringResource(R.string.faq),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 articles.forEachIndexed { index, (heading, body) ->
                     item(key = heading) {
                         if (privacy) {
-                            Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface) {
-                                Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    Text(stringResource(heading), style = MaterialTheme.typography.titleMedium)
-                                    Text(stringResource(body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Surface(
+                                shape = RoundedCornerShape(20.dp),
+                                color = MaterialTheme.colorScheme.surface
+                            ) {
+                                Column(
+                                    Modifier.fillMaxWidth().padding(20.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Text(
+                                        stringResource(heading),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        stringResource(body),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         } else {
                             var expanded by rememberSaveable { mutableStateOf(index == 0) }
-                            val expansionLabel = stringResource(if (expanded) R.string.expanded else R.string.collapsed)
+                            val expansionLabel =
+                                stringResource(if (expanded) R.string.expanded else R.string.collapsed)
                             Surface(
                                 onClick = { expanded = !expanded },
-                                modifier = Modifier.fillMaxWidth().animateContentSize().semantics { stateDescription = expansionLabel },
-                                shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface,
+                                modifier = Modifier.fillMaxWidth().animateContentSize()
+                                    .semantics { stateDescription = expansionLabel },
+                                shape = RoundedCornerShape(20.dp),
+                                color = MaterialTheme.colorScheme.surface,
                             ) {
-                                Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        Text(stringResource(heading), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                                        Icon(if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null)
+                                Column(
+                                    Modifier.padding(20.dp),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Text(
+                                            stringResource(heading),
+                                            Modifier.weight(1f),
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Icon(
+                                            if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                                            null
+                                        )
                                     }
-                                    if (expanded) Text(stringResource(body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (expanded) Text(
+                                        stringResource(body),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         }

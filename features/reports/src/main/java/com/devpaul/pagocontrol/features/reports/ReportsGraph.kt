@@ -10,7 +10,12 @@ import com.devpaul.pagocontrol.features.reports.ui.reports.ReportsViewModel
 import com.devpaul.pagocontrol.navigation.route.ReportsRoute
 import org.koin.androidx.compose.koinViewModel
 
-fun NavGraphBuilder.reportsGraph(authorized: Boolean, onHome: () -> Unit, onMovements: () -> Unit, onProfile: () -> Unit) {
+fun NavGraphBuilder.reportsGraph(
+    authorized: Boolean,
+    onHome: () -> Unit,
+    onMovements: () -> Unit,
+    onProfile: () -> Unit
+) {
     navigation<ReportsRoute.Graph>(startDestination = ReportsRoute.Reports) {
         composable<ReportsRoute.Reports> {
             if (authorized) {

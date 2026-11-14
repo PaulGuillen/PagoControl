@@ -32,12 +32,28 @@ class SimulatePaymentReceiver : BroadcastReceiver(), KoinComponent {
                 if (scenario == "clear") {
                     val ids = database.openHelper.readableDatabase.query(
                         "SELECT id FROM payment_notifications WHERE id LIKE 'debug-sim-%'"
-                    ).use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.getString(0)) } }
+                    ).use { cursor ->
+                        buildList {
+                            while (cursor.moveToNext()) add(
+                                cursor.getString(
+                                    0
+                                )
+                            )
+                        }
+                    }
                     ids.forEach { repository.discard(it) }
                     pending.resultData = "Datos de simulacion retirados del balance y pendientes."
                     return@launch
                 }
-                require(scenario in setOf("bcp", "steam", "pair", "income", "rejected")) { "Escenario no valido" }
+                require(
+                    scenario in setOf(
+                        "bcp",
+                        "steam",
+                        "pair",
+                        "income",
+                        "rejected"
+                    )
+                ) { "Escenario no valido" }
                 require(PaymentAmount.parse(amount) != null) { "Importe no valido" }
                 if (!gmail.observeGmailEnabled().first()) {
                     pending.resultData = "Activa Monitorear Gmail antes de simular."
@@ -45,19 +61,33 @@ class SimulatePaymentReceiver : BroadcastReceiver(), KoinComponent {
                 }
                 val batch = UUID.randomUUID().toString()
                 suspend fun capture(key: String, title: String, text: String) {
-                    repository.capture(PaymentNotification(
-                        id = "debug-sim-$batch-$key",
-                        packageName = GmailTransactionCandidate.PACKAGE_NAME,
-                        source = "Gmail (prueba)", title = title, text = text,
-                        postedAt = System.currentTimeMillis(), suggestedAmountCents = null,
-                    ))
+                    repository.capture(
+                        PaymentNotification(
+                            id = "debug-sim-$batch-$key",
+                            packageName = GmailTransactionCandidate.PACKAGE_NAME,
+                            source = "Gmail (prueba)", title = title, text = text,
+                            postedAt = System.currentTimeMillis(), suggestedAmountCents = null,
+                        )
+                    )
                 }
-                if (scenario == "bcp" || scenario == "pair") capture("bcp", "BCP Notificaciones",
-                    "Realizaste un consumo de S/ $amount con tu Tarjeta de D\u00e9bito BCP en STEAM (PRUEBA).\nMonto\nTotal del consumo\nS/ $amount")
-                if (scenario == "steam" || scenario == "pair") capture("steam", "Steam Support (prueba)",
-                    "Gracias por tu compra de prueba.\nJuego de ejemplo\nTotal: S/ $amount")
-                if (scenario == "income") capture("income", "Interbank (prueba)", "Transferencia recibida S/ $amount")
-                if (scenario == "rejected") capture("rejected", "BCP Notificaciones", "Compra rechazada S/ $amount (prueba)")
+                if (scenario == "bcp" || scenario == "pair") capture(
+                    "bcp", "BCP Notificaciones",
+                    "Realizaste un consumo de S/ $amount con tu Tarjeta de D\u00e9bito BCP en STEAM (PRUEBA).\nMonto\nTotal del consumo\nS/ $amount"
+                )
+                if (scenario == "steam" || scenario == "pair") capture(
+                    "steam", "Steam Support (prueba)",
+                    "Gracias por tu compra de prueba.\nJuego de ejemplo\nTotal: S/ $amount"
+                )
+                if (scenario == "income") capture(
+                    "income",
+                    "Interbank (prueba)",
+                    "Transferencia recibida S/ $amount"
+                )
+                if (scenario == "rejected") capture(
+                    "rejected",
+                    "BCP Notificaciones",
+                    "Compra rechazada S/ $amount (prueba)"
+                )
                 pending.resultData = "Simulacion $scenario enviada. Revisa Correo en PagoControl."
             } catch (error: Exception) {
                 pending.resultCode = 1

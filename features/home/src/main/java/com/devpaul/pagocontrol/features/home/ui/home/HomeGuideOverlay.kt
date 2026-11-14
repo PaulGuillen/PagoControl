@@ -87,7 +87,8 @@ internal fun HomeGuideOverlay(
     ) {
         Canvas(Modifier.fillMaxSize()) {
             val viewport = Rect(Offset.Zero, size)
-            val visibleTarget = localTarget?.intersect(viewport)?.takeIf { it.width > 0 && it.height > 0 }
+            val visibleTarget =
+                localTarget?.intersect(viewport)?.takeIf { it.width > 0 && it.height > 0 }
             val scrim = Path().apply {
                 fillType = PathFillType.EvenOdd
                 addRect(viewport)
@@ -109,22 +110,34 @@ internal fun HomeGuideOverlay(
                 modifier = Modifier.fillMaxSize(),
                 content = {
                     val interaction = if (action.checked != null) {
-                        Modifier.toggleable(value = action.checked, enabled = action.enabled, role = Role.Switch) { action.onClick() }
+                        Modifier.toggleable(
+                            value = action.checked,
+                            enabled = action.enabled,
+                            role = Role.Switch
+                        ) { action.onClick() }
                     } else {
-                        Modifier.clickable(enabled = action.enabled, role = Role.Button, onClick = action.onClick)
+                        Modifier.clickable(
+                            enabled = action.enabled,
+                            role = Role.Button,
+                            onClick = action.onClick
+                        )
                     }
                     Box(
-                        Modifier.testTag("home-guide-action").semantics { contentDescription = action.label }
+                        Modifier.testTag("home-guide-action")
+                            .semantics { contentDescription = action.label }
                             .then(interaction),
                     )
                 },
             ) { measurables, constraints ->
-                val viewport = Rect(0f, 0f, constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+                val viewport =
+                    Rect(0f, 0f, constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
                 val bounds = action.bounds.translate(-origin).intersect(viewport)
-                val control = measurables.single().measure(Constraints.fixed(
-                    width = bounds.width.roundToInt().coerceAtLeast(0),
-                    height = bounds.height.roundToInt().coerceAtLeast(0),
-                ))
+                val control = measurables.single().measure(
+                    Constraints.fixed(
+                        width = bounds.width.roundToInt().coerceAtLeast(0),
+                        height = bounds.height.roundToInt().coerceAtLeast(0),
+                    )
+                )
                 layout(constraints.maxWidth, constraints.maxHeight) {
                     control.place(x = bounds.left.roundToInt(), y = bounds.top.roundToInt())
                 }
@@ -134,30 +147,49 @@ internal fun HomeGuideOverlay(
             modifier = Modifier.fillMaxSize(),
             content = {
                 Surface(
-                    modifier = Modifier.testTag("home-guide-tooltip").semantics { liveRegion = LiveRegionMode.Polite },
+                    modifier = Modifier.testTag("home-guide-tooltip")
+                        .semantics { liveRegion = LiveRegionMode.Polite },
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = MaterialTheme.colorScheme.onSurface,
                     shape = MaterialTheme.shapes.large,
                     shadowElevation = 12.dp,
                 ) {
-                    Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(progress, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            progress,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Text(
                             text = if (permissionStep) stringResource(R.string.notifications_access_title) else titles[step],
                             style = MaterialTheme.typography.titleMedium,
                         )
-                        Column(Modifier.weight(1f, fill = false).verticalScroll(descriptionScroll)) {
+                        Column(
+                            Modifier.weight(1f, fill = false).verticalScroll(descriptionScroll)
+                        ) {
                             Text(
                                 text = if (permissionStep) stringResource(R.string.notifications_access_guide) else descriptions[step],
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                             if (permissionStep && settingsFailed) {
-                                Text(stringResource(R.string.notifications_settings_error), color = MaterialTheme.colorScheme.error)
+                                Text(
+                                    stringResource(R.string.notifications_settings_error),
+                                    color = MaterialTheme.colorScheme.error
+                                )
                             }
                         }
-                        FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
                             TextButton(onClick = { onIntent(HomeUiIntent.DismissGuide) }) {
-                                Text(stringResource(R.string.home_guide_cancel), color = MaterialTheme.colorScheme.onSurface)
+                                Text(
+                                    stringResource(R.string.home_guide_cancel),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                             Button(onClick = { onIntent(HomeUiIntent.NextGuideStep) }) {
                                 Text(stringResource(if (step == 3) R.string.home_guide_finish else R.string.home_guide_next))
@@ -169,19 +201,26 @@ internal fun HomeGuideOverlay(
         ) { measurables, constraints ->
             val margin = 16.dp.roundToPx()
             val gap = 12.dp.roundToPx()
-            val viewport = Rect(0f, 0f, constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+            val viewport =
+                Rect(0f, 0f, constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
             val anchor = localTarget?.intersect(viewport) ?: Rect.Zero
             val above = (anchor.top.roundToInt() - gap - margin).coerceAtLeast(0)
-            val below = (constraints.maxHeight - anchor.bottom.roundToInt() - gap - margin).coerceAtLeast(0)
+            val below =
+                (constraints.maxHeight - anchor.bottom.roundToInt() - gap - margin).coerceAtLeast(0)
             val placeBelow = below >= above
             val availableHeight = maxOf(above, below)
                 .coerceAtLeast(minOf(240.dp.roundToPx(), constraints.maxHeight - margin * 2))
                 .coerceAtMost(constraints.maxHeight - margin * 2)
                 .coerceAtLeast(0)
             val width = (constraints.maxWidth - margin * 2).coerceIn(0, 520.dp.roundToPx())
-            val tooltip = measurables.single().measure(Constraints.fixedWidth(width).copy(maxHeight = availableHeight))
-            val desiredTop = if (placeBelow) anchor.bottom.roundToInt() + gap else anchor.top.roundToInt() - gap - tooltip.height
-            val top = desiredTop.coerceIn(margin, maxOf(margin, constraints.maxHeight - margin - tooltip.height))
+            val tooltip = measurables.single()
+                .measure(Constraints.fixedWidth(width).copy(maxHeight = availableHeight))
+            val desiredTop =
+                if (placeBelow) anchor.bottom.roundToInt() + gap else anchor.top.roundToInt() - gap - tooltip.height
+            val top = desiredTop.coerceIn(
+                margin,
+                maxOf(margin, constraints.maxHeight - margin - tooltip.height)
+            )
             layout(constraints.maxWidth, constraints.maxHeight) {
                 tooltip.placeRelative(x = (constraints.maxWidth - tooltip.width) / 2, y = top)
             }

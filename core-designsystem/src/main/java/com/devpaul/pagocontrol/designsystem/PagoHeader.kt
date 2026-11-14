@@ -14,8 +14,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PagoHeader(title: String, onNotifications: (() -> Unit)? = null, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth().heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
+fun PagoHeader(
+    title: String,
+    onNotifications: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier.fillMaxWidth().heightIn(min = 64.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         PagoBrand(title, Modifier.weight(1f))
         if (onNotifications != null) {
             IconButton(onClick = onNotifications) {

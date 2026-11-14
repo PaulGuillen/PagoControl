@@ -69,14 +69,24 @@ fun AuthLayout(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).imePadding(), contentAlignment = Alignment.TopCenter) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(padding).imePadding(),
+            contentAlignment = Alignment.TopCenter
+        ) {
             Column(
-                modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(24.dp),
+                modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth()
+                    .verticalScroll(rememberScrollState()).padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     if (onBack != null) IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.flow_back))
+                        Icon(
+                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            stringResource(R.string.flow_back)
+                        )
                     }
                     Box(Modifier.weight(1f))
                     AppearanceMenu(themeIndex, onThemeSelected)
@@ -95,11 +105,25 @@ fun AuthHeading(title: String, description: String, security: Boolean = false) {
     ) {
         if (security) {
             Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
-                Icon(imageVector = Icons.Outlined.LockReset, contentDescription = null, modifier = Modifier.padding(24.dp).size(48.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                Icon(
+                    imageVector = Icons.Outlined.LockReset,
+                    contentDescription = null,
+                    modifier = Modifier.padding(24.dp).size(48.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             }
         } else BrandMark()
-        Text(text = title, style = MaterialTheme.typography.headlineLarge, textAlign = TextAlign.Center)
-        Text(text = description, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineLarge,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -115,7 +139,10 @@ fun AuthField(
         value = value, onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(), singleLine = true, enabled = enabled,
         leadingIcon = {
-            Icon(if (password) Icons.Outlined.Lock else if (keyboardType == KeyboardType.Email) Icons.Outlined.Email else Icons.Outlined.Person, null)
+            Icon(
+                if (password) Icons.Outlined.Lock else if (keyboardType == KeyboardType.Email) Icons.Outlined.Email else Icons.Outlined.Person,
+                null
+            )
         },
         label = { Text(label) }, isError = error, shape = MaterialTheme.shapes.medium,
         colors = TextFieldDefaults.colors(
@@ -144,13 +171,19 @@ fun AuthField(
 @Composable
 fun AuthPrimaryButton(text: String, loading: Boolean, onClick: () -> Unit) {
     Button(
-        onClick = onClick, enabled = !loading, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+        onClick = onClick,
+        enabled = !loading,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
         if (loading) CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp)
         else {
             Text(text)
-            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null, modifier = Modifier.padding(start = 12.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 12.dp)
+            )
         }
     }
 }
@@ -223,9 +256,16 @@ fun AuthFingerprintButton(onClick: () -> Unit, enabled: Boolean = true) {
 
 @Composable
 fun AuthDivider(text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         HorizontalDivider(Modifier.weight(1f))
-        Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         HorizontalDivider(Modifier.weight(1f))
     }
 }
@@ -236,6 +276,13 @@ fun AuthInfoDialog(message: String, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.flow_information)) },
         text = { Text(message) },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.flow_understood), color = MaterialTheme.colorScheme.onSurface) } },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    stringResource(R.string.flow_understood),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
     )
 }

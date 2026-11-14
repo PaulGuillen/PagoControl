@@ -26,12 +26,20 @@ class LoginViewModel(
                 savedStateHandle["email"] = intent.value
                 updateState { it.copy(email = intent.value, emailInvalid = false, error = null) }
             }
+
             is LoginUiIntent.PasswordChanged -> updateState {
                 it.copy(password = intent.value, passwordInvalid = false, error = null)
             }
+
             LoginUiIntent.TogglePassword -> updateState { it.copy(passwordVisible = !it.passwordVisible) }
             LoginUiIntent.Submit -> submit()
-            LoginUiIntent.ClearError -> updateState { it.copy(error = null, emailInvalid = false, passwordInvalid = false) }
+            LoginUiIntent.ClearError -> updateState {
+                it.copy(
+                    error = null,
+                    emailInvalid = false,
+                    passwordInvalid = false
+                )
+            }
         }
     }
 
@@ -51,6 +59,7 @@ class LoginViewModel(
                         AppAnalytics.outcome("login", "success")
                         SignInResult.Success
                     }
+
                     is UseCaseResult.Error -> {
                         AppAnalytics.error("login", code = response.error.error.name.lowercase())
                         response.error.error.toSignInResult()

@@ -10,7 +10,12 @@ import com.devpaul.pagocontrol.features.movements.ui.movements.MovementsViewMode
 import com.devpaul.pagocontrol.navigation.route.MovementsRoute
 import org.koin.androidx.compose.koinViewModel
 
-fun NavGraphBuilder.movementsGraph(authorized: Boolean, onHome: () -> Unit, onProfile: () -> Unit = {}, onReports: () -> Unit = {}) {
+fun NavGraphBuilder.movementsGraph(
+    authorized: Boolean,
+    onHome: () -> Unit,
+    onProfile: () -> Unit = {},
+    onReports: () -> Unit = {}
+) {
     navigation<MovementsRoute.Graph>(startDestination = MovementsRoute.Movements) {
         composable<MovementsRoute.Movements> {
             if (authorized) {

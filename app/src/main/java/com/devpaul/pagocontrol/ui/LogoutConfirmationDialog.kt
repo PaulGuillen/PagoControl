@@ -54,7 +54,11 @@ internal fun LogoutConfirmationDialog(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Outlined.Info, contentDescription = null, modifier = Modifier.size(36.dp))
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = null,
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
                 }
                 Text(

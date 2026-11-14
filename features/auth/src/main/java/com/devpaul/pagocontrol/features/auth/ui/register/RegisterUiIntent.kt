@@ -1,4 +1,5 @@
 package com.devpaul.pagocontrol.features.auth.ui.register
+
 sealed interface RegisterUiIntent {
     data class NameChanged(val value: String) : RegisterUiIntent
     data class EmailChanged(val value: String) : RegisterUiIntent

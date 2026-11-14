@@ -19,11 +19,18 @@ import org.junit.Assert.*
 class SplashViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun teardown() { Dispatchers.resetMain() }
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun retriesStartupReadWithoutDiscardingPreference() = runTest {
+    @Test
+    fun retriesStartupReadWithoutDiscardingPreference() = runTest {
         val preferences = ControlledPreferences()
         val viewModel = SplashViewModel(preferences)
         advanceUntilIdle()
@@ -38,10 +45,11 @@ class SplashViewModelTest {
 
     private class ControlledPreferences : StartupPreferences {
         var fail = true
-        override val onboardingCompleted get() = flow {
-            if (fail) throw IOException()
-            emit(true)
-        }
+        override val onboardingCompleted
+            get() = flow {
+                if (fail) throw IOException()
+                emit(true)
+            }
 
         override suspend fun completeOnboarding() = Unit
     }

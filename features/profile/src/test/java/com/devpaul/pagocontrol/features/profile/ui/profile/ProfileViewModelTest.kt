@@ -24,11 +24,18 @@ import org.junit.Test
 class ProfileViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun tearDown() { Dispatchers.resetMain() }
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun validatesAndSavesIdentityForCurrentUser() = runTest {
+    @Test
+    fun validatesAndSavesIdentityForCurrentUser() = runTest {
         val repository = MemoryProfile()
         val viewModel = ProfileViewModel(repository, DemoAuth())
         advanceUntilIdle()
@@ -47,7 +54,8 @@ class ProfileViewModelTest {
         assertNull(viewModel.state.value.dialog)
     }
 
-    @Test fun failedNotificationWriteKeepsPreviousValueAndAllowsRetry() = runTest {
+    @Test
+    fun failedNotificationWriteKeepsPreviousValueAndAllowsRetry() = runTest {
         val repository = MemoryProfile()
         val viewModel = ProfileViewModel(repository, DemoAuth())
         advanceUntilIdle()
@@ -66,7 +74,8 @@ class ProfileViewModelTest {
         assertFalse(recreated.state.value.notificationsEnabled)
     }
 
-    @Test fun ratingRequiresStarsAndCancelDiscardsDraft() = runTest {
+    @Test
+    fun ratingRequiresStarsAndCancelDiscardsDraft() = runTest {
         val repository = MemoryProfile()
         val viewModel = ProfileViewModel(repository, DemoAuth())
         advanceUntilIdle()
@@ -90,7 +99,8 @@ class ProfileViewModelTest {
         assertEquals(ProfileNotice.SavedRating, viewModel.state.value.notice)
     }
 
-    @Test fun signOutRequiresConfirmationAndPreventsDuplicateRequests() = runTest {
+    @Test
+    fun signOutRequiresConfirmationAndPreventsDuplicateRequests() = runTest {
         val auth = DemoAuth()
         val viewModel = ProfileViewModel(MemoryProfile(), auth)
         advanceUntilIdle()
@@ -136,6 +146,8 @@ class ProfileViewModelTest {
 
         override suspend fun signIn(email: String, password: String) = SignInResult.Success
 
-        override suspend fun signOut() { signOutCount++; session.value = null }
+        override suspend fun signOut() {
+            signOutCount++; session.value = null
+        }
     }
 }

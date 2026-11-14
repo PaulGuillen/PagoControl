@@ -10,11 +10,17 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class SplashViewModel(private val preferences: StartupPreferences) : BaseViewModel<SplashUiState>(SplashUiState()) {
+class SplashViewModel(private val preferences: StartupPreferences) :
+    BaseViewModel<SplashUiState>(SplashUiState()) {
     private var loading = false
-    init { load() }
 
-    fun onIntent(intent: SplashUiIntent) { if (intent == SplashUiIntent.Retry) load() }
+    init {
+        load()
+    }
+
+    fun onIntent(intent: SplashUiIntent) {
+        if (intent == SplashUiIntent.Retry) load()
+    }
 
     private fun load() {
         if (loading) return

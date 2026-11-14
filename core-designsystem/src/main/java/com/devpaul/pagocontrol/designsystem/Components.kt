@@ -44,22 +44,36 @@ fun PagoCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() 
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(modifier = Modifier.padding(PagoSpacing.medium), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
+        Column(
+            modifier = Modifier.padding(PagoSpacing.medium),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            content = content
+        )
     }
 }
 
 @Composable
 fun PagoBrand(subtitle: String, modifier: Modifier = Modifier) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
         Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.primary) {
             Icon(
-                imageVector = Icons.Outlined.AccountBalanceWallet, contentDescription = null,
-                modifier = Modifier.padding(10.dp).size(24.dp), tint = MaterialTheme.colorScheme.onPrimary,
+                imageVector = Icons.Outlined.AccountBalanceWallet,
+                contentDescription = null,
+                modifier = Modifier.padding(10.dp).size(24.dp),
+                tint = MaterialTheme.colorScheme.onPrimary,
             )
         }
         Column {
             Text(stringResource(R.string.brand_name), style = MaterialTheme.typography.titleMedium)
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -70,13 +84,20 @@ fun AppearanceMenu(selectedIndex: Int, onSelect: (Int) -> Unit) {
     val choices = listOf(R.string.theme_system, R.string.theme_light, R.string.theme_dark)
     val selectedLabel = stringResource(choices.getOrElse(selectedIndex) { R.string.theme_system })
     Column {
-        IconButton(onClick = { expanded = true }, modifier = Modifier.semantics { stateDescription = selectedLabel }) {
+        IconButton(
+            onClick = { expanded = true },
+            modifier = Modifier.semantics { stateDescription = selectedLabel }) {
             Icon(Icons.Outlined.Contrast, stringResource(R.string.appearance))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             choices.forEachIndexed { index, resource ->
                 DropdownMenuItem(
-                    text = { Text(stringResource(resource), fontWeight = if (selectedIndex == index) FontWeight.Bold else null) },
+                    text = {
+                        Text(
+                            stringResource(resource),
+                            fontWeight = if (selectedIndex == index) FontWeight.Bold else null
+                        )
+                    },
                     onClick = { expanded = false; onSelect(index) },
                 )
             }
@@ -87,7 +108,9 @@ fun AppearanceMenu(selectedIndex: Int, onSelect: (Int) -> Unit) {
 fun formatSoles(cents: Long, signed: Boolean = false): String {
     val formatter = DecimalFormat("#,##0.00", DecimalFormatSymbols(Locale.US))
     val amount = BigDecimal.valueOf(cents).movePointLeft(2).abs()
-    val prefix = when { cents < 0 -> "- "; signed && cents > 0 -> "+ "; else -> "" }
+    val prefix = when {
+        cents < 0 -> "- "; signed && cents > 0 -> "+ "; else -> ""
+    }
     return "${prefix}S/ ${formatter.format(amount)}"
 }
 
@@ -129,6 +152,10 @@ fun InstitutionBadge(source: String) {
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
     ) {
-        Text(text = source, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall)
+        Text(
+            text = source,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }

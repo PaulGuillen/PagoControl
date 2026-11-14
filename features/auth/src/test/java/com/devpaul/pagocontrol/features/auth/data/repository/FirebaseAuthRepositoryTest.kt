@@ -16,20 +16,27 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class FirebaseAuthRepositoryTest {
-    @Test fun repositoryAndUseCaseKeepValidationSeparateFromNetworkCalls() = runTest {
+    @Test
+    fun repositoryAndUseCaseKeepValidationSeparateFromNetworkCalls() = runTest {
         val source = FakeSource()
         val repository = AuthRepositoryImpl(source, AuthAttemptLimiter(MemoryAttempts()))
         val result = SignInUseCase(repository)("", "")
         assertTrue(result is UseCaseResult.Error)
         assertEquals(0, source.calls)
-        assertTrue(SignInUseCase(repository)(" paul@example.com ", " password ") is UseCaseResult.Success)
+        assertTrue(
+            SignInUseCase(repository)(
+                " paul@example.com ",
+                " password "
+            ) is UseCaseResult.Success
+        )
         assertEquals("paul@example.com", source.lastEmail)
         assertEquals(" password ", source.lastPassword)
         repository.signOut()
         assertNull(repository.currentUser())
     }
 
-    @Test fun preservesTypedFailuresAndCancellation() = runTest {
+    @Test
+    fun preservesTypedFailuresAndCancellation() = runTest {
         val source = FakeSource()
         val repository = AuthRepositoryImpl(source, AuthAttemptLimiter(MemoryAttempts()))
         source.failure = AuthException(AuthError.NETWORK)
@@ -37,27 +44,39 @@ class FirebaseAuthRepositoryTest {
         assertEquals(AuthError.NETWORK, (result as UseCaseResult.Error).error.error)
         source.failure = CancellationException("Cancelled")
         var cancelled = false
-        try { repository.signIn("paul@example.com", "password") } catch (_: CancellationException) { cancelled = true }
+        try {
+            repository.signIn("paul@example.com", "password")
+        } catch (_: CancellationException) {
+            cancelled = true
+        }
         assertTrue(cancelled)
     }
 
-    @Test fun attemptLimitPersistsAcrossLimiterInstances() {
+    @Test
+    fun attemptLimitPersistsAcrossLimiterInstances() {
         val store = MemoryAttempts()
         val first = AuthAttemptLimiter(store)
         repeat(3) { first.recordAttempt(AuthAction.Login, 1_000L + it) }
         val recreated = AuthAttemptLimiter(store)
-        try { recreated.recordAttempt(AuthAction.Login, 2_000L); fail("Expected throttling") }
-        catch (error: AuthException) { assertEquals(AuthError.ATTEMPT_LIMIT_REACHED, error.error) }
+        try {
+            recreated.recordAttempt(AuthAction.Login, 2_000L); fail("Expected throttling")
+        } catch (error: AuthException) {
+            assertEquals(AuthError.ATTEMPT_LIMIT_REACHED, error.error)
+        }
         recreated.recordAttempt(AuthAction.PasswordReset, 2_000L)
         recreated.recordAttempt(AuthAction.Login, AuthAttemptLimiter.WINDOW_MILLIS + 2_000L)
     }
+
     private class MemoryAttempts : AuthAttemptStore {
         private val values = mutableMapOf<AuthAction, List<Long>>()
 
         override fun read(action: AuthAction) = values[action].orEmpty()
 
-        override fun write(action: AuthAction, attempts: List<Long>) { values[action] = attempts }
+        override fun write(action: AuthAction, attempts: List<Long>) {
+            values[action] = attempts
+        }
     }
+
     private class FakeSource : AuthRemoteDataSource {
         override val session = MutableStateFlow<UserSession?>(null)
         var failure: Exception? = null
@@ -79,6 +98,8 @@ class FirebaseAuthRepositoryTest {
 
         override suspend fun updateName(name: String) {}
 
-        override suspend fun signOut() { session.value = null }
+        override suspend fun signOut() {
+            session.value = null
+        }
     }
 }

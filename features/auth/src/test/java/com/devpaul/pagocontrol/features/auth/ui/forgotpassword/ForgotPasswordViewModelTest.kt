@@ -17,13 +17,21 @@ import org.junit.Test
 class ForgotPasswordViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun teardown() { Dispatchers.resetMain() }
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun validatesEmailAndAllowsRetryAfterNetworkFailure() = runTest {
+    @Test
+    fun validatesEmailAndAllowsRetryAfterNetworkFailure() = runTest {
         val repository = ControlledAuth()
-        val viewModel = ForgotPasswordViewModel(SendPasswordResetUseCase(repository), SavedStateHandle())
+        val viewModel =
+            ForgotPasswordViewModel(SendPasswordResetUseCase(repository), SavedStateHandle())
         viewModel.onIntent(ForgotPasswordUiIntent.Submit)
         assertEquals(ForgotPasswordError.InvalidEmail, viewModel.state.value.error)
         assertEquals(0, repository.calls)
@@ -37,10 +45,13 @@ class ForgotPasswordViewModelTest {
         assertEquals(2, repository.calls)
         assertTrue(viewModel.state.value.completed)
     }
+
     private class ControlledAuth : TestAuthRepository() {
         var calls = 0
         var fail = true
 
-        override suspend fun sendPasswordReset(email: String) { calls++; if (fail) throw AuthException(AuthError.NETWORK) }
+        override suspend fun sendPasswordReset(email: String) {
+            calls++; if (fail) throw AuthException(AuthError.NETWORK)
+        }
     }
 }

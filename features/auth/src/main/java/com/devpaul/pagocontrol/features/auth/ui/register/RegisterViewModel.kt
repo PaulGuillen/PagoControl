@@ -16,9 +16,11 @@ import org.koin.android.annotation.KoinViewModel
 class RegisterViewModel(
     private val register: RegisterUseCase,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<RegisterUiState>(RegisterUiState(
-    name = savedStateHandle["name"] ?: "", email = savedStateHandle["email"] ?: "",
-)) {
+) : BaseViewModel<RegisterUiState>(
+    RegisterUiState(
+        name = savedStateHandle["name"] ?: "", email = savedStateHandle["email"] ?: "",
+    )
+) {
     fun onIntent(intent: RegisterUiIntent) {
         if (state.value.loading || state.value.completed) return
         when (intent) {
@@ -26,15 +28,34 @@ class RegisterViewModel(
                 savedStateHandle["name"] = intent.value
                 updateState { it.copy(name = intent.value, error = null) }
             }
+
             is RegisterUiIntent.EmailChanged -> {
                 savedStateHandle["email"] = intent.value
                 updateState { it.copy(email = intent.value, error = null) }
             }
-            is RegisterUiIntent.PasswordChanged -> updateState { it.copy(password = intent.value, error = null) }
-            is RegisterUiIntent.TermsChanged -> updateState { it.copy(termsAccepted = intent.value, error = null) }
+
+            is RegisterUiIntent.PasswordChanged -> updateState {
+                it.copy(
+                    password = intent.value,
+                    error = null
+                )
+            }
+
+            is RegisterUiIntent.TermsChanged -> updateState {
+                it.copy(
+                    termsAccepted = intent.value,
+                    error = null
+                )
+            }
+
             RegisterUiIntent.TogglePassword -> updateState { it.copy(passwordVisible = !it.passwordVisible) }
             RegisterUiIntent.Submit -> submit()
-            RegisterUiIntent.ClearError -> updateState { it.copy(error = null, validationAttempted = false) }
+            RegisterUiIntent.ClearError -> updateState {
+                it.copy(
+                    error = null,
+                    validationAttempted = false
+                )
+            }
         }
     }
 
@@ -51,11 +72,16 @@ class RegisterViewModel(
         updateState { it.copy(loading = true) }
         viewModelScope.launch {
             val result = try {
-                when (val response = register(name = current.name, email = current.email, password = current.password)) {
+                when (val response = register(
+                    name = current.name,
+                    email = current.email,
+                    password = current.password
+                )) {
                     is UseCaseResult.Success -> {
                         AppAnalytics.outcome("register", "success")
                         AccountResult.Success
                     }
+
                     is UseCaseResult.Error -> {
                         AppAnalytics.error("register", code = response.error.error.name.lowercase())
                         response.error.error.toAccountResult()

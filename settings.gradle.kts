@@ -24,7 +24,14 @@ dependencyResolutionManagement {
 
 rootProject.name = "PagoControl"
 include(":app")
-include(":core-domain", ":core-data", ":core-platform", ":core-designsystem", ":navigation", ":session")
+include(
+    ":core-domain",
+    ":core-data",
+    ":core-platform",
+    ":core-designsystem",
+    ":navigation",
+    ":session"
+)
 include(":features:auth", ":features:home", ":features:splash", ":features:onboarding")
 include(":features:movements")
 include(":features:profile")

@@ -32,7 +32,12 @@ import com.devpaul.pagocontrol.domain.LoginValidation
 import com.devpaul.pagocontrol.features.profile.R
 
 @Composable
-internal fun ProfileDialogs(state: ProfileUiState, themeIndex: Int, onThemeSelected: (Int) -> Unit, onIntent: (ProfileUiIntent) -> Unit) {
+internal fun ProfileDialogs(
+    state: ProfileUiState,
+    themeIndex: Int,
+    onThemeSelected: (Int) -> Unit,
+    onIntent: (ProfileUiIntent) -> Unit
+) {
     val dismiss = { onIntent(ProfileUiIntent.Dismiss) }
     state.dialog?.let { dialog ->
         val title = when (dialog) {
@@ -47,63 +52,152 @@ internal fun ProfileDialogs(state: ProfileUiState, themeIndex: Int, onThemeSelec
             onDismissRequest = dismiss,
             title = { Text(stringResource(title)) },
             text = {
-                Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     when (dialog) {
                         ProfileDialog.Edit -> {
-                            Text(stringResource(R.string.edit_detail), style = MaterialTheme.typography.bodySmall)
-                            OutlinedTextField(state.draftName, { onIntent(ProfileUiIntent.Name(it)) }, label = { Text(stringResource(R.string.name)) }, singleLine = true, enabled = !state.saving, modifier = Modifier.fillMaxWidth())
+                            Text(
+                                stringResource(R.string.edit_detail),
+                                style = MaterialTheme.typography.bodySmall
+                            )
                             OutlinedTextField(
-                                state.draftEmail, { onIntent(ProfileUiIntent.Email(it)) },
-                                label = { Text(stringResource(R.string.email)) }, singleLine = true,
-                                enabled = !state.saving, readOnly = !state.emailEditable, modifier = Modifier.fillMaxWidth(),
+                                state.draftName,
+                                { onIntent(ProfileUiIntent.Name(it)) },
+                                label = { Text(stringResource(R.string.name)) },
+                                singleLine = true,
+                                enabled = !state.saving,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                state.draftEmail,
+                                { onIntent(ProfileUiIntent.Email(it)) },
+                                label = { Text(stringResource(R.string.email)) },
+                                singleLine = true,
+                                enabled = !state.saving,
+                                readOnly = !state.emailEditable,
+                                modifier = Modifier.fillMaxWidth(),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                                isError = state.draftEmail.isNotBlank() && !LoginValidation.validEmail(state.draftEmail),
+                                isError = state.draftEmail.isNotBlank() && !LoginValidation.validEmail(
+                                    state.draftEmail
+                                ),
                             )
                         }
-                        ProfileDialog.Appearance -> listOf(R.string.theme_system, R.string.theme_light, R.string.theme_dark).forEachIndexed { index, label ->
-                            ChoiceRow(stringResource(label), themeIndex == index) { onThemeSelected(index); dismiss() }
+
+                        ProfileDialog.Appearance -> listOf(
+                            R.string.theme_system,
+                            R.string.theme_light,
+                            R.string.theme_dark
+                        ).forEachIndexed { index, label ->
+                            ChoiceRow(stringResource(label), themeIndex == index) {
+                                onThemeSelected(
+                                    index
+                                ); dismiss()
+                            }
                         }
+
                         ProfileDialog.Language -> {
                             ChoiceRow(stringResource(R.string.spanish), true, dismiss)
-                            Text(stringResource(R.string.language_available), style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                stringResource(R.string.language_available),
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
+
                         ProfileDialog.Rating -> {
                             Text(stringResource(R.string.rating_intro))
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
                                 (1..5).forEach { stars ->
                                     Column(
-                                        Modifier.weight(1f).selectable(selected = state.stars == stars, enabled = !state.saving, role = Role.RadioButton, onClick = { onIntent(ProfileUiIntent.Stars(stars)) }).padding(vertical = 8.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        Modifier.weight(1f).selectable(
+                                            selected = state.stars == stars,
+                                            enabled = !state.saving,
+                                            role = Role.RadioButton,
+                                            onClick = { onIntent(ProfileUiIntent.Stars(stars)) })
+                                            .padding(vertical = 8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
                                     ) {
-                                        Icon(if (state.stars >= stars) Icons.Filled.Star else Icons.Outlined.StarBorder, stringResource(R.string.stars, stars), Modifier.size(32.dp), tint = if (state.stars >= stars) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
-                                        Text(stars.toString(), style = MaterialTheme.typography.labelMedium)
+                                        Icon(
+                                            if (state.stars >= stars) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                                            stringResource(R.string.stars, stars),
+                                            Modifier.size(32.dp),
+                                            tint = if (state.stars >= stars) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Text(
+                                            stars.toString(),
+                                            style = MaterialTheme.typography.labelMedium
+                                        )
                                     }
                                 }
                             }
                             OutlinedTextField(
-                                state.comment, { onIntent(ProfileUiIntent.Comment(it)) }, modifier = Modifier.fillMaxWidth(),
-                                label = { Text(stringResource(R.string.comment)) }, minLines = 3, maxLines = 5, enabled = !state.saving,
-                                supportingText = { Text(stringResource(R.string.comment_count, state.comment.length)) },
+                                state.comment,
+                                { onIntent(ProfileUiIntent.Comment(it)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text(stringResource(R.string.comment)) },
+                                minLines = 3,
+                                maxLines = 5,
+                                enabled = !state.saving,
+                                supportingText = {
+                                    Text(
+                                        stringResource(
+                                            R.string.comment_count,
+                                            state.comment.length
+                                        )
+                                    )
+                                },
                             )
-                            Text(stringResource(R.string.rating_local), style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                stringResource(R.string.rating_local),
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
+
                         ProfileDialog.SignOut -> Text(stringResource(R.string.sign_out_detail))
                         ProfileDialog.Notifications -> Text(stringResource(if (state.notificationsEnabled) R.string.notifications_on else R.string.notifications_off))
                     }
-                    if (state.notice == ProfileNotice.SaveError) Text(stringResource(R.string.save_error), color = MaterialTheme.colorScheme.error)
+                    if (state.notice == ProfileNotice.SaveError) Text(
+                        stringResource(R.string.save_error),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             },
             confirmButton = {
                 when (dialog) {
-                    ProfileDialog.Edit -> Button(onClick = { onIntent(ProfileUiIntent.SaveIdentity) }, enabled = state.canSaveIdentity && !state.saving) { Text(stringResource(R.string.save)) }
-                    ProfileDialog.Rating -> Button(onClick = { onIntent(ProfileUiIntent.SaveRating) }, enabled = state.stars in 1..5 && !state.saving) { Text(stringResource(R.string.save_rating)) }
-                    ProfileDialog.SignOut -> Button(onClick = { onIntent(ProfileUiIntent.SignOut) }, enabled = !state.saving) { Text(stringResource(R.string.sign_out)) }
+                    ProfileDialog.Edit -> Button(
+                        onClick = { onIntent(ProfileUiIntent.SaveIdentity) },
+                        enabled = state.canSaveIdentity && !state.saving
+                    ) { Text(stringResource(R.string.save)) }
+
+                    ProfileDialog.Rating -> Button(
+                        onClick = { onIntent(ProfileUiIntent.SaveRating) },
+                        enabled = state.stars in 1..5 && !state.saving
+                    ) { Text(stringResource(R.string.save_rating)) }
+
+                    ProfileDialog.SignOut -> Button(
+                        onClick = { onIntent(ProfileUiIntent.SignOut) },
+                        enabled = !state.saving
+                    ) { Text(stringResource(R.string.sign_out)) }
+
                     else -> TextButton(onClick = dismiss) { Text(stringResource(R.string.close)) }
                 }
             },
             dismissButton = {
-                if (dialog in listOf(ProfileDialog.Edit, ProfileDialog.Rating, ProfileDialog.SignOut)) {
-                    TextButton(onClick = dismiss, enabled = !state.saving) { Text(stringResource(R.string.cancel)) }
+                if (dialog in listOf(
+                        ProfileDialog.Edit,
+                        ProfileDialog.Rating,
+                        ProfileDialog.SignOut
+                    )
+                ) {
+                    TextButton(
+                        onClick = dismiss,
+                        enabled = !state.saving
+                    ) { Text(stringResource(R.string.cancel)) }
                 }
             },
         )
@@ -119,7 +213,11 @@ internal fun ProfileDialogs(state: ProfileUiState, themeIndex: Int, onThemeSelec
             onDismissRequest = dismiss, title = { Text(stringResource(R.string.profile_title)) },
             text = { Text(stringResource(message)) },
             confirmButton = {
-                TextButton(onClick = { if (state.notice == ProfileNotice.LoadError) onIntent(ProfileUiIntent.Retry) else dismiss() }) {
+                TextButton(onClick = {
+                    if (state.notice == ProfileNotice.LoadError) onIntent(
+                        ProfileUiIntent.Retry
+                    ) else dismiss()
+                }) {
                     Text(stringResource(if (state.notice == ProfileNotice.LoadError) R.string.retry else R.string.close))
                 }
             },
@@ -130,8 +228,11 @@ internal fun ProfileDialogs(state: ProfileUiState, themeIndex: Int, onThemeSelec
 @Composable
 private fun ChoiceRow(label: String, selected: Boolean, onClick: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().selectable(selected = selected, role = Role.RadioButton, onClick = onClick).padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
+        Modifier.fillMaxWidth()
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         RadioButton(selected, onClick = null)
         Text(label, style = MaterialTheme.typography.bodyLarge)

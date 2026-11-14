@@ -21,5 +21,5 @@ data class ProfileUiState(
 ) {
     val canSaveIdentity: Boolean
         get() = draftName.trim().length in 2..80 &&
-            (draftEmail.isBlank() || LoginValidation.validEmail(draftEmail))
+                (draftEmail.isBlank() || LoginValidation.validEmail(draftEmail))
 }

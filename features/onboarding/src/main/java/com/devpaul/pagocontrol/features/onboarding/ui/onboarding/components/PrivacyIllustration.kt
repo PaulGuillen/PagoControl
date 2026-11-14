@@ -52,7 +52,12 @@ internal fun PrivacyIllustration() {
             val border = EntryColors.border
             Canvas(Modifier.fillMaxSize()) {
                 drawCircle(
-                    brush = Brush.radialGradient(listOf(EntryColors.Gold.copy(alpha = 0.1f), Color.Transparent)),
+                    brush = Brush.radialGradient(
+                        listOf(
+                            EntryColors.Gold.copy(alpha = 0.1f),
+                            Color.Transparent
+                        )
+                    ),
                     radius = size.minDimension * 0.45f,
                 )
                 listOf(0.3f, 0.45f).forEach { fraction ->
@@ -61,7 +66,12 @@ internal fun PrivacyIllustration() {
                         radius = size.minDimension * fraction,
                         style = Stroke(
                             width = 1.dp.toPx(),
-                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 6.dp.toPx())),
+                            pathEffect = PathEffect.dashPathEffect(
+                                floatArrayOf(
+                                    4.dp.toPx(),
+                                    6.dp.toPx()
+                                )
+                            ),
                         ),
                     )
                 }

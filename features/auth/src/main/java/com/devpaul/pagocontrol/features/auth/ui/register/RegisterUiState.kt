@@ -1,4 +1,5 @@
 package com.devpaul.pagocontrol.features.auth.ui.register
+
 data class RegisterUiState(
     val name: String = "",
     val email: String = "",

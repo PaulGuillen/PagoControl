@@ -25,7 +25,10 @@ import com.devpaul.pagocontrol.features.home.R
 
 @Composable
 internal fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> Unit) {
-    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth().selectableGroup().padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -33,9 +36,10 @@ internal fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> U
             HomeSection.entries.forEach { tab ->
                 val selected = section == tab
                 Surface(
-                    modifier = Modifier.weight(1f).selectable(selected = selected, role = Role.Tab) {
-                        onIntent(HomeUiIntent.SelectSection(tab))
-                    },
+                    modifier = Modifier.weight(1f)
+                        .selectable(selected = selected, role = Role.Tab) {
+                            onIntent(HomeUiIntent.SelectSection(tab))
+                        },
                     shape = MaterialTheme.shapes.medium,
                     color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -45,8 +49,15 @@ internal fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> U
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        Icon(imageVector = if (tab == HomeSection.Wallets) Icons.Outlined.AccountBalanceWallet else Icons.Outlined.MailOutline, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Text(stringResource(if (tab == HomeSection.Wallets) R.string.home_wallets_tab else R.string.home_mail_tab), style = MaterialTheme.typography.labelLarge)
+                        Icon(
+                            imageVector = if (tab == HomeSection.Wallets) Icons.Outlined.AccountBalanceWallet else Icons.Outlined.MailOutline,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            stringResource(if (tab == HomeSection.Wallets) R.string.home_wallets_tab else R.string.home_mail_tab),
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 }
             }

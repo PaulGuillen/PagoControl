@@ -41,38 +41,56 @@ import org.koin.core.context.GlobalContext
 class AuthHomeFlowTest {
     private val testEmail = "flow-${System.nanoTime()}@example.com"
     private val testPassword = "TestPassword123!"
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @get:Rule
+    val compose = createAndroidComposeRule<MainActivity>()
 
-    @Before fun enterLogin() {
-        assumeTrue("Requires Firebase emulators", AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
-        compose.activity.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE).edit().clear().commit()
+    @Before
+    fun enterLogin() {
+        assumeTrue(
+            "Requires Firebase emulators",
+            AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()
+        )
+        compose.activity.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE).edit()
+            .clear().commit()
         runBlocking {
             val auth = GlobalContext.get().get<AuthRepository>()
             auth.signOut()
-            assertEquals(AccountResult.Success, GlobalContext.get().get<AccountRepository>().register("Carlos", testEmail, testPassword))
+            assertEquals(
+                AccountResult.Success,
+                GlobalContext.get().get<AccountRepository>()
+                    .register("Carlos", testEmail, testPassword)
+            )
             auth.signOut()
         }
         val loginLabel = compose.activity.getString(AuthResources.string.flow_login_title)
         val skipLabel = compose.activity.getString(OnboardingResources.string.onboarding_skip)
         compose.waitUntil(10_000) {
-            if (compose.onNodeWithText(skipLabel).isDisplayed()) compose.onNodeWithText(skipLabel).performClick()
+            if (compose.onNodeWithText(skipLabel).isDisplayed()) compose.onNodeWithText(skipLabel)
+                .performClick()
             compose.onNodeWithText(loginLabel).isDisplayed()
         }
     }
 
-    @Test fun loginThemeRecreationAndMovements() {
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email)).performScrollTo().performTextInput(testEmail)
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
+    @Test
+    fun loginThemeRecreationAndMovements() {
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email))
+            .performScrollTo().performTextInput(testEmail)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password))
+            .performScrollTo().performTextInput(testPassword)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button))
+            .performScrollTo().performClick()
         compose.waitUntil(5_000) {
-            compose.onAllNodes(hasText("COBROS RECIBIDOS ESTE MES")).fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodes(hasText("COBROS RECIBIDOS ESTE MES")).fetchSemanticsNodes()
+                .isNotEmpty()
         }
         compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").assertIsDisplayed()
         listOf("Inicio", "Movimientos", "Reportes", "Perfil").forEach { tab ->
             compose.onNode(hasText(tab) and hasClickAction()).performClick()
             compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
-            compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_title)).assertIsDisplayed()
-            compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_cancel)).performClick()
+            compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_title))
+                .assertIsDisplayed()
+            compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_cancel))
+                .performClick()
         }
         compose.onNodeWithText("Inicio").performClick()
         compose.onNodeWithContentDescription("Notificaciones").assertIsDisplayed()
@@ -107,13 +125,17 @@ class AuthHomeFlowTest {
         compose.onNodeWithText("Apariencia").performScrollTo().performClick()
         compose.onAllNodesWithText("Claro").onLast().performClick()
         compose.onNodeWithText("Notificaciones", useUnmergedTree = true).performScrollTo()
-        val before = compose.onNode(isToggleable()).fetchSemanticsNode().config[SemanticsProperties.ToggleableState]
+        val before = compose.onNode(isToggleable())
+            .fetchSemanticsNode().config[SemanticsProperties.ToggleableState]
         compose.onNode(isToggleable()).performClick()
         compose.waitForIdle()
         compose.activityRule.scenario.recreate()
         compose.onNodeWithText("Notificaciones", useUnmergedTree = true).performScrollTo()
         compose.onNode(isToggleable()).assert(
-            SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, if (before == ToggleableState.On) ToggleableState.Off else ToggleableState.On),
+            SemanticsMatcher.expectValue(
+                SemanticsProperties.ToggleableState,
+                if (before == ToggleableState.On) ToggleableState.Off else ToggleableState.On
+            ),
         )
         compose.onNode(isToggleable()).performClick()
         compose.onNodeWithText("Centro de ayuda").performScrollTo().performClick()
@@ -127,25 +149,35 @@ class AuthHomeFlowTest {
         compose.onNodeWithContentDescription("4 / 5 estrellas").performClick()
         compose.onNodeWithText("Comentario (opcional)").performTextInput("Muy útil")
         compose.onNodeWithText("Guardar valoración").performClick()
-        compose.onNodeWithText("¡Gracias por tu opinión! Tu valoración se guardó en este dispositivo.").assertIsDisplayed()
+        compose.onNodeWithText("¡Gracias por tu opinión! Tu valoración se guardó en este dispositivo.")
+            .assertIsDisplayed()
         compose.onNodeWithText("Cerrar").performClick()
         compose.onNode(hasScrollAction()).performScrollToNode(hasText("Cerrar sesión"))
         compose.onNodeWithText("Cerrar sesión").performClick()
         compose.onAllNodesWithText("Cerrar sesión").onLast().performClick()
         compose.waitUntil(5_000) {
-            compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).isDisplayed()
+            compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button))
+                .isDisplayed()
         }
     }
 
-    @Test fun backConfirmationSignsOutAndReturnsToLogin() {
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email)).performScrollTo().performTextInput(testEmail)
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password)).performScrollTo().performTextInput(testPassword)
-        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).performScrollTo().performClick()
-        compose.waitUntil(5_000) { compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").isDisplayed() }
-        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
-        compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_confirm)).performClick()
+    @Test
+    fun backConfirmationSignsOutAndReturnsToLogin() {
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_email))
+            .performScrollTo().performTextInput(testEmail)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_password))
+            .performScrollTo().performTextInput(testPassword)
+        compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button))
+            .performScrollTo().performClick()
         compose.waitUntil(5_000) {
-            compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button)).isDisplayed()
+            compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").isDisplayed()
+        }
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.onNodeWithText(compose.activity.getString(R.string.logout_confirmation_confirm))
+            .performClick()
+        compose.waitUntil(5_000) {
+            compose.onNodeWithText(compose.activity.getString(AuthResources.string.flow_login_button))
+                .isDisplayed()
         }
         assertEquals(null, GlobalContext.get().get<AuthRepository>().session.value)
     }

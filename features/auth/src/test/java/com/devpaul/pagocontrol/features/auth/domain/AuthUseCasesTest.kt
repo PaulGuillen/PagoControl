@@ -13,7 +13,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AuthUseCasesTest {
-    @Test fun invalidRegistrationIsClassifiedAsValidation() = runTest {
+    @Test
+    fun invalidRegistrationIsClassifiedAsValidation() = runTest {
         val result = RegisterUseCase(TestAuthRepository())("P", "paul@example.com", "Password123")
         assertTrue(result is UseCaseResult.Error)
         val failure = (result as UseCaseResult.Error).error
@@ -21,7 +22,8 @@ class AuthUseCasesTest {
         assertEquals(AuthFailureType.VALIDATION, failure.type)
     }
 
-    @Test fun rejectsInvalidEmailAndOverlongProfileNames() = runTest {
+    @Test
+    fun rejectsInvalidEmailAndOverlongProfileNames() = runTest {
         val reset = SendPasswordResetUseCase(TestAuthRepository())("a@.")
         assertEquals(AuthError.INVALID_EMAIL, (reset as UseCaseResult.Error).error.error)
         val update = UpdateUserNameUseCase(TestAuthRepository())("a".repeat(81))

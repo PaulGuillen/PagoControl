@@ -45,7 +45,10 @@ internal fun NotificationReviewScreen(
                 title = { Text(stringResource(R.string.notifications_review)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.gmail_review_back))
+                        Icon(
+                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            stringResource(R.string.gmail_review_back)
+                        )
                     }
                 },
             )
@@ -58,13 +61,23 @@ internal fun NotificationReviewScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    Text(stringResource(R.string.gmail_review_list_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        stringResource(R.string.gmail_review_list_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 if (error) item {
-                    Text(stringResource(R.string.home_error), color = MaterialTheme.colorScheme.error)
+                    Text(
+                        stringResource(R.string.home_error),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
                 if (notifications.isEmpty()) item {
-                    Text(stringResource(R.string.gmail_review_empty), style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        stringResource(R.string.gmail_review_empty),
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
                 items(notifications, key = { it.id }) { notification ->
                     PendingNotificationCard(notification, saving, onIntent, mail = mail)

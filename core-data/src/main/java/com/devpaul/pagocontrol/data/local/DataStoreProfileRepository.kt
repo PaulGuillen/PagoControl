@@ -25,7 +25,8 @@ class DataStoreProfileRepository(context: Context) : ProfileRepository {
         ProfilePreferences(
             name = preferences[stringPreferencesKey("$userId.name")],
             email = preferences[stringPreferencesKey("$userId.email")],
-            notificationsEnabled = preferences[booleanPreferencesKey("$userId.notifications")] ?: true,
+            notificationsEnabled = preferences[booleanPreferencesKey("$userId.notifications")]
+                ?: true,
             rating = preferences[intPreferencesKey("$userId.rating")] ?: 0,
             ratingComment = preferences[stringPreferencesKey("$userId.rating_comment")] ?: "",
         )

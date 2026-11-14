@@ -14,13 +14,26 @@ class MovementsViewModel : BaseViewModel<MovementsUiState>(MovementsUiState()) {
                 is MovementsUiIntent.Status -> state.copy(status = intent.value)
                 is MovementsUiIntent.Month -> state.copy(month = intent.value)
                 is MovementsUiIntent.Review -> state.copy(reviewing = intent.movement)
-                is MovementsUiIntent.Categorize -> state.copy(reviewing = null, movements = state.movements.map {
-                    if (it.id == state.reviewing?.id && it.pending) it.copy(pending = false, badge = intent.category, status = "Confirmado") else it
-                })
+                is MovementsUiIntent.Categorize -> state.copy(
+                    reviewing = null,
+                    movements = state.movements.map {
+                        if (it.id == state.reviewing?.id && it.pending) it.copy(
+                            pending = false,
+                            badge = intent.category,
+                            status = "Confirmado"
+                        ) else it
+                    })
+
                 MovementsUiIntent.Dismiss -> state.copy(reviewing = null, notice = null)
                 MovementsUiIntent.Upcoming -> state.copy(notice = "Esta función estará disponible próximamente.")
                 MovementsUiIntent.LoadMore -> state.copy(notice = "Has visualizado todos los movimientos de ejemplo disponibles.")
-                MovementsUiIntent.Reset -> state.copy(query = "", filter = "all", source = "Todas", status = "Todos", month = "Noviembre 2023")
+                MovementsUiIntent.Reset -> state.copy(
+                    query = "",
+                    filter = "all",
+                    source = "Todas",
+                    status = "Todos",
+                    month = "Noviembre 2023"
+                )
             }
         }
     }

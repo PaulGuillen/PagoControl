@@ -28,10 +28,31 @@ fun NavGraphBuilder.profileGraph(
             if (authorized) {
                 val viewModel = koinViewModel<ProfileViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
-                ProfileScreen(state, themeIndex, version, onThemeSelected, viewModel::onIntent, onHome, onMovements, onHelp, onPrivacy, onReports)
+                ProfileScreen(
+                    state,
+                    themeIndex,
+                    version,
+                    onThemeSelected,
+                    viewModel::onIntent,
+                    onHome,
+                    onMovements,
+                    onHelp,
+                    onPrivacy,
+                    onReports
+                )
             }
         }
-        composable<ProfileRoute.Help> { if (authorized) ProfileSupportScreen(privacy = false, onBack = onBack) }
-        composable<ProfileRoute.Privacy> { if (authorized) ProfileSupportScreen(privacy = true, onBack = onBack) }
+        composable<ProfileRoute.Help> {
+            if (authorized) ProfileSupportScreen(
+                privacy = false,
+                onBack = onBack
+            )
+        }
+        composable<ProfileRoute.Privacy> {
+            if (authorized) ProfileSupportScreen(
+                privacy = true,
+                onBack = onBack
+            )
+        }
     }
 }

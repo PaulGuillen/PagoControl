@@ -31,22 +31,36 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AuthAppearanceTest {
-    @get:Rule val compose = createComposeRule()
+    @get:Rule
+    val compose = createComposeRule()
 
-    @Test fun loginDark() = captureLogin(true)
+    @Test
+    fun loginDark() = captureLogin(true)
 
-    @Test fun loginLight() = captureLogin(false)
+    @Test
+    fun loginLight() = captureLogin(false)
 
-    @Test fun registerDark() = captureRegister(true)
+    @Test
+    fun registerDark() = captureRegister(true)
 
-    @Test fun registerLight() = captureRegister(false)
+    @Test
+    fun registerLight() = captureRegister(false)
 
-    @Test fun recoveryDark() = captureRecovery(true)
+    @Test
+    fun recoveryDark() = captureRecovery(true)
 
-    @Test fun recoveryLight() = captureRecovery(false)
+    @Test
+    fun recoveryLight() = captureRecovery(false)
 
-    @Test fun providerButtonsKeepTheirInformationDialogs() {
-        setContent(false) { LoginScreen(state = LoginUiState(), onIntent = {}, themeIndex = 1, onThemeSelected = {}) }
+    @Test
+    fun providerButtonsKeepTheirInformationDialogs() {
+        setContent(false) {
+            LoginScreen(
+                state = LoginUiState(),
+                onIntent = {},
+                themeIndex = 1,
+                onThemeSelected = {})
+        }
         compose.onNodeWithText("Continuar con Google").performScrollTo().performClick()
         compose.onNodeWithText("Entendido").performClick()
         compose.onNodeWithText("Ingresar con huella digital").performScrollTo().performClick()
@@ -55,7 +69,11 @@ class AuthAppearanceTest {
 
     private fun captureLogin(dark: Boolean) {
         setContent(dark) {
-            LoginScreen(state = LoginUiState(), onIntent = {}, themeIndex = if (dark) 2 else 1, onThemeSelected = {})
+            LoginScreen(
+                state = LoginUiState(),
+                onIntent = {},
+                themeIndex = if (dark) 2 else 1,
+                onThemeSelected = {})
         }
         saveImage("login-${if (dark) "dark" else "light"}-top")
         val footer = "¿No tienes cuenta? Regístrate aquí"
@@ -73,7 +91,12 @@ class AuthAppearanceTest {
     }
 
     private fun captureRecovery(dark: Boolean) {
-        setContent(dark) { ForgotPasswordScreen(state = ForgotPasswordUiState(), onIntent = {}, onLogin = {}) }
+        setContent(dark) {
+            ForgotPasswordScreen(
+                state = ForgotPasswordUiState(),
+                onIntent = {},
+                onLogin = {})
+        }
         compose.onNodeWithText("Recuperar contraseña").assertDoesNotExist()
         saveImage("recovery-${if (dark) "dark" else "light"}-top")
         val footer = "Volver a iniciar sesión"
@@ -87,14 +110,20 @@ class AuthAppearanceTest {
     }
 
     private fun assertLinkStyle(text: String, action: String, dark: Boolean) {
-        val annotated = compose.onNodeWithText(text).fetchSemanticsNode().config[SemanticsProperties.Text].single()
-        val span = annotated.spanStyles.single { it.start == text.lastIndexOf(action) && it.end == text.length }
+        val annotated = compose.onNodeWithText(text)
+            .fetchSemanticsNode().config[SemanticsProperties.Text].single()
+        val span =
+            annotated.spanStyles.single { it.start == text.lastIndexOf(action) && it.end == text.length }
         assertEquals(FontWeight.Bold, span.item.fontWeight)
-        assertEquals(if (dark) TextDecoration.None else TextDecoration.Underline, span.item.textDecoration)
+        assertEquals(
+            if (dark) TextDecoration.None else TextDecoration.Underline,
+            span.item.textDecoration
+        )
         if (dark) assertEquals(EntryColors.Gold, span.item.color)
         val actionStart = text.lastIndexOf(action)
         if (actionStart > 0) {
-            val separator = annotated.spanStyles.single { it.start == actionStart - 1 && it.end == actionStart }
+            val separator =
+                annotated.spanStyles.single { it.start == actionStart - 1 && it.end == actionStart }
             assertEquals(6.sp, separator.item.letterSpacing)
         }
     }
@@ -103,7 +132,8 @@ class AuthAppearanceTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val directory = File(context.getExternalFilesDir(null), "auth-previews").apply { mkdirs() }
         File(directory, "$name.png").outputStream().use { output ->
-            compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, output)
+            compose.onRoot().captureToImage().asAndroidBitmap()
+                .compress(Bitmap.CompressFormat.PNG, 100, output)
         }
     }
 }

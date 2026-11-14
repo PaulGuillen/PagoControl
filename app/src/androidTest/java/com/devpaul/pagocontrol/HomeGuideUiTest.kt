@@ -40,9 +40,11 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class HomeGuideUiTest {
-    @get:Rule val compose = createComposeRule()
+    @get:Rule
+    val compose = createComposeRule()
 
-    @Test fun walletGuideScrollsToEachControlAndCanBeReplayed() {
+    @Test
+    fun walletGuideScrollsToEachControlAndCanBeReplayed() {
         showGuide(HomeSection.Wallets)
         compose.onNodeWithTag("home-guide-overlay").assertIsDisplayed()
         compose.onNodeWithTag("home-guide-overlay").performTouchInput { click(Offset(4f, 4f)) }
@@ -62,7 +64,8 @@ class HomeGuideUiTest {
         compose.onNodeWithText("Guía de Inicio · 1 de 4").assertIsDisplayed()
     }
 
-    @Test fun gmailGuideExplainsItsOwnSwitchRatherThanTheWalletPicker() {
+    @Test
+    fun gmailGuideExplainsItsOwnSwitchRatherThanTheWalletPicker() {
         showGuide(HomeSection.Mail)
         compose.onNodeWithText("Siguiente").performClick()
         compose.onNodeWithText("Guía de Inicio · 2 de 4").assertIsDisplayed()
@@ -75,7 +78,8 @@ class HomeGuideUiTest {
         compose.onNodeWithText("Guía de Inicio · 2 de 4").assertDoesNotExist()
     }
 
-    @Test fun overlayKeepsActionsVisibleOnSmallScreensWithLargeText() {
+    @Test
+    fun overlayKeepsActionsVisibleOnSmallScreensWithLargeText() {
         showGuide(section = HomeSection.Wallets, compact = true)
         repeat(3) {
             compose.onNodeWithText("Cancelar").assertIsDisplayed()
@@ -90,21 +94,43 @@ class HomeGuideUiTest {
 
     private fun saveImage(name: String) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val directory = File(context.getExternalFilesDir(null), "home-guide-previews").apply { mkdirs() }
+        val directory =
+            File(context.getExternalFilesDir(null), "home-guide-previews").apply { mkdirs() }
         File(directory, "$name.png").outputStream().use { output ->
-            compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, output)
+            compose.onRoot().captureToImage().asAndroidBitmap()
+                .compress(Bitmap.CompressFormat.PNG, 100, output)
         }
     }
 
     private fun showGuide(section: HomeSection, compact: Boolean = false) {
-        val content = HomeContent.Ready(Dashboard(
-            balanceCents = 0, incomeCents = 0, expenseCents = 0, incomeCount = 0, expenseCount = 0,
-            weeklyFlow = List(7) { 0 }, monthlyFlow = List(5) { 0 }, movements = emptyList(),
-        ))
-        var state by mutableStateOf(HomeUiState(content = content, gmailContent = content, section = section, guideStep = 0))
+        val content = HomeContent.Ready(
+            Dashboard(
+                balanceCents = 0,
+                incomeCents = 0,
+                expenseCents = 0,
+                incomeCount = 0,
+                expenseCount = 0,
+                weeklyFlow = List(7) { 0 },
+                monthlyFlow = List(5) { 0 },
+                movements = emptyList(),
+            )
+        )
+        var state by mutableStateOf(
+            HomeUiState(
+                content = content,
+                gmailContent = content,
+                section = section,
+                guideStep = 0
+            )
+        )
         compose.setContent {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, if (compact) 1.5f else density.fontScale)) {
+            CompositionLocalProvider(
+                LocalDensity provides Density(
+                    density.density,
+                    if (compact) 1.5f else density.fontScale
+                )
+            ) {
                 PagoControlTheme(compact) {
                     Box(if (compact) Modifier.height(420.dp) else Modifier) {
                         HomeScreen(
@@ -114,7 +140,12 @@ class HomeGuideUiTest {
                                 state = when (intent) {
                                     HomeUiIntent.ShowGuide -> state.copy(guideStep = 0)
                                     HomeUiIntent.NextGuideStep -> state.copy(guideStep = state.guideStep?.let { if (it == 3) null else it + 1 })
-                                    HomeUiIntent.PreviousGuideStep -> state.copy(guideStep = state.guideStep?.minus(1))
+                                    HomeUiIntent.PreviousGuideStep -> state.copy(
+                                        guideStep = state.guideStep?.minus(
+                                            1
+                                        )
+                                    )
+
                                     HomeUiIntent.DismissGuide -> state.copy(guideStep = null)
                                     else -> state
                                 }

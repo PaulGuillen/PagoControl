@@ -18,7 +18,7 @@ private fun AuthError.toFailureType(): AuthFailureType = when (this) {
     AuthError.EMPTY_PASSWORD,
     AuthError.SHORT_PASSWORD,
     AuthError.INVALID_NAME,
-    -> AuthFailureType.VALIDATION
+        -> AuthFailureType.VALIDATION
 
     else -> AuthFailureType.OPERATION
 }

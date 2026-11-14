@@ -16,7 +16,11 @@ import org.koin.android.annotation.KoinViewModel
 class ForgotPasswordViewModel(
     private val sendPasswordReset: SendPasswordResetUseCase,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<ForgotPasswordUiState>(ForgotPasswordUiState(email = savedStateHandle["email"] ?: "")) {
+) : BaseViewModel<ForgotPasswordUiState>(
+    ForgotPasswordUiState(
+        email = savedStateHandle["email"] ?: ""
+    )
+) {
     fun onIntent(intent: ForgotPasswordUiIntent) {
         if (state.value.loading || state.value.completed) return
         when (intent) {
@@ -24,6 +28,7 @@ class ForgotPasswordViewModel(
                 savedStateHandle["email"] = intent.value
                 updateState { it.copy(email = intent.value, error = null) }
             }
+
             ForgotPasswordUiIntent.Submit -> submit()
             ForgotPasswordUiIntent.ClearError -> updateState { it.copy(error = null) }
         }
@@ -43,8 +48,12 @@ class ForgotPasswordViewModel(
                         AppAnalytics.outcome("password_reset", "success")
                         AccountResult.Success
                     }
+
                     is UseCaseResult.Error -> {
-                        AppAnalytics.error("password_reset", code = response.error.error.name.lowercase())
+                        AppAnalytics.error(
+                            "password_reset",
+                            code = response.error.error.name.lowercase()
+                        )
                         response.error.error.toAccountResult()
                     }
                 }

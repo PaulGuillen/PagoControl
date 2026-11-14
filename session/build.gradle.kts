@@ -4,4 +4,5 @@ plugins {
 }
 dependencies {
     implementation(libs.koin.core)
- implementation(libs.coroutines.core) }
+    implementation(libs.coroutines.core)
+}

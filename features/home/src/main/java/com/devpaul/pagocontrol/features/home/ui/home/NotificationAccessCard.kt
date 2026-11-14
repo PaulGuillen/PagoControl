@@ -32,14 +32,19 @@ internal fun rememberNotificationAccess(): Boolean {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     var granted by remember(context) {
-        mutableStateOf(NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName))
+        mutableStateOf(
+            NotificationManagerCompat.getEnabledListenerPackages(context)
+                .contains(context.packageName)
+        )
     }
     DisposableEffect(lifecycle, context) {
         fun refresh() {
-            granted = NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+            granted = NotificationManagerCompat.getEnabledListenerPackages(context)
+                .contains(context.packageName)
         }
         refresh()
-        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) refresh() }
+        val observer =
+            LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) refresh() }
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
     }
@@ -47,20 +52,42 @@ internal fun rememberNotificationAccess(): Boolean {
 }
 
 @Composable
-internal fun NotificationAccessCard(settingsFailed: Boolean, onActivate: () -> Unit, actionModifier: Modifier = Modifier) {
+internal fun NotificationAccessCard(
+    settingsFailed: Boolean,
+    onActivate: () -> Unit,
+    actionModifier: Modifier = Modifier
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         shape = MaterialTheme.shapes.large,
     ) {
-        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             Icon(imageVector = Icons.Outlined.Notifications, contentDescription = null)
-            Text(stringResource(R.string.notifications_access_title), style = MaterialTheme.typography.titleLarge)
-            Text(stringResource(R.string.notifications_access_description), style = MaterialTheme.typography.bodyMedium)
-            Text(stringResource(R.string.notifications_access_privacy), style = MaterialTheme.typography.bodySmall)
-            Button(onClick = onActivate, modifier = actionModifier) { Text(stringResource(R.string.notifications_access)) }
-            if (settingsFailed) Text(stringResource(R.string.notifications_settings_error), color = MaterialTheme.colorScheme.error)
+            Text(
+                stringResource(R.string.notifications_access_title),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                stringResource(R.string.notifications_access_description),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                stringResource(R.string.notifications_access_privacy),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Button(
+                onClick = onActivate,
+                modifier = actionModifier
+            ) { Text(stringResource(R.string.notifications_access)) }
+            if (settingsFailed) Text(
+                stringResource(R.string.notifications_settings_error),
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }

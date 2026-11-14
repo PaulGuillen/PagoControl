@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <!-- Intro and guides belong to this installation, not restored device data. -->
-    <exclude domain="file" path="datastore/startup.preferences_pb" />
-    <exclude domain="file" path="datastore/home_guides.preferences_pb" />
-    <exclude domain="database" path="payment_notifications.db" />
-    <exclude domain="database" path="payment_notifications.db-wal" />
-    <exclude domain="database" path="payment_notifications.db-shm" />
+    <exclude
+        domain="file"
+        path="datastore/startup.preferences_pb" />
+    <exclude
+        domain="file"
+        path="datastore/home_guides.preferences_pb" />
+    <exclude
+        domain="database"
+        path="payment_notifications.db" />
+    <exclude
+        domain="database"
+        path="payment_notifications.db-wal" />
+    <exclude
+        domain="database"
+        path="payment_notifications.db-shm" />
 </full-backup-content>

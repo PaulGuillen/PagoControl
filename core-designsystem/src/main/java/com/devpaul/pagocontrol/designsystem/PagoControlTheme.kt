@@ -57,8 +57,11 @@ private fun manropeFont(weight: FontWeight) = Font(
 )
 
 private val Manrope = FontFamily(
-    manropeFont(FontWeight.Normal), manropeFont(FontWeight.Medium),
-    manropeFont(FontWeight.SemiBold), manropeFont(FontWeight.Bold), manropeFont(FontWeight.ExtraBold),
+    manropeFont(FontWeight.Normal),
+    manropeFont(FontWeight.Medium),
+    manropeFont(FontWeight.SemiBold),
+    manropeFont(FontWeight.Bold),
+    manropeFont(FontWeight.ExtraBold),
 )
 
 private fun type(size: Int, height: Int, weight: FontWeight = FontWeight.Normal) = TextStyle(

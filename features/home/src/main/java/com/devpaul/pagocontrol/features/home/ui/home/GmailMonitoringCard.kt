@@ -48,8 +48,16 @@ internal fun GmailMonitoringCard(
     var icon by remember { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(context) {
         val result = withContext(Dispatchers.IO) {
-            runCatching { context.packageManager.getApplicationInfo(GmailTransactionCandidate.PACKAGE_NAME, 0) }.getOrNull()?.let { info ->
-                runCatching { context.packageManager.getApplicationIcon(info).toBitmap(width = 96, height = 96).asImageBitmap() }.getOrNull() to info.enabled
+            runCatching {
+                context.packageManager.getApplicationInfo(
+                    GmailTransactionCandidate.PACKAGE_NAME,
+                    0
+                )
+            }.getOrNull()?.let { info ->
+                runCatching {
+                    context.packageManager.getApplicationIcon(info)
+                        .toBitmap(width = 96, height = 96).asImageBitmap()
+                }.getOrNull() to info.enabled
             }
         }
         installed = result?.second ?: false
@@ -64,12 +72,26 @@ internal fun GmailMonitoringCard(
     val switchEnabled = installed == true && !state.savingNotification
     LaunchedEffect(switchEnabled) { onSwitchEnabled(switchEnabled) }
     PagoCard(Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             val gmailIcon = icon
-            if (gmailIcon != null) Image(bitmap = gmailIcon, contentDescription = null, modifier = Modifier.size(48.dp))
-            else Icon(imageVector = Icons.Outlined.MailOutline, contentDescription = null, modifier = Modifier.size(48.dp))
+            if (gmailIcon != null) Image(
+                bitmap = gmailIcon,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
+            )
+            else Icon(
+                imageVector = Icons.Outlined.MailOutline,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
+            )
             Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.gmail_name), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.gmail_name),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Text(stringResource(status), style = MaterialTheme.typography.bodySmall)
             }
             val monitoringLabel = stringResource(R.string.gmail_switch)
@@ -80,9 +102,16 @@ internal fun GmailMonitoringCard(
                 modifier = switchModifier.semantics { contentDescription = monitoringLabel },
             )
         }
-        Text(stringResource(R.string.gmail_capture_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            stringResource(R.string.gmail_capture_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         if (state.gmailError) {
-            Text(stringResource(R.string.notifications_error), color = MaterialTheme.colorScheme.error)
+            Text(
+                stringResource(R.string.notifications_error),
+                color = MaterialTheme.colorScheme.error
+            )
             TextButton(onClick = { onIntent(HomeUiIntent.Retry) }) { Text(stringResource(R.string.home_retry)) }
         }
     }

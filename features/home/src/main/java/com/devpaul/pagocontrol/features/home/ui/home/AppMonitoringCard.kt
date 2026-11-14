@@ -66,7 +66,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private data class MonitoredApp(val packageName: String, val label: String, val icon: ImageBitmap? = null)
+private data class MonitoredApp(
+    val packageName: String,
+    val label: String,
+    val icon: ImageBitmap? = null
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +93,8 @@ internal fun NotificationControls(
             refreshToken++
         }
         refresh()
-        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) refresh() }
+        val observer =
+            LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) refresh() }
         owner.lifecycle.addObserver(observer)
         onDispose { owner.lifecycle.removeObserver(observer) }
     }
@@ -106,7 +111,10 @@ internal fun NotificationControls(
                         MonitoredApp(
                             packageName = info.activityInfo.packageName,
                             label = info.loadLabel(manager).toString(),
-                            icon = runCatching { info.loadIcon(manager).toBitmap(width = 96, height = 96).asImageBitmap() }.getOrNull(),
+                            icon = runCatching {
+                                info.loadIcon(manager).toBitmap(width = 96, height = 96)
+                                    .asImageBitmap()
+                            }.getOrNull(),
                         )
                     }.sortedBy { it.label.lowercase() }
             }
@@ -120,7 +128,10 @@ internal fun NotificationControls(
         }
     }
     val selectedApps = state.notificationSources.sorted().map { packageName ->
-        apps.find { it.packageName == packageName } ?: MonitoredApp(packageName = packageName, label = packageName.substringAfterLast('.'))
+        apps.find { it.packageName == packageName } ?: MonitoredApp(
+            packageName = packageName,
+            label = packageName.substringAfterLast('.')
+        )
     }
     val appsListState = rememberLazyListState()
     LaunchedEffect(showApps, state.guideStep, selectedApps.size) {
@@ -128,7 +139,8 @@ internal fun NotificationControls(
     }
     PagoCard(Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth().clickable(role = Role.Button) { onShowAppsChange(true) },
+            modifier = Modifier.fillMaxWidth()
+                .clickable(role = Role.Button) { onShowAppsChange(true) },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -142,31 +154,52 @@ internal fun NotificationControls(
         LazyRow(state = appsListState, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(items = selectedApps, key = { it.packageName }) { app ->
                 Column(
-                    modifier = Modifier.width(72.dp).clickable(role = Role.Button) { onShowAppsChange(true) }.padding(vertical = 8.dp),
+                    modifier = Modifier.width(72.dp)
+                        .clickable(role = Role.Button) { onShowAppsChange(true) }
+                        .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     AppIcon(app)
-                    Text(text = app.label, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        text = app.label,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
             item {
                 Column(
                     modifier = Modifier.width(72.dp)
                         .onGloballyPositioned { onAddPositioned(it.boundsInRoot()) }
-                        .clickable(role = Role.Button) { onShowAppsChange(true) }.padding(vertical = 8.dp),
+                        .clickable(role = Role.Button) { onShowAppsChange(true) }
+                        .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.primaryContainer) {
-                        Icon(imageVector = Icons.Outlined.Add, contentDescription = null, modifier = Modifier.padding(12.dp).size(24.dp))
+                    Surface(
+                        shape = MaterialTheme.shapes.large,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            contentDescription = null,
+                            modifier = Modifier.padding(12.dp).size(24.dp)
+                        )
                     }
-                    Text(stringResource(R.string.notifications_add_apps), style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        stringResource(R.string.notifications_add_apps),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
             }
         }
         if (state.notificationError) {
-            Text(stringResource(R.string.notifications_error), color = MaterialTheme.colorScheme.error)
+            Text(
+                stringResource(R.string.notifications_error),
+                color = MaterialTheme.colorScheme.error
+            )
             TextButton(onClick = { onIntent(HomeUiIntent.Retry) }) { Text(stringResource(R.string.home_retry)) }
         }
     }
@@ -178,14 +211,23 @@ internal fun NotificationControls(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f).padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(stringResource(R.string.notifications_choose_apps), style = MaterialTheme.typography.headlineSmall)
+            Text(
+                stringResource(R.string.notifications_choose_apps),
+                style = MaterialTheme.typography.headlineSmall
+            )
             OutlinedTextField(
                 value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.notifications_search_apps)) },
-                leadingIcon = { Icon(imageVector = Icons.Outlined.Search, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = null
+                    )
+                },
                 singleLine = true,
             )
-            val allApps = apps + selectedApps.filter { selected -> apps.none { it.packageName == selected.packageName } }
+            val allApps =
+                apps + selectedApps.filter { selected -> apps.none { it.packageName == selected.packageName } }
             val filteredApps = allApps.filter { it.label.contains(query.trim(), ignoreCase = true) }
             LazyColumn(modifier = Modifier.weight(1f)) {
                 if (loading) item { CircularProgressIndicator(Modifier.padding(16.dp)) }
@@ -197,21 +239,46 @@ internal fun NotificationControls(
                 items(items = filteredApps, key = { it.packageName }) { app ->
                     val selected = app.packageName in state.notificationSources
                     Row(
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp).testTag("monitored-app-${app.packageName}")
-                            .toggleable(value = selected, enabled = !state.savingNotification, role = Role.Checkbox) {
-                                onIntent(HomeUiIntent.SetNotificationSource(packageName = app.packageName, enabled = it))
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp)
+                            .testTag("monitored-app-${app.packageName}")
+                            .toggleable(
+                                value = selected,
+                                enabled = !state.savingNotification,
+                                role = Role.Checkbox
+                            ) {
+                                onIntent(
+                                    HomeUiIntent.SetNotificationSource(
+                                        packageName = app.packageName,
+                                        enabled = it
+                                    )
+                                )
                             }.padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         AppIcon(app)
-                        Text(text = app.label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                        Checkbox(checked = selected, onCheckedChange = null, enabled = !state.savingNotification)
+                        Text(
+                            text = app.label,
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Checkbox(
+                            checked = selected,
+                            onCheckedChange = null,
+                            enabled = !state.savingNotification
+                        )
                     }
                 }
             }
-            Text(stringResource(R.string.notifications_gmail_separate), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Button(onClick = { onShowAppsChange(false) }, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+            Text(
+                stringResource(R.string.notifications_gmail_separate),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Button(
+                onClick = { onShowAppsChange(false) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            ) {
                 Text(stringResource(R.string.notifications_done))
             }
         }
@@ -223,8 +290,15 @@ private fun AppIcon(app: MonitoredApp) {
     if (app.icon != null) {
         Image(bitmap = app.icon, contentDescription = null, modifier = Modifier.size(48.dp))
     } else {
-        Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-            Icon(imageVector = Icons.Outlined.Apps, contentDescription = null, modifier = Modifier.padding(12.dp).size(24.dp))
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Apps,
+                contentDescription = null,
+                modifier = Modifier.padding(12.dp).size(24.dp)
+            )
         }
     }
 }

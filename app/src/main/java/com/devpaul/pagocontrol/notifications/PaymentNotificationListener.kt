@@ -29,21 +29,29 @@ class PaymentNotificationListener : NotificationListenerService(), KoinComponent
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty().take(200)
         val text = (extras.getCharSequence(Notification.EXTRA_BIG_TEXT)
             ?: extras.getCharSequence(Notification.EXTRA_TEXT))?.toString().orEmpty().ifBlank {
-                extras.getCharSequenceArray(Notification.EXTRA_TEXT_LINES)?.joinToString("\n").orEmpty()
-            }.take(1000)
+            extras.getCharSequenceArray(Notification.EXTRA_TEXT_LINES)?.joinToString("\n").orEmpty()
+        }.take(1000)
         if (title.isBlank() && text.isBlank()) return
         val source = runCatching {
-            packageManager.getApplicationLabel(packageManager.getApplicationInfo(notification.packageName, 0)).toString()
+            packageManager.getApplicationLabel(
+                packageManager.getApplicationInfo(
+                    notification.packageName,
+                    0
+                )
+            ).toString()
         }.getOrDefault(notification.packageName)
         val identity = "${notification.key}|${notification.postTime}"
-        val id = MessageDigest.getInstance("SHA-256").digest(identity.toByteArray()).joinToString("") { "%02x".format(it) }
+        val id = MessageDigest.getInstance("SHA-256").digest(identity.toByteArray())
+            .joinToString("") { "%02x".format(it) }
         scope.launch {
             try {
-                repository.capture(PaymentNotification(
-                    id = id, packageName = notification.packageName, source = source,
-                    title = title, text = text, postedAt = notification.postTime,
-                    suggestedAmountCents = PaymentAmount.suggest("$title $text"),
-                ))
+                repository.capture(
+                    PaymentNotification(
+                        id = id, packageName = notification.packageName, source = source,
+                        title = title, text = text, postedAt = notification.postTime,
+                        suggestedAmountCents = PaymentAmount.suggest("$title $text"),
+                    )
+                )
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {

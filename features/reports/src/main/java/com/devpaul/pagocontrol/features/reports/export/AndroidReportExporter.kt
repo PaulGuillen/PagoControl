@@ -25,26 +25,36 @@ class AndroidReportExporter(private val context: Context) : ReportExporter {
         val months = context.resources.getStringArray(R.array.reports_months)
         val rows = listOf(
             listOf("PagoControl", context.getString(R.string.reports_demo_export)),
-            listOf(context.getString(R.string.reports_period_label), "${months[report.firstMonth - 1]} – ${months[report.lastMonth - 1]} 2023"),
+            listOf(
+                context.getString(R.string.reports_period_label),
+                "${months[report.firstMonth - 1]} – ${months[report.lastMonth - 1]} 2023"
+            ),
             listOf(context.getString(R.string.reports_currency), "PEN"),
             listOf(context.getString(R.string.reports_income), decimal(report.income)),
             listOf(context.getString(R.string.reports_expense), decimal(report.expense)),
             listOf(context.getString(R.string.reports_net_balance), decimal(report.net)),
             listOf(context.getString(R.string.reports_categories), ""),
         ) + report.categories.map { listOf(context.getString(it.label), decimal(it.cents)) } +
-            listOf(listOf(context.getString(R.string.reports_channels), "")) +
-            report.channels.map { listOf(context.getString(it.label), decimal(it.cents)) } +
-            listOf(listOf(context.getString(R.string.reports_subscriptions), "")) +
-            demoSubscriptions
-                .map { listOf(it.first, decimal(it.second * (report.lastMonth - report.firstMonth + 1))) } +
-            listOf(listOf(context.getString(R.string.reports_export_note), ""))
-        val stream = context.contentResolver.openOutputStream(Uri.parse(uri), "wt") ?: error("Cannot open document")
+                listOf(listOf(context.getString(R.string.reports_channels), "")) +
+                report.channels.map { listOf(context.getString(it.label), decimal(it.cents)) } +
+                listOf(listOf(context.getString(R.string.reports_subscriptions), "")) +
+                demoSubscriptions
+                    .map {
+                        listOf(
+                            it.first,
+                            decimal(it.second * (report.lastMonth - report.firstMonth + 1))
+                        )
+                    } +
+                listOf(listOf(context.getString(R.string.reports_export_note), ""))
+        val stream = context.contentResolver.openOutputStream(Uri.parse(uri), "wt")
+            ?: error("Cannot open document")
         stream.use { output ->
             when (export.format) {
                 ReportFormat.Pdf -> writePdf(output, rows)
                 ReportFormat.Csv -> output.write(("\uFEFF" + rows.joinToString("\r\n") { row ->
                     row.joinToString(";") { value -> "\"" + value.replace("\"", "\"\"") + "\"" }
                 }).toByteArray(Charsets.UTF_8))
+
                 ReportFormat.Excel -> writeExcel(output, rows)
             }
         }
@@ -86,28 +96,48 @@ class AndroidReportExporter(private val context: Context) : ReportExporter {
                 zip.write(contents.toByteArray(Charsets.UTF_8))
                 zip.closeEntry()
             }
-            entry("[Content_Types].xml", """<?xml version="1.0" encoding="UTF-8"?>
+            entry(
+                "[Content_Types].xml", """<?xml version="1.0" encoding="UTF-8"?>
                 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
                 <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
                 <Default Extension="xml" ContentType="application/xml"/>
                 <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
                 <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
-                </Types>""".trimIndent())
-            entry("_rels/.rels", """<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>""")
-            entry("xl/workbook.xml", """<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="PagoControl" sheetId="1" r:id="rId1"/></sheets></workbook>""")
-            entry("xl/_rels/workbook.xml.rels", """<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>""")
+                </Types>""".trimIndent()
+            )
+            entry(
+                "_rels/.rels",
+                """<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>"""
+            )
+            entry(
+                "xl/workbook.xml",
+                """<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="PagoControl" sheetId="1" r:id="rId1"/></sheets></workbook>"""
+            )
+            entry(
+                "xl/_rels/workbook.xml.rels",
+                """<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>"""
+            )
             val cells = rows.mapIndexed { index, row ->
                 val rowNumber = index + 1
                 val content = row.mapIndexed { column, value ->
                     val reference = "${if (column == 0) "A" else "B"}$rowNumber"
                     if (column == 1 && value.toBigDecimalOrNull() != null) """<c r="$reference"><v>$value</v></c>"""
-                    else """<c r="$reference" t="inlineStr"><is><t xml:space="preserve">${escapeXml(value)}</t></is></c>"""
+                    else """<c r="$reference" t="inlineStr"><is><t xml:space="preserve">${
+                        escapeXml(
+                            value
+                        )
+                    }</t></is></c>"""
                 }.joinToString("")
                 """<row r="$rowNumber">$content</row>"""
             }.joinToString("")
-            entry("xl/worksheets/sheet1.xml", """<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols><col min="1" max="1" width="64" customWidth="1"/><col min="2" max="2" width="38" customWidth="1"/></cols><sheetData>$cells</sheetData></worksheet>""")
+            entry(
+                "xl/worksheets/sheet1.xml",
+                """<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols><col min="1" max="1" width="64" customWidth="1"/><col min="2" max="2" width="38" customWidth="1"/></cols><sheetData>$cells</sheetData></worksheet>"""
+            )
         }
     }
 
-    private fun escapeXml(value: String) = value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&apos;")
+    private fun escapeXml(value: String) =
+        value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            .replace("\"", "&quot;").replace("'", "&apos;")
 }

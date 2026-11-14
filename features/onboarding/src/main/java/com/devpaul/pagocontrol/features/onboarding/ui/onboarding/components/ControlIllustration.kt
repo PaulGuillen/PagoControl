@@ -57,7 +57,10 @@ internal fun ControlIllustration() {
                         modifier = Modifier.size(18.dp),
                         tint = positive,
                     )
-                    Text(stringResource(R.string.onboarding_balance), style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        stringResource(R.string.onboarding_balance),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
                 Surface(
                     shape = MaterialTheme.shapes.large,
@@ -77,7 +80,10 @@ internal fun ControlIllustration() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.onboarding_upcoming_debits), style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(R.string.onboarding_upcoming_debits),
+                    style = MaterialTheme.typography.labelMedium
+                )
                 Text(
                     text = stringResource(R.string.onboarding_this_month),
                     style = MaterialTheme.typography.labelMedium,
@@ -123,7 +129,11 @@ internal fun ControlIllustration() {
                             modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.bodyMedium,
                         )
-                        Text(text = "66.8%", color = positive, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = "66.8%",
+                            color = positive,
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
                     LinearProgressIndicator(
                         progress = { 0.668f },
@@ -136,8 +146,14 @@ internal fun ControlIllustration() {
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        Text(stringResource(R.string.onboarding_spent), style = MaterialTheme.typography.labelSmall)
-                        Text(stringResource(R.string.onboarding_goal), style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            stringResource(R.string.onboarding_spent),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Text(
+                            stringResource(R.string.onboarding_goal),
+                            style = MaterialTheme.typography.labelSmall
+                        )
                     }
                 }
             }
@@ -151,7 +167,13 @@ internal fun ControlIllustration() {
 }
 
 @Composable
-private fun DebitPreview(title: String, detail: String, amount: String, icon: ImageVector, color: Color) {
+private fun DebitPreview(
+    title: String,
+    detail: String,
+    amount: String,
+    icon: ImageVector,
+    color: Color
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -183,9 +205,15 @@ private fun DebitPreview(title: String, detail: String, amount: String, icon: Im
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(amount, style = MaterialTheme.typography.titleSmall)
-                Text(stringResource(R.string.onboarding_demo_status), style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(R.string.onboarding_demo_status),
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }

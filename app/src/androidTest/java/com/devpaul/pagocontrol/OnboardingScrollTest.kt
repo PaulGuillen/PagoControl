@@ -23,15 +23,18 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class OnboardingScrollTest {
-    @get:Rule val compose = createComposeRule()
+    @get:Rule
+    val compose = createComposeRule()
 
-    @Test fun everyPageStartsAtTheTopIncludingWhenGoingBack() {
+    @Test
+    fun everyPageStartsAtTheTopIncludingWhenGoingBack() {
         var state by mutableStateOf(OnboardingUiState())
         compose.setContent {
             PagoControlTheme(false) {
                 Box(Modifier.height(420.dp)) {
                     OnboardingScreen(state) { intent ->
-                        if (intent == OnboardingUiIntent.Next) state = state.copy(page = state.page + 1)
+                        if (intent == OnboardingUiIntent.Next) state =
+                            state.copy(page = state.page + 1)
                     }
                 }
             }

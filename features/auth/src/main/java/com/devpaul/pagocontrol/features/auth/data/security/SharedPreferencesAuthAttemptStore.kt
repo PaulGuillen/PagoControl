@@ -5,7 +5,8 @@ import org.koin.core.annotation.Single
 
 @Single([AuthAttemptStore::class])
 class SharedPreferencesAuthAttemptStore(context: Context) : AuthAttemptStore {
-    private val preferences = context.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE)
+    private val preferences =
+        context.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE)
 
     override fun read(action: AuthAction): List<Long> = preferences.getString(action.name, null)
         ?.split(',')?.mapNotNull(String::toLongOrNull).orEmpty()

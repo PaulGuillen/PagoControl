@@ -15,10 +15,10 @@ internal fun MainScreenBackHandler(
     onRequestLogout: () -> Unit,
 ) {
     val isMainScreen = destination != null && (
-        destination.hasRoute<HomeRoute.Home>() ||
-            destination.hasRoute<MovementsRoute.Movements>() ||
-            destination.hasRoute<ReportsRoute.Reports>() ||
-            destination.hasRoute<ProfileRoute.Profile>()
-        )
+            destination.hasRoute<HomeRoute.Home>() ||
+                    destination.hasRoute<MovementsRoute.Movements>() ||
+                    destination.hasRoute<ReportsRoute.Reports>() ||
+                    destination.hasRoute<ProfileRoute.Profile>()
+            )
     BackHandler(enabled = isMainScreen, onBack = onRequestLogout)
 }

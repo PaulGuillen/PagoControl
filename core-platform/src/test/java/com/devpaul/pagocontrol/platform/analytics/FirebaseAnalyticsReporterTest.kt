@@ -6,8 +6,12 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class FirebaseAnalyticsReporterTest {
-    @Test fun errorReportsExcludeMessagesAndCausesContainingAccountData() {
-        val original = IllegalStateException("private@example.com password123", IllegalArgumentException("token"))
+    @Test
+    fun errorReportsExcludeMessagesAndCausesContainingAccountData() {
+        val original = IllegalStateException(
+            "private@example.com password123",
+            IllegalArgumentException("token")
+        )
         val sanitized = sanitizedAnalyticsError("login", original)
         assertEquals("login: IllegalStateException", sanitized.message)
         assertEquals(original.stackTrace.toList(), sanitized.stackTrace.toList())

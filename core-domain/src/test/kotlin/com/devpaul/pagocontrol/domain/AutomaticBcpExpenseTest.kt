@@ -7,8 +7,12 @@ import org.junit.Test
 
 class AutomaticBcpExpenseTest {
     private val notification = PaymentNotification(
-        id = "bcp-consumption", packageName = GmailTransactionCandidate.PACKAGE_NAME, source = "Gmail",
-        title = "BCP Notificaciones", postedAt = 1, suggestedAmountCents = null,
+        id = "bcp-consumption",
+        packageName = GmailTransactionCandidate.PACKAGE_NAME,
+        source = "Gmail",
+        title = "BCP Notificaciones",
+        postedAt = 1,
+        suggestedAmountCents = null,
         text = """
             Realizaste un consumo con tu Tarjeta de Débito BCP - Servicio de Notificaciones BCP
             Hola Paul Antony,
@@ -31,28 +35,46 @@ class AutomaticBcpExpenseTest {
         """.trimIndent(),
     )
 
-    @Test fun recognizesScreenshotWithRepeatedAmountAsExpense() {
+    @Test
+    fun recognizesScreenshotWithRepeatedAmountAsExpense() {
         assertEquals(
             AutomaticBcpExpense(merchant = "WL *STEAM PURCHASE", amountCents = -2578),
             AutomaticBcpExpense.recognize(notification),
         )
-        assertEquals(-2578L, AutomaticBcpExpense.recognize(notification.copy(suggestedAmountCents = 99999))?.amountCents)
+        assertEquals(
+            -2578L,
+            AutomaticBcpExpense.recognize(notification.copy(suggestedAmountCents = 99999))?.amountCents
+        )
     }
 
-    @Test fun merchantTitleStopsBeforeBcpReceiptDetailsWithoutSecurityIntroduction() {
-        val text = "Realizaste un consumo de S/ 6.56 con tu Tarjeta de D\u00e9bito BCP en WL *STEAM PURCHASE.\u00a0\nMonto\nTotal del consumo\nS/ 6.56\nDatos de la operaci\u00f3n\nEmpresa\nWL *STEAM PURCHASE"
-        assertEquals(AutomaticBcpExpense("WL *STEAM PURCHASE", -656), AutomaticBcpExpense.recognize(notification.copy(text = text)))
-        assertEquals("WL *STEAM PURCHASE", AutomaticGmailPayment.recognize(notification.copy(text = text))?.title)
+    @Test
+    fun merchantTitleStopsBeforeBcpReceiptDetailsWithoutSecurityIntroduction() {
+        val text =
+            "Realizaste un consumo de S/ 6.56 con tu Tarjeta de D\u00e9bito BCP en WL *STEAM PURCHASE.\u00a0\nMonto\nTotal del consumo\nS/ 6.56\nDatos de la operaci\u00f3n\nEmpresa\nWL *STEAM PURCHASE"
+        assertEquals(
+            AutomaticBcpExpense("WL *STEAM PURCHASE", -656),
+            AutomaticBcpExpense.recognize(notification.copy(text = text))
+        )
+        assertEquals(
+            "WL *STEAM PURCHASE",
+            AutomaticGmailPayment.recognize(notification.copy(text = text))?.title
+        )
     }
 
-    @Test fun recognizesConsumptionWithoutEnglishTransactionWords() {
-        val consumption = notification.copy(text = "Realizaste un consumo de S/ 10.00 con tu Tarjeta de Débito BCP en TIENDA.")
+    @Test
+    fun recognizesConsumptionWithoutEnglishTransactionWords() {
+        val consumption =
+            notification.copy(text = "Realizaste un consumo de S/ 10.00 con tu Tarjeta de Débito BCP en TIENDA.")
         assertTrue(GmailTransactionCandidate.matches(consumption))
-        assertEquals(AutomaticBcpExpense("TIENDA", -1000), AutomaticBcpExpense.recognize(consumption))
+        assertEquals(
+            AutomaticBcpExpense("TIENDA", -1000),
+            AutomaticBcpExpense.recognize(consumption)
+        )
         assertTrue(GmailTransactionCandidate.matches(consumption.copy(text = "Consumo tarjeta de débito S/ 10.00")))
     }
 
-    @Test fun leavesUnknownSourcesAndAmbiguousOrUnsuccessfulMessagesForReview() {
+    @Test
+    fun leavesUnknownSourcesAndAmbiguousOrUnsuccessfulMessagesForReview() {
         assertNull(AutomaticBcpExpense.recognize(notification.copy(packageName = "other.app")))
         assertNull(AutomaticBcpExpense.recognize(notification.copy(title = "Otro banco")))
         listOf(

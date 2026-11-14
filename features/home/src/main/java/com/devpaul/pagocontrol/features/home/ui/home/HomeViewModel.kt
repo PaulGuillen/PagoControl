@@ -36,7 +36,12 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 completedGuides = guides.completedGuides.first() + completedGuides.orEmpty()
-                updateState { it.copy(guideStep = if (it.section.guideKey in completedGuides.orEmpty()) null else it.guideStep ?: 0) }
+                updateState {
+                    it.copy(
+                        guideStep = if (it.section.guideKey in completedGuides.orEmpty()) null else it.guideStep
+                            ?: 0
+                    )
+                }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
@@ -54,38 +59,72 @@ class HomeViewModel(
                     updateState { it.copy(selectedBar = currentChartBar(it.monthly)) }
                 }
             }
+
             HomeUiIntent.ShowGuide -> updateState { it.copy(guideStep = 0) }
             HomeUiIntent.NextGuideStep -> {
                 val step = state.value.guideStep ?: return
                 if (step == 3) dismissGuide() else updateState { it.copy(guideStep = step + 1) }
             }
-            HomeUiIntent.PreviousGuideStep -> updateState { it.copy(guideStep = it.guideStep?.minus(1)?.coerceAtLeast(0)) }
+
+            HomeUiIntent.PreviousGuideStep -> updateState {
+                it.copy(
+                    guideStep = it.guideStep?.minus(
+                        1
+                    )?.coerceAtLeast(0)
+                )
+            }
+
             HomeUiIntent.DismissGuide -> dismissGuide()
             is HomeUiIntent.SelectSection -> {
                 if (state.value.section != intent.section) updateState {
-                    it.copy(section = intent.section, guideStep = if (completedGuides != null && intent.section.guideKey !in completedGuides.orEmpty()) 0 else null)
+                    it.copy(
+                        section = intent.section,
+                        guideStep = if (completedGuides != null && intent.section.guideKey !in completedGuides.orEmpty()) 0 else null
+                    )
                 }
             }
-            HomeUiIntent.Retry -> { load(); observeNotifications(); observeGmail() }
+
+            HomeUiIntent.Retry -> {
+                load(); observeNotifications(); observeGmail()
+            }
+
             is HomeUiIntent.SelectPeriod -> updateState {
                 it.copy(monthly = intent.monthly, selectedBar = currentChartBar(intent.monthly))
             }
+
             is HomeUiIntent.SelectBar -> {
                 val count = if (state.value.monthly) 12 else 7
                 if (intent.index in 0 until count) updateState { it.copy(selectedBar = intent.index) }
             }
+
             HomeUiIntent.Upcoming -> updateState { it.copy(showUpcoming = true) }
             HomeUiIntent.DismissUpcoming -> updateState { it.copy(showUpcoming = false) }
             HomeUiIntent.SignOut -> signOut()
             is HomeUiIntent.SetNotificationSource -> saveNotification {
                 notifications.setSource(intent.packageName, intent.enabled)
             }
+
             is HomeUiIntent.ConfirmPayment -> saveNotification(mail = intent.mail) {
                 notifications.confirm(intent.id, intent.amountCents)
             }
-            is HomeUiIntent.DiscardNotification -> saveNotification(mail = intent.mail) { notifications.discard(intent.id) }
-            is HomeUiIntent.SetGmailMonitoring -> saveNotification(mail = true) { gmail.setGmailEnabled(intent.enabled) }
-            is HomeUiIntent.DeleteGmailMovement -> saveNotification(mail = true) { notifications.discard(intent.id) }
+
+            is HomeUiIntent.DiscardNotification -> saveNotification(mail = intent.mail) {
+                notifications.discard(
+                    intent.id
+                )
+            }
+
+            is HomeUiIntent.SetGmailMonitoring -> saveNotification(mail = true) {
+                gmail.setGmailEnabled(
+                    intent.enabled
+                )
+            }
+
+            is HomeUiIntent.DeleteGmailMovement -> saveNotification(mail = true) {
+                notifications.discard(
+                    intent.id
+                )
+            }
         }
     }
 
@@ -111,10 +150,12 @@ class HomeViewModel(
             try {
                 home.observeDashboard().collect { result ->
                     updateState {
-                        it.copy(content = when (result) {
-                            is DashboardResult.Success -> HomeContent.Ready(result.dashboard)
-                            DashboardResult.SessionRequired, DashboardResult.Unavailable -> HomeContent.Error
-                        })
+                        it.copy(
+                            content = when (result) {
+                                is DashboardResult.Success -> HomeContent.Ready(result.dashboard)
+                                DashboardResult.SessionRequired, DashboardResult.Unavailable -> HomeContent.Error
+                            }
+                        )
                     }
                 }
             } catch (cancelled: CancellationException) {
@@ -131,7 +172,8 @@ class HomeViewModel(
         sourcesJob?.cancel()
         pendingJob = viewModelScope.launch {
             try {
-                notifications.observePending().collect { pending -> updateState { it.copy(pendingNotifications = pending) } }
+                notifications.observePending()
+                    .collect { pending -> updateState { it.copy(pendingNotifications = pending) } }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
@@ -140,7 +182,8 @@ class HomeViewModel(
         }
         sourcesJob = viewModelScope.launch {
             try {
-                notifications.observeSources().collect { sources -> updateState { it.copy(notificationSources = sources) } }
+                notifications.observeSources()
+                    .collect { sources -> updateState { it.copy(notificationSources = sources) } }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
@@ -155,17 +198,23 @@ class HomeViewModel(
         gmailJobs = listOf(
             observeGmailFlow {
                 gmail.observeGmailDashboard().collect { result ->
-                    updateState { it.copy(gmailContent = when (result) {
-                        is DashboardResult.Success -> HomeContent.Ready(result.dashboard)
-                        else -> HomeContent.Error
-                    }) }
+                    updateState {
+                        it.copy(
+                            gmailContent = when (result) {
+                                is DashboardResult.Success -> HomeContent.Ready(result.dashboard)
+                                else -> HomeContent.Error
+                            }
+                        )
+                    }
                 }
             },
             observeGmailFlow {
-                gmail.observeGmailPending().collect { pending -> updateState { it.copy(gmailPendingNotifications = pending) } }
+                gmail.observeGmailPending()
+                    .collect { pending -> updateState { it.copy(gmailPendingNotifications = pending) } }
             },
             observeGmailFlow {
-                gmail.observeGmailEnabled().collect { enabled -> updateState { it.copy(gmailMonitoring = enabled) } }
+                gmail.observeGmailEnabled()
+                    .collect { enabled -> updateState { it.copy(gmailMonitoring = enabled) } }
             },
         )
     }
@@ -182,7 +231,13 @@ class HomeViewModel(
 
     private fun saveNotification(mail: Boolean = false, operation: suspend () -> Unit) {
         if (state.value.savingNotification) return
-        updateState { it.copy(savingNotification = true, notificationError = if (mail) it.notificationError else false, gmailError = if (mail) false else it.gmailError) }
+        updateState {
+            it.copy(
+                savingNotification = true,
+                notificationError = if (mail) it.notificationError else false,
+                gmailError = if (mail) false else it.gmailError
+            )
+        }
         viewModelScope.launch {
             try {
                 operation()

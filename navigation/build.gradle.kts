@@ -5,4 +5,5 @@ plugins {
 }
 dependencies {
     implementation(libs.koin.core)
- implementation(libs.serialization.json) }
+    implementation(libs.serialization.json)
+}

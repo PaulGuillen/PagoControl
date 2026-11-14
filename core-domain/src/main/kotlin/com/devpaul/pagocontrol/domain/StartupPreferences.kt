@@ -1,4 +1,5 @@
 package com.devpaul.pagocontrol.domain
+
 import kotlinx.coroutines.flow.Flow
 
 interface StartupPreferences {

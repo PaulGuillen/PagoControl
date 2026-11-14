@@ -196,9 +196,24 @@ private fun ForceUpdateBody(
 
         Spacer(Modifier.height(16.dp))
 
-        ForceUpdateFeature(Icons.Default.Security, stringResource(R.string.update_security), colors, isDark)
-        ForceUpdateFeature(Icons.Default.Bolt, stringResource(R.string.update_performance), colors, isDark)
-        ForceUpdateFeature(Icons.Default.NewReleases, stringResource(R.string.update_features), colors, isDark)
+        ForceUpdateFeature(
+            Icons.Default.Security,
+            stringResource(R.string.update_security),
+            colors,
+            isDark
+        )
+        ForceUpdateFeature(
+            Icons.Default.Bolt,
+            stringResource(R.string.update_performance),
+            colors,
+            isDark
+        )
+        ForceUpdateFeature(
+            Icons.Default.NewReleases,
+            stringResource(R.string.update_features),
+            colors,
+            isDark
+        )
 
         Spacer(Modifier.height(12.dp))
 

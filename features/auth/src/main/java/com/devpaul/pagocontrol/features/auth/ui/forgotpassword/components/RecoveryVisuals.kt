@@ -171,7 +171,10 @@ internal fun RecoveryProtection() {
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(stringResource(R.string.flow_recovery_protection), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.flow_recovery_protection),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Text(
                     text = stringResource(R.string.flow_security_description),
                     style = MaterialTheme.typography.bodySmall,

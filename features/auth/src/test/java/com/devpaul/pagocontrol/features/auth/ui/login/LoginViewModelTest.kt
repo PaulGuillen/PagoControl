@@ -19,11 +19,18 @@ import org.junit.Test
 class LoginViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun teardown() { Dispatchers.resetMain() }
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun emptyFieldsNeverAuthenticate() = runTest {
+    @Test
+    fun emptyFieldsNeverAuthenticate() = runTest {
         val repository = ControlledAuth()
         val viewModel = LoginViewModel(SignInUseCase(repository), SavedStateHandle())
         viewModel.onIntent(LoginUiIntent.Submit)
@@ -33,7 +40,8 @@ class LoginViewModelTest {
         assertEquals(0, repository.calls)
     }
 
-    @Test fun duplicateSubmitIsIgnoredAndFailureCanRetryWithoutPersistingPassword() = runTest {
+    @Test
+    fun duplicateSubmitIsIgnoredAndFailureCanRetryWithoutPersistingPassword() = runTest {
         val repository = ControlledAuth()
         val handle = SavedStateHandle()
         val viewModel = LoginViewModel(SignInUseCase(repository), handle)
@@ -54,10 +62,13 @@ class LoginViewModelTest {
         assertEquals("", viewModel.state.value.password)
         assertFalse(handle.contains("password"))
     }
+
     private class ControlledAuth : TestAuthRepository() {
         var calls = 0
         var response = CompletableDeferred<AuthUser>()
 
-        override suspend fun signIn(email: String, password: String): AuthUser { calls++; return response.await() }
+        override suspend fun signIn(email: String, password: String): AuthUser {
+            calls++; return response.await()
+        }
     }
 }

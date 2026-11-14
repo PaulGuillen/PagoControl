@@ -19,11 +19,18 @@ import org.junit.Test
 class ReportsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun tearDown() { Dispatchers.resetMain() }
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun periodsAndPointSelectionStayWithinRange() {
+    @Test
+    fun periodsAndPointSelectionStayWithinRange() {
         val viewModel = ReportsViewModel(MemoryExporter())
         viewModel.onIntent(ReportsUiIntent.Period(ReportPeriod.Year))
         assertEquals(11, viewModel.state.value.report.points.size)
@@ -38,7 +45,8 @@ class ReportsViewModelTest {
         assertFalse(viewModel.state.value.customDialog)
     }
 
-    @Test fun exportUsesSnapshotAndPreventsDuplicateWrites() = runTest {
+    @Test
+    fun exportUsesSnapshotAndPreventsDuplicateWrites() = runTest {
         val exporter = MemoryExporter()
         val viewModel = ReportsViewModel(exporter)
         viewModel.onIntent(ReportsUiIntent.Format(ReportFormat.Excel))
@@ -54,7 +62,8 @@ class ReportsViewModelTest {
         assertNull(viewModel.state.value.pendingExport)
     }
 
-    @Test fun canceledPickerDoesNotWriteAndFailureAllowsRetry() = runTest {
+    @Test
+    fun canceledPickerDoesNotWriteAndFailureAllowsRetry() = runTest {
         val exporter = MemoryExporter()
         val viewModel = ReportsViewModel(exporter)
         viewModel.onIntent(ReportsUiIntent.PrepareExport)

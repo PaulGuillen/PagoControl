@@ -20,11 +20,18 @@ import org.junit.Assert.*
 class OnboardingViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @Before fun setup() { Dispatchers.setMain(dispatcher) }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
 
-    @After fun teardown() { Dispatchers.resetMain() }
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
+    }
 
-    @Test fun keepsPageAndRetriesPreferenceWrite() = runTest {
+    @Test
+    fun keepsPageAndRetriesPreferenceWrite() = runTest {
         val preferences = ControlledPreferences()
         val saved = SavedStateHandle()
         val viewModel = OnboardingViewModel(preferences, saved)
@@ -44,7 +51,8 @@ class OnboardingViewModelTest {
         assertEquals(OnboardingDestination.Login, viewModel.state.value.destination)
     }
 
-    @Test fun completingAllPagesOpensLoginOnlyAfterSaving() = runTest {
+    @Test
+    fun completingAllPagesOpensLoginOnlyAfterSaving() = runTest {
         val preferences = ControlledPreferences().apply { fail = false }
         val viewModel = OnboardingViewModel(preferences, SavedStateHandle())
         repeat(3) { viewModel.onIntent(OnboardingUiIntent.Next) }

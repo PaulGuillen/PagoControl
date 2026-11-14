@@ -38,36 +38,76 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-internal fun PendingNotificationCard(notification: PaymentNotification, saving: Boolean, onIntent: (HomeUiIntent) -> Unit, mail: Boolean = false) {
+internal fun PendingNotificationCard(
+    notification: PaymentNotification,
+    saving: Boolean,
+    onIntent: (HomeUiIntent) -> Unit,
+    mail: Boolean = false
+) {
     var reviewing by rememberSaveable(notification.id) { mutableStateOf(false) }
     var amount by rememberSaveable(notification.id) {
-        mutableStateOf(notification.suggestedAmountCents?.let { BigDecimal.valueOf(it, 2).toPlainString() }.orEmpty())
+        mutableStateOf(notification.suggestedAmountCents?.let {
+            BigDecimal.valueOf(it, 2).toPlainString()
+        }.orEmpty())
     }
     val date = remember(notification.postedAt) {
-        SimpleDateFormat("dd MMM, HH:mm", Locale.forLanguageTag("es-PE")).format(Date(notification.postedAt))
+        SimpleDateFormat(
+            "dd MMM, HH:mm",
+            Locale.forLanguageTag("es-PE")
+        ).format(Date(notification.postedAt))
     }
-        PagoCard(Modifier.fillMaxWidth().clickable(enabled = !saving, role = Role.Button) { reviewing = true }) {
-            Text(notification.title.ifBlank { notification.source }, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text("${notification.source} \u00b7 $date", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(notification.suggestedAmountCents?.let { formatSoles(it) } ?: stringResource(R.string.gmail_review_no_amount), style = MaterialTheme.typography.bodyMedium)
-                Text(stringResource(if (mail && notification.possibleDuplicate) R.string.gmail_duplicate_short else R.string.gmail_review_detail), color = if (mail && notification.possibleDuplicate) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelMedium)
-            }
+    PagoCard(
+        Modifier.fillMaxWidth()
+            .clickable(enabled = !saving, role = Role.Button) { reviewing = true }) {
+        Text(
+            notification.title.ifBlank { notification.source },
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            "${notification.source} \u00b7 $date",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(notification.suggestedAmountCents?.let { formatSoles(it) }
+                ?: stringResource(R.string.gmail_review_no_amount),
+                style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(if (mail && notification.possibleDuplicate) R.string.gmail_duplicate_short else R.string.gmail_review_detail),
+                color = if (mail && notification.possibleDuplicate) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelMedium
+            )
         }
+    }
     if (reviewing) AlertDialog(
         onDismissRequest = { if (!saving) reviewing = false },
         title = { Text(stringResource(R.string.notifications_review)) },
         text = {
-            Column(modifier = Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 run {
-                    Text(notification.title.ifBlank { notification.source }, style = MaterialTheme.typography.titleMedium)
-                    Text("${notification.source} \u00b7 $date", style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        notification.title.ifBlank { notification.source },
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        "${notification.source} \u00b7 $date",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
                 if (mail && notification.possibleDuplicate) Text(stringResource(R.string.gmail_duplicate_hint))
                 run {
-                    Text(stringResource(if (mail) R.string.gmail_review_message else R.string.notifications_review_message), style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        stringResource(if (mail) R.string.gmail_review_message else R.string.notifications_review_message),
+                        style = MaterialTheme.typography.labelLarge
+                    )
                     val message = remember(notification.text) {
-                        notification.text.lineSequence().map { it.trim().replace(Regex("[\\t ]+"), " ") }
+                        notification.text.lineSequence()
+                            .map { it.trim().replace(Regex("[\\t ]+"), " ") }
                             .filter { it.isNotBlank() }.joinToString("\n\n")
                     }
                     Text(message, style = MaterialTheme.typography.bodyMedium)
@@ -87,15 +127,35 @@ internal fun PendingNotificationCard(notification: PaymentNotification, saving: 
                 }) { Text(stringResource(if (mail && notification.possibleDuplicate) R.string.gmail_already_recorded else R.string.notifications_discard)) }
                 val cents = PaymentAmount.parse(amount)
                 Button(enabled = cents != null && !saving, onClick = {
-                    cents?.let { onIntent(HomeUiIntent.ConfirmPayment(id = notification.id, amountCents = it, mail = mail)) }
+                    cents?.let {
+                        onIntent(
+                            HomeUiIntent.ConfirmPayment(
+                                id = notification.id,
+                                amountCents = it,
+                                mail = mail
+                            )
+                        )
+                    }
                     reviewing = false
                 }) { Text(stringResource(R.string.notifications_income)) }
                 if (mail) Button(enabled = cents != null && !saving, onClick = {
-                    cents?.let { onIntent(HomeUiIntent.ConfirmPayment(id = notification.id, amountCents = -it, mail = true)) }
+                    cents?.let {
+                        onIntent(
+                            HomeUiIntent.ConfirmPayment(
+                                id = notification.id,
+                                amountCents = -it,
+                                mail = true
+                            )
+                        )
+                    }
                     reviewing = false
                 }) { Text(stringResource(R.string.gmail_confirm_expense)) }
             }
         },
-        confirmButton = { TextButton(onClick = { reviewing = false }) { Text(stringResource(R.string.notifications_cancel)) } },
+        confirmButton = {
+            TextButton(onClick = {
+                reviewing = false
+            }) { Text(stringResource(R.string.notifications_cancel)) }
+        },
     )
 }

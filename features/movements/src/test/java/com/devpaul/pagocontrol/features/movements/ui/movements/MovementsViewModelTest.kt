@@ -6,7 +6,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MovementsViewModelTest {
-    @Test fun combinesSearchSourceAndCategory() {
+    @Test
+    fun combinesSearchSourceAndCategory() {
         val viewModel = MovementsViewModel()
         viewModel.onIntent(MovementsUiIntent.Filter("income"))
         viewModel.onIntent(MovementsUiIntent.Source("Yape"))
@@ -18,7 +19,8 @@ class MovementsViewModelTest {
         assertTrue(viewModel.state.value.visible.isEmpty())
     }
 
-    @Test fun categorizingPendingRemovesItFromPendingFilter() {
+    @Test
+    fun categorizingPendingRemovesItFromPendingFilter() {
         val viewModel = MovementsViewModel()
         viewModel.onIntent(MovementsUiIntent.Filter("pending"))
         val pending = viewModel.state.value.visible.single()
@@ -32,14 +34,16 @@ class MovementsViewModelTest {
         assertEquals(null, viewModel.state.value.reviewing)
     }
 
-    @Test fun transfersStaySeparateFromIncomeAndExpense() {
+    @Test
+    fun transfersStaySeparateFromIncomeAndExpense() {
         val state = MovementsUiState(filter = "transfer")
         assertEquals(listOf("6"), state.visible.map { it.id })
         assertFalse(state.copy(filter = "income").visible.any { it.kind == "transfer" })
         assertFalse(state.copy(filter = "expense").visible.any { it.kind == "transfer" })
     }
 
-    @Test fun emptyMonthAndResetRestoreHistory() {
+    @Test
+    fun emptyMonthAndResetRestoreHistory() {
         val viewModel = MovementsViewModel()
         viewModel.onIntent(MovementsUiIntent.Month("Octubre 2023"))
         assertTrue(viewModel.state.value.visible.isEmpty())

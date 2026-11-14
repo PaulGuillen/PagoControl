@@ -26,42 +26,68 @@ import org.koin.core.context.GlobalContext
 
 @RunWith(AndroidJUnit4::class)
 class AccountScreensFlowTest {
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
-    @Before fun requireEmulators() {
-        assumeTrue("Requires Firebase emulators", AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank())
-        compose.activity.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE).edit().clear().commit()
+    @get:Rule
+    val compose = createAndroidComposeRule<MainActivity>()
+    @Before
+    fun requireEmulators() {
+        assumeTrue(
+            "Requires Firebase emulators",
+            AuthBuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()
+        )
+        compose.activity.getSharedPreferences("auth_attempt_limits", Context.MODE_PRIVATE).edit()
+            .clear().commit()
         runBlocking { GlobalContext.get().get<AuthRepository>().signOut() }
     }
 
-    @Test fun registerAndRecoveryValidateAndReturnToLogin() {
+    @Test
+    fun registerAndRecoveryValidateAndReturnToLogin() {
         val testEmail = "account-${System.nanoTime()}@example.com"
         val activity = compose.activity
         val skip = activity.getString(OnboardingResources.string.onboarding_skip)
         val loginTitle = activity.getString(AuthResources.string.flow_login_title)
-        compose.waitUntil(10_000) { compose.onNodeWithText(skip).isDisplayed() || compose.onNodeWithText(loginTitle).isDisplayed() }
+        compose.waitUntil(10_000) {
+            compose.onNodeWithText(skip).isDisplayed() || compose.onNodeWithText(loginTitle)
+                .isDisplayed()
+        }
         if (compose.onNodeWithText(skip).isDisplayed()) compose.onNodeWithText(skip).performClick()
         compose.waitUntil(10_000) { compose.onNodeWithText(loginTitle).isDisplayed() }
 
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_register_link)).performScrollTo().performClick()
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account)).performScrollTo().performClick()
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_register_invalid)).performScrollTo().assertIsDisplayed()
-        compose.onNode(hasText(activity.getString(AuthResources.string.flow_name)) and hasSetTextAction()).performScrollTo().performTextInput("Paul Demo")
-        compose.onNode(hasText(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput(testEmail)
-        compose.onNode(hasText(activity.getString(AuthResources.string.flow_password)) and hasSetTextAction()).performScrollTo().performTextInput("Password123")
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_accept_terms)).performScrollTo().performClick()
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account)).performScrollTo().performClick()
-        compose.waitUntil(15_000) { compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").isDisplayed() }
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_register_link))
+            .performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account))
+            .performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_register_invalid))
+            .performScrollTo().assertIsDisplayed()
+        compose.onNode(hasText(activity.getString(AuthResources.string.flow_name)) and hasSetTextAction())
+            .performScrollTo().performTextInput("Paul Demo")
+        compose.onNode(hasText(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction())
+            .performScrollTo().performTextInput(testEmail)
+        compose.onNode(hasText(activity.getString(AuthResources.string.flow_password)) and hasSetTextAction())
+            .performScrollTo().performTextInput("Password123")
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_accept_terms))
+            .performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_create_account))
+            .performScrollTo().performClick()
+        compose.waitUntil(15_000) {
+            compose.onNodeWithText("COBROS RECIBIDOS ESTE MES").isDisplayed()
+        }
         runBlocking { GlobalContext.get().get<AuthRepository>().signOut() }
         compose.waitUntil(5_000) { compose.onNodeWithText(loginTitle).isDisplayed() }
 
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_forgot_link)).performScrollTo().performClick()
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions)).performScrollTo().performClick()
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_email_invalid)).performScrollTo().assertIsDisplayed()
-        compose.onNode(hasContentDescription(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction()).performScrollTo().performTextInput(testEmail)
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions)).performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_forgot_link))
+            .performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions))
+            .performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_email_invalid))
+            .performScrollTo().assertIsDisplayed()
+        compose.onNode(hasContentDescription(activity.getString(AuthResources.string.flow_email)) and hasSetTextAction())
+            .performScrollTo().performTextInput(testEmail)
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_send_instructions))
+            .performScrollTo().performClick()
         val recoverySuccess = activity.getString(AuthResources.string.flow_forgot_success)
         compose.waitUntil(10_000) { compose.onNodeWithText(recoverySuccess).isDisplayed() }
-        compose.onNodeWithText(activity.getString(AuthResources.string.flow_back_login)).performScrollTo().performClick()
+        compose.onNodeWithText(activity.getString(AuthResources.string.flow_back_login))
+            .performScrollTo().performClick()
         compose.onNodeWithText(loginTitle).performScrollTo().assertIsDisplayed()
     }
 }

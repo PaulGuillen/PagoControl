@@ -21,23 +21,39 @@ import com.devpaul.pagocontrol.features.auth.ui.components.*
 
 @Composable
 fun LoginScreen(
-    state: LoginUiState, onIntent: (LoginUiIntent) -> Unit, themeIndex: Int, onThemeSelected: (Int) -> Unit,
-    onRegister: () -> Unit = {}, onForgotPassword: () -> Unit = {},
+    state: LoginUiState,
+    onIntent: (LoginUiIntent) -> Unit,
+    themeIndex: Int,
+    onThemeSelected: (Int) -> Unit,
+    onRegister: () -> Unit = {},
+    onForgotPassword: () -> Unit = {},
 ) {
     var providerInfo by rememberSaveable { mutableStateOf(false) }
     AuthLayout(themeIndex = themeIndex, onThemeSelected = onThemeSelected) {
-        AuthHeading(stringResource(R.string.flow_login_title), stringResource(R.string.flow_login_description))
+        AuthHeading(
+            stringResource(R.string.flow_login_title),
+            stringResource(R.string.flow_login_description)
+        )
         AuthProviderButton { providerInfo = true }
         AuthDivider(stringResource(R.string.flow_login_separator))
         AuthField(
-            value = state.email, onValueChange = { onIntent(LoginUiIntent.EmailChanged(it)) }, label = stringResource(R.string.flow_email),
-            error = state.emailInvalid, enabled = !state.loading, keyboardType = KeyboardType.Email,
+            value = state.email,
+            onValueChange = { onIntent(LoginUiIntent.EmailChanged(it)) },
+            label = stringResource(R.string.flow_email),
+            error = state.emailInvalid,
+            enabled = !state.loading,
+            keyboardType = KeyboardType.Email,
         )
         AuthField(
-            value = state.password, onValueChange = { onIntent(LoginUiIntent.PasswordChanged(it)) }, label = stringResource(R.string.flow_password),
-            error = state.passwordInvalid, enabled = !state.loading,
-            password = true, visible = state.passwordVisible,
-            onToggleVisibility = { onIntent(LoginUiIntent.TogglePassword) }, onSubmit = { onIntent(LoginUiIntent.Submit) },
+            value = state.password,
+            onValueChange = { onIntent(LoginUiIntent.PasswordChanged(it)) },
+            label = stringResource(R.string.flow_password),
+            error = state.passwordInvalid,
+            enabled = !state.loading,
+            password = true,
+            visible = state.passwordVisible,
+            onToggleVisibility = { onIntent(LoginUiIntent.TogglePassword) },
+            onSubmit = { onIntent(LoginUiIntent.Submit) },
         )
         TextButton(onClick = onForgotPassword, enabled = !state.loading) {
             Text(
@@ -47,16 +63,23 @@ fun LoginScreen(
             )
         }
         state.error?.let {
-            Text(stringResource(when (it) {
-                LoginError.InvalidCredentials -> R.string.flow_credentials_error
-                LoginError.Network -> R.string.flow_network_error
-                LoginError.TooManyRequests -> R.string.flow_too_many_requests
-                LoginError.UserDisabled -> R.string.flow_user_disabled
-                LoginError.ProfileIncomplete -> R.string.flow_profile_incomplete
-                LoginError.Unavailable -> R.string.flow_unavailable
-            }), color = MaterialTheme.colorScheme.error)
+            Text(
+                stringResource(
+                    when (it) {
+                        LoginError.InvalidCredentials -> R.string.flow_credentials_error
+                        LoginError.Network -> R.string.flow_network_error
+                        LoginError.TooManyRequests -> R.string.flow_too_many_requests
+                        LoginError.UserDisabled -> R.string.flow_user_disabled
+                        LoginError.ProfileIncomplete -> R.string.flow_profile_incomplete
+                        LoginError.Unavailable -> R.string.flow_unavailable
+                    }
+                ), color = MaterialTheme.colorScheme.error
+            )
         }
-        AuthPrimaryButton(text = stringResource(R.string.flow_login_button), loading = state.loading) { onIntent(LoginUiIntent.Submit) }
+        AuthPrimaryButton(
+            text = stringResource(R.string.flow_login_button),
+            loading = state.loading
+        ) { onIntent(LoginUiIntent.Submit) }
         AuthFingerprintButton(onClick = { providerInfo = true }, enabled = !state.loading)
         AccountLink(
             text = stringResource(R.string.flow_register_link),
@@ -66,13 +89,31 @@ fun LoginScreen(
             enabled = !state.loading,
         )
     }
-    if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) { providerInfo = false }
+    if (providerInfo) AuthInfoDialog(stringResource(R.string.flow_provider_info)) {
+        providerInfo = false
+    }
 }
 
 @Preview(name = "Login claro", showBackground = true)
 @Composable
-private fun LoginLightPreview() { PagoControlTheme(false) { LoginScreen(state = LoginUiState(), onIntent = {}, themeIndex = 1, onThemeSelected = {}) } }
+private fun LoginLightPreview() {
+    PagoControlTheme(false) {
+        LoginScreen(
+            state = LoginUiState(),
+            onIntent = {},
+            themeIndex = 1,
+            onThemeSelected = {})
+    }
+}
 
 @Preview(name = "Login oscuro", showBackground = true)
 @Composable
-private fun LoginDarkPreview() { PagoControlTheme(true) { LoginScreen(state = LoginUiState(), onIntent = {}, themeIndex = 2, onThemeSelected = {}) } }
+private fun LoginDarkPreview() {
+    PagoControlTheme(true) {
+        LoginScreen(
+            state = LoginUiState(),
+            onIntent = {},
+            themeIndex = 2,
+            onThemeSelected = {})
+    }
+}

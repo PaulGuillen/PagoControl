@@ -14,14 +14,16 @@ data class AutomaticYapePayment(val sender: String, val amountCents: Long) {
             if (normalize(notification.title) != "confirmacion de pago") return null
             val match = receivedPayment.matchEntire(normalize(notification.text)) ?: return null
             val amount = PaymentAmount.parse(match.groupValues[2]) ?: return null
-            val sender = notification.text.trim().split(Regex("\\s+te\\s+envi[oó]\\s+", RegexOption.IGNORE_CASE)).first()
+            val sender = notification.text.trim()
+                .split(Regex("\\s+te\\s+envi[oó]\\s+", RegexOption.IGNORE_CASE)).first()
             return AutomaticYapePayment(sender = sender, amountCents = amount)
         }
 
-        private fun normalize(value: String): String = Normalizer.normalize(value, Normalizer.Form.NFD)
-            .replace(Regex("\\p{M}+"), "")
-            .lowercase(Locale.ROOT)
-            .replace(Regex("\\s+"), " ")
-            .trim()
+        private fun normalize(value: String): String =
+            Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replace(Regex("\\p{M}+"), "")
+                .lowercase(Locale.ROOT)
+                .replace(Regex("\\s+"), " ")
+                .trim()
     }
 }

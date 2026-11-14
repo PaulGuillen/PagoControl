@@ -66,12 +66,21 @@ fun SplashScreen(state: SplashUiState, onIntent: (SplashUiIntent) -> Unit) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Box(Modifier.size(8.dp).background(if (EntryColors.isDark) EntryColors.Mint else EntryColors.Green, CircleShape))
-                        Text(stringResource(R.string.splash_badge), style = MaterialTheme.typography.labelMedium)
+                        Box(
+                            Modifier.size(8.dp).background(
+                                if (EntryColors.isDark) EntryColors.Mint else EntryColors.Green,
+                                CircleShape
+                            )
+                        )
+                        Text(
+                            stringResource(R.string.splash_badge),
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
                 Column(
-                    modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().padding(vertical = 32.dp),
+                    modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth()
+                        .padding(vertical = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
@@ -93,8 +102,16 @@ fun SplashScreen(state: SplashUiState, onIntent: (SplashUiIntent) -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                     )
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf(R.string.splash_yape, R.string.splash_plin, R.string.splash_bcp, R.string.splash_interbank).forEach { resource ->
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(
+                            R.string.splash_yape,
+                            R.string.splash_plin,
+                            R.string.splash_bcp,
+                            R.string.splash_interbank
+                        ).forEach { resource ->
                             Surface(
                                 shape = CircleShape,
                                 color = EntryColors.card,
@@ -103,7 +120,10 @@ fun SplashScreen(state: SplashUiState, onIntent: (SplashUiIntent) -> Unit) {
                             ) {
                                 Text(
                                     text = stringResource(resource),
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    modifier = Modifier.padding(
+                                        horizontal = 10.dp,
+                                        vertical = 6.dp
+                                    ),
                                     style = MaterialTheme.typography.labelMedium,
                                 )
                             }
@@ -115,7 +135,10 @@ fun SplashScreen(state: SplashUiState, onIntent: (SplashUiIntent) -> Unit) {
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
                     if (state.failed) {
-                        Text(stringResource(R.string.splash_error), color = MaterialTheme.colorScheme.error)
+                        Text(
+                            stringResource(R.string.splash_error),
+                            color = MaterialTheme.colorScheme.error
+                        )
                         Button(onClick = { onIntent(SplashUiIntent.Retry) }) { Text(stringResource(R.string.splash_retry)) }
                     } else CircularProgressIndicator(
                         color = if (EntryColors.isDark) EntryColors.Gold else Color(0xFF765B00),
@@ -137,7 +160,10 @@ fun SplashScreen(state: SplashUiState, onIntent: (SplashUiIntent) -> Unit) {
                                 contentDescription = null,
                                 tint = if (EntryColors.isDark) EntryColors.Mint else EntryColors.Green,
                             )
-                            Text(stringResource(R.string.splash_privacy), style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                stringResource(R.string.splash_privacy),
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }
@@ -159,7 +185,13 @@ private fun SplashBrandMark() {
         ) {
             Box(
                 modifier = Modifier.background(
-                    Brush.linearGradient(listOf(EntryColors.Gold.copy(alpha = 0.08f), Color.Transparent, EntryColors.Mint.copy(alpha = 0.12f))),
+                    Brush.linearGradient(
+                        listOf(
+                            EntryColors.Gold.copy(alpha = 0.08f),
+                            Color.Transparent,
+                            EntryColors.Mint.copy(alpha = 0.12f)
+                        )
+                    ),
                 ),
                 contentAlignment = Alignment.Center,
             ) {
@@ -178,15 +210,23 @@ private fun SplashBrandMark() {
             contentColor = Color.White,
             border = BorderStroke(1.dp, EntryColors.Mint),
         ) {
-            Text(text = stringResource(R.string.splash_country), modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge)
+            Text(
+                text = stringResource(R.string.splash_country),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }
 
 @Preview(name = "Splash claro", showBackground = true)
 @Composable
-private fun SplashLightPreview() { PagoControlTheme(false) { SplashScreen(SplashUiState(), {}) } }
+private fun SplashLightPreview() {
+    PagoControlTheme(false) { SplashScreen(SplashUiState(), {}) }
+}
 
 @Preview(name = "Splash oscuro", showBackground = true)
 @Composable
-private fun SplashDarkPreview() { PagoControlTheme(true) { SplashScreen(SplashUiState(), {}) } }
+private fun SplashDarkPreview() {
+    PagoControlTheme(true) { SplashScreen(SplashUiState(), {}) }
+}

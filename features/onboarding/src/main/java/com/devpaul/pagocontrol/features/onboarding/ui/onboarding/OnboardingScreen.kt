@@ -55,51 +55,96 @@ import com.devpaul.pagocontrol.features.onboarding.ui.onboarding.components.Cont
 fun OnboardingScreen(state: OnboardingUiState, onIntent: (OnboardingUiIntent) -> Unit) {
     val scrollState = remember(state.page) { ScrollState(initial = 0) }
     BackHandler(enabled = state.page > 0 && !state.saving) { onIntent(OnboardingUiIntent.Back) }
-    val titles = listOf(R.string.onboarding_title_1, R.string.onboarding_title_2, R.string.onboarding_title_3)
-    val descriptions = listOf(R.string.onboarding_description_1, R.string.onboarding_description_2, R.string.onboarding_description_3)
+    val titles = listOf(
+        R.string.onboarding_title_1,
+        R.string.onboarding_title_2,
+        R.string.onboarding_title_3
+    )
+    val descriptions = listOf(
+        R.string.onboarding_description_1,
+        R.string.onboarding_description_2,
+        R.string.onboarding_description_3
+    )
     Scaffold(
         containerColor = EntryColors.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentAlignment = Alignment.TopCenter
+        ) {
             Column(
-                modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth().verticalScroll(scrollState).padding(24.dp),
+                modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth().verticalScroll(scrollState)
+                    .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     val progress = stringResource(R.string.onboarding_progress, state.page + 1)
                     Row(
                         modifier = Modifier.weight(1f).semantics { stateDescription = progress },
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         repeat(3) { index ->
-                            Box(Modifier.width(if (index == state.page) 36.dp else 12.dp).height(6.dp)
-                                .background(if (index == state.page) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant, CircleShape))
+                            Box(
+                                Modifier.width(if (index == state.page) 36.dp else 12.dp)
+                                    .height(6.dp)
+                                    .background(
+                                        if (index == state.page) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                                        CircleShape
+                                    )
+                            )
                         }
                     }
                     TextButton(
                         onClick = { onIntent(OnboardingUiIntent.Finish(OnboardingDestination.Login)) },
                         enabled = !state.saving,
-                    ) { Text(stringResource(R.string.onboarding_skip), color = MaterialTheme.colorScheme.onSurface) }
+                    ) {
+                        Text(
+                            stringResource(R.string.onboarding_skip),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
                 when (state.page) {
                     0 -> DetectionIllustration()
                     1 -> PrivacyIllustration()
                     else -> ControlIllustration()
                 }
-                Text(text = stringResource(titles[state.page]), style = MaterialTheme.typography.headlineLarge, textAlign = TextAlign.Center)
-                Text(text = stringResource(descriptions[state.page]), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-                if (state.failed) Text(stringResource(R.string.onboarding_error), color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = stringResource(titles[state.page]),
+                    style = MaterialTheme.typography.headlineLarge,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(descriptions[state.page]),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+                if (state.failed) Text(
+                    stringResource(R.string.onboarding_error),
+                    color = MaterialTheme.colorScheme.error
+                )
                 Button(
                     onClick = { onIntent(OnboardingUiIntent.Next) },
                     modifier = Modifier.fillMaxWidth().height(56.dp), enabled = !state.saving,
                     shape = MaterialTheme.shapes.medium,
                 ) {
-                    if (state.saving) CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp)
+                    if (state.saving) CircularProgressIndicator(
+                        Modifier.size(22.dp),
+                        strokeWidth = 2.dp
+                    )
                     else {
                         Text(stringResource(if (state.page == 2) R.string.onboarding_start else R.string.onboarding_next))
-                        Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null, modifier = Modifier.padding(start = 12.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                            contentDescription = null,
+                            modifier = Modifier.padding(start = 12.dp)
+                        )
                     }
                 }
                 AccountLink(
@@ -155,7 +200,10 @@ private fun DetectionIllustration() {
                     modifier = Modifier.size(18.dp),
                     tint = if (EntryColors.isDark) EntryColors.Gold else Color(0xFF765B00),
                 )
-                Text(stringResource(R.string.onboarding_sync_preview), style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(R.string.onboarding_sync_preview),
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
         ProviderPreview(
@@ -181,7 +229,10 @@ private fun DetectionIllustration() {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(Modifier.size(8.dp).background(EntryColors.Gold, CircleShape))
-                    Text(stringResource(R.string.onboarding_daily), style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        stringResource(R.string.onboarding_daily),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -205,7 +256,10 @@ private fun DetectionIllustration() {
                                 modifier = Modifier.size(18.dp),
                                 tint = Color.White,
                             )
-                            Text(stringResource(R.string.onboarding_example_count), style = MaterialTheme.typography.labelMedium)
+                            Text(
+                                stringResource(R.string.onboarding_example_count),
+                                style = MaterialTheme.typography.labelMedium
+                            )
                         }
                     }
                 }
@@ -233,7 +287,11 @@ private fun ProviderPreview(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Surface(shape = MaterialTheme.shapes.medium, color = color, contentColor = Color.White) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = color,
+                contentColor = Color.White
+            ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
@@ -251,7 +309,11 @@ private fun ProviderPreview(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Surface(shape = CircleShape, color = color, contentColor = Color.White) {
-                        Text(text = provider, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp), style = MaterialTheme.typography.labelMedium)
+                        Text(
+                            text = provider,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                     Text(
                         text = amount,
@@ -272,11 +334,15 @@ private fun ProviderPreview(
 
 @Preview(name = "Onboarding claro", showBackground = true)
 @Composable
-private fun OnboardingLightPreview() { PagoControlTheme(false) { OnboardingScreen(OnboardingUiState(), {}) } }
+private fun OnboardingLightPreview() {
+    PagoControlTheme(false) { OnboardingScreen(OnboardingUiState(), {}) }
+}
 
 @Preview(name = "Onboarding oscuro", showBackground = true)
 @Composable
-private fun OnboardingDarkPreview() { PagoControlTheme(true) { OnboardingScreen(OnboardingUiState(), {}) } }
+private fun OnboardingDarkPreview() {
+    PagoControlTheme(true) { OnboardingScreen(OnboardingUiState(), {}) }
+}
 
 @Preview(name = "Privacidad claro", showBackground = true)
 @Composable

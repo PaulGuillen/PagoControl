@@ -23,21 +23,64 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PagoDock(movementsSelected: Boolean, onHome: () -> Unit, onMovements: () -> Unit, profileSelected: Boolean = false, onProfile: () -> Unit = {}, reportsSelected: Boolean = false, onReports: () -> Unit = {}) {
+fun PagoDock(
+    movementsSelected: Boolean,
+    onHome: () -> Unit,
+    onMovements: () -> Unit,
+    profileSelected: Boolean = false,
+    onProfile: () -> Unit = {},
+    reportsSelected: Boolean = false,
+    onReports: () -> Unit = {}
+) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
-        DockItem(icon = Icons.Outlined.Home, activeIcon = Icons.Filled.Home, label = stringResource(R.string.dock_home), selected = !movementsSelected && !profileSelected && !reportsSelected, onClick = onHome)
-        DockItem(icon = Icons.AutoMirrored.Outlined.ReceiptLong, activeIcon = Icons.AutoMirrored.Filled.ReceiptLong, label = stringResource(R.string.dock_movements), selected = movementsSelected, onClick = onMovements)
-        DockItem(icon = Icons.Outlined.Insights, activeIcon = Icons.Filled.Insights, label = stringResource(R.string.dock_reports), selected = reportsSelected, onClick = onReports)
-        DockItem(icon = Icons.Outlined.Person, activeIcon = Icons.Filled.Person, label = stringResource(R.string.dock_profile), selected = profileSelected, onClick = onProfile)
+        DockItem(
+            icon = Icons.Outlined.Home,
+            activeIcon = Icons.Filled.Home,
+            label = stringResource(R.string.dock_home),
+            selected = !movementsSelected && !profileSelected && !reportsSelected,
+            onClick = onHome
+        )
+        DockItem(
+            icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+            activeIcon = Icons.AutoMirrored.Filled.ReceiptLong,
+            label = stringResource(R.string.dock_movements),
+            selected = movementsSelected,
+            onClick = onMovements
+        )
+        DockItem(
+            icon = Icons.Outlined.Insights,
+            activeIcon = Icons.Filled.Insights,
+            label = stringResource(R.string.dock_reports),
+            selected = reportsSelected,
+            onClick = onReports
+        )
+        DockItem(
+            icon = Icons.Outlined.Person,
+            activeIcon = Icons.Filled.Person,
+            label = stringResource(R.string.dock_profile),
+            selected = profileSelected,
+            onClick = onProfile
+        )
     }
 }
 
 @Composable
-private fun RowScope.DockItem(icon: ImageVector, activeIcon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
+private fun RowScope.DockItem(
+    icon: ImageVector,
+    activeIcon: ImageVector,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
     NavigationBarItem(
         selected = selected,
         onClick = onClick,
-        icon = { Icon(imageVector = if (selected) activeIcon else icon, contentDescription = null) },
+        icon = {
+            Icon(
+                imageVector = if (selected) activeIcon else icon,
+                contentDescription = null
+            )
+        },
         label = {
             Text(
                 text = label,

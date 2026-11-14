@@ -61,9 +61,15 @@ interface PaymentNotificationDao {
         val mail = notification.packageName == "com.google.android.gm"
         val duplicate = mail && confirmed(mail = true).any {
             AutomaticGmailPayment.possibleDuplicate(
-                notification.asPaymentNotification(), it.asPaymentNotification(), it.amountCents)
+                notification.asPaymentNotification(), it.asPaymentNotification(), it.amountCents
+            )
         }
-        insert(if (duplicate) notification.copy(status = "pending", amountCents = null) else notification)
+        insert(
+            if (duplicate) notification.copy(
+                status = "pending",
+                amountCents = null
+            ) else notification
+        )
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

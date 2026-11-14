@@ -37,10 +37,21 @@ internal fun MailReviewTitle(pulsing: Boolean) {
                 scaleY = 1f + pulse * 0.025f
             },
         ) {
-            Text(stringResource(R.string.notifications_review), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-            Text(stringResource(R.string.gmail_review_new), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+            Text(
+                stringResource(R.string.notifications_review),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                stringResource(R.string.gmail_review_new),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     } else {
-        Text(stringResource(R.string.notifications_review), style = MaterialTheme.typography.titleMedium)
+        Text(
+            stringResource(R.string.notifications_review),
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }

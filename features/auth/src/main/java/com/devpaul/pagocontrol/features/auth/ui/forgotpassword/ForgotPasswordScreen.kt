@@ -60,7 +60,8 @@ fun ForgotPasswordScreen(
         ) {
             Column(
                 modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth()
-                    .verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
@@ -132,7 +133,8 @@ private fun RecoveryForm(state: ForgotPasswordUiState, onIntent: (ForgotPassword
             OutlinedTextField(
                 value = state.email,
                 onValueChange = { onIntent(ForgotPasswordUiIntent.EmailChanged(it)) },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).semantics { contentDescription = emailLabel },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
+                    .semantics { contentDescription = emailLabel },
                 enabled = !state.loading,
                 singleLine = true,
                 shape = MaterialTheme.shapes.medium,
@@ -146,17 +148,22 @@ private fun RecoveryForm(state: ForgotPasswordUiState, onIntent: (ForgotPassword
                     focusedBorderColor = if (dark) EntryColors.Gold else Color(0xFF765B00),
                     unfocusedBorderColor = if (dark) EntryColors.border else Color.Transparent,
                 ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Done
+                ),
                 keyboardActions = KeyboardActions(onDone = { onIntent(ForgotPasswordUiIntent.Submit) }),
             )
             state.error?.let { error ->
                 Text(
-                    text = stringResource(when (error) {
-                        ForgotPasswordError.InvalidEmail -> R.string.flow_email_invalid
-                        ForgotPasswordError.Network -> R.string.flow_network_error
-                        ForgotPasswordError.Unavailable -> R.string.flow_unavailable
-                        ForgotPasswordError.TooManyRequests -> R.string.flow_too_many_requests
-                    }),
+                    text = stringResource(
+                        when (error) {
+                            ForgotPasswordError.InvalidEmail -> R.string.flow_email_invalid
+                            ForgotPasswordError.Network -> R.string.flow_network_error
+                            ForgotPasswordError.Unavailable -> R.string.flow_unavailable
+                            ForgotPasswordError.TooManyRequests -> R.string.flow_too_many_requests
+                        }
+                    ),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -174,11 +181,21 @@ private fun RecoveryForm(state: ForgotPasswordUiState, onIntent: (ForgotPassword
 @Preview(name = "Recuperar contraseña claro", showBackground = true)
 @Composable
 private fun ForgotLightPreview() {
-    PagoControlTheme(false) { ForgotPasswordScreen(state = ForgotPasswordUiState(), onIntent = {}, onLogin = {}) }
+    PagoControlTheme(false) {
+        ForgotPasswordScreen(
+            state = ForgotPasswordUiState(),
+            onIntent = {},
+            onLogin = {})
+    }
 }
 
 @Preview(name = "Recuperar contraseña oscuro", showBackground = true)
 @Composable
 private fun ForgotDarkPreview() {
-    PagoControlTheme(true) { ForgotPasswordScreen(state = ForgotPasswordUiState(), onIntent = {}, onLogin = {}) }
+    PagoControlTheme(true) {
+        ForgotPasswordScreen(
+            state = ForgotPasswordUiState(),
+            onIntent = {},
+            onLogin = {})
+    }
 }
