@@ -53,23 +53,22 @@ interface PaymentNotificationDao {
     suspend fun isEnabled(packageName: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(notification: NotificationEntity)
+    suspend fun insert(notification: NotificationEntity): Long
 
     @Transaction
-    suspend fun captureIfEnabled(notification: NotificationEntity) {
-        if (!isEnabled(notification.packageName)) return
+    suspend fun captureIfEnabled(notification: NotificationEntity): NotificationEntity? {
+        if (!isEnabled(notification.packageName)) return null
         val mail = notification.packageName == "com.google.android.gm"
         val duplicate = mail && confirmed(mail = true).any {
             AutomaticGmailPayment.possibleDuplicate(
                 notification.asPaymentNotification(), it.asPaymentNotification(), it.amountCents
             )
         }
-        insert(
-            if (duplicate) notification.copy(
-                status = "pending",
-                amountCents = null
-            ) else notification
-        )
+        val recorded = if (duplicate) notification.copy(
+            status = "pending",
+            amountCents = null
+        ) else notification
+        return recorded.takeIf { insert(it) != -1L && it.status == "automatic" }
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -79,7 +78,14 @@ interface PaymentNotificationDao {
     suspend fun disable(packageName: String)
 
     @Query("UPDATE payment_notifications SET status = 'confirmed', amountCents = :amountCents WHERE id = :id AND status = 'pending'")
-    suspend fun confirm(id: String, amountCents: Long)
+    suspend fun confirm(id: String, amountCents: Long): Int
+
+    @Query("SELECT * FROM payment_notifications WHERE id = :id")
+    suspend fun find(id: String): NotificationEntity?
+
+    @Transaction
+    suspend fun confirmMovement(id: String, amountCents: Long): NotificationEntity? =
+        if (confirm(id, amountCents) == 1) find(id) else null
 
     @Query("UPDATE payment_notifications SET status = 'discarded', title = '', text = '' WHERE id = :id AND (status = 'pending' OR (packageName = 'com.google.android.gm' AND status IN ('confirmed', 'automatic')))")
     suspend fun discard(id: String)

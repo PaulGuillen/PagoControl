@@ -1,5 +1,13 @@
 package com.devpaul.pagocontrol.features.profile.ui.profile
 
+import android.Manifest
+import android.app.NotificationManager
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,13 +45,20 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.PagoDock
 import com.devpaul.pagocontrol.designsystem.PagoHeader
@@ -62,6 +77,43 @@ fun ProfileScreen(
     onPrivacy: () -> Unit,
     onReports: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val preview = LocalInspectionMode.current
+    fun notificationsAllowed(): Boolean {
+        if (preview) return true
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return false
+        return manager.areNotificationsEnabled() &&
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+                        manager.getNotificationChannel("recorded_movements")?.importance != NotificationManager.IMPORTANCE_NONE)
+    }
+
+    var systemNotificationsEnabled by remember { mutableStateOf(notificationsAllowed()) }
+    LifecycleResumeEffect(context) {
+        systemNotificationsEnabled = notificationsAllowed()
+        onPauseOrDispose { }
+    }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            systemNotificationsEnabled = notificationsAllowed()
+            onIntent(ProfileUiIntent.Notifications(granted))
+        }
+    val toggleNotifications: (Boolean) -> Unit = { enabled ->
+        when {
+            !enabled -> onIntent(ProfileUiIntent.Notifications(false))
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED ->
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+
+            !notificationsAllowed() -> context.startActivity(
+                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(
+                    Settings.EXTRA_APP_PACKAGE,
+                    context.packageName
+                )
+            )
+
+            else -> onIntent(ProfileUiIntent.Notifications(true))
+        }
+    }
     val themeLabel = stringResource(
         listOf(
             R.string.theme_system,
@@ -128,20 +180,29 @@ fun ProfileScreen(
                             SettingRow(
                                 Icons.Outlined.Notifications,
                                 stringResource(R.string.notifications),
-                                stringResource(R.string.notifications_detail),
+                                stringResource(if (systemNotificationsEnabled) R.string.notifications_detail else R.string.notifications_permission_detail),
                                 enabled = !state.saving,
                                 trailing = {
                                     Switch(
-                                        checked = state.notificationsEnabled,
-                                        onCheckedChange = {
-                                            onIntent(
-                                                ProfileUiIntent.Notifications(it)
-                                            )
-                                        },
+                                        checked = state.notificationsEnabled && systemNotificationsEnabled,
+                                        onCheckedChange = toggleNotifications,
                                         enabled = !state.saving
                                     )
                                 },
-                            ) { onIntent(ProfileUiIntent.Notifications(!state.notificationsEnabled)) }
+                            ) { toggleNotifications(!(state.notificationsEnabled && systemNotificationsEnabled)) }
+                            if (!systemNotificationsEnabled) {
+                                TextButton(onClick = {
+                                    context.startActivity(
+                                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                            .putExtra(
+                                                Settings.EXTRA_APP_PACKAGE,
+                                                context.packageName
+                                            )
+                                    )
+                                }) {
+                                    Text(stringResource(R.string.notifications_open_settings))
+                                }
+                            }
                         }
                     }
                     item { SectionLabel(stringResource(R.string.account_support)) }

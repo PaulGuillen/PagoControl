@@ -17,3 +17,9 @@ description: Implementar notificaciones Android, permisos, canales y apertura se
 ## Comprobar y entregar
 
 Prueba permiso denegado, canal desactivado, doble toque, entrada sin sesión y usuario distinto. Comprueba que la navegación se consume una vez y que logout no deja avisos privados de otra cuenta.
+
+## Avisos de movimientos de PagoControl
+
+El toolbar compartido `PagoHeader` muestra la marca y el titulo sin campana ni accion de notificaciones. Los avisos son locales y se controlan desde Notificaciones en Perfil y desde el permiso/canal de Android; no requieren FCM. Solicita `POST_NOTIFICATIONS` en Android 13 o superior al activar la opcion. Si Android o el canal bloquea los avisos, muestra el estado real y permite abrir sus ajustes; conserva la captura de movimientos como configuracion independiente.
+
+Emite avisos de ingreso o egreso solo despues de guardar un movimiento automatico nuevo o de confirmar uno pendiente. La operacion de Room devuelve el registro efectivamente insertado/confirmado para evitar avisos de capturas repetidas, confirmaciones repetidas, pendientes, descartes, historiales y fuentes desactivadas. Un fallo al mostrar el aviso no revierte el movimiento. Verifica la sesion y preferencia actual antes de publicarlo, limpia avisos al cambiar de cuenta/cerrar sesion o desactivar la preferencia y usa contenido privado en la pantalla bloqueada. El toque abre la aplicacion mediante un PendingIntent explicito e inmutable y conserva el flujo normal de autenticacion.

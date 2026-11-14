@@ -14,4 +14,4 @@ data class ReportsUiState(
     val report: FinancialReport get() = demoReport(firstMonth, lastMonth)
 }
 
-enum class ReportsNotice { Notifications, ExportSaved, ExportError }
+enum class ReportsNotice { ExportSaved, ExportError }

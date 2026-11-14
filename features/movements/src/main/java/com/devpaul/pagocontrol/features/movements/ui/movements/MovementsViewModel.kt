@@ -25,7 +25,6 @@ class MovementsViewModel : BaseViewModel<MovementsUiState>(MovementsUiState()) {
                     })
 
                 MovementsUiIntent.Dismiss -> state.copy(reviewing = null, notice = null)
-                MovementsUiIntent.Upcoming -> state.copy(notice = "Esta función estará disponible próximamente.")
                 MovementsUiIntent.LoadMore -> state.copy(notice = "Has visualizado todos los movimientos de ejemplo disponibles.")
                 MovementsUiIntent.Reset -> state.copy(
                     query = "",

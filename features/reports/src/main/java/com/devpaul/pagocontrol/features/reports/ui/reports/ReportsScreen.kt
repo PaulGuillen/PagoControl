@@ -84,9 +84,7 @@ fun ReportsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
-                    PagoHeader(
-                        stringResource(R.string.reports_title),
-                        { onIntent(ReportsUiIntent.Notifications) })
+                    PagoHeader(stringResource(R.string.reports_title))
                 }
                 item {
                     Row(
@@ -212,7 +210,7 @@ fun ReportsScreen(
                 Text(
                     stringResource(
                         when (notice) {
-                            ReportsNotice.Notifications -> R.string.reports_notifications_notice; ReportsNotice.ExportSaved -> R.string.reports_export_saved; ReportsNotice.ExportError -> R.string.reports_export_error
+                            ReportsNotice.ExportSaved -> R.string.reports_export_saved; ReportsNotice.ExportError -> R.string.reports_export_error
                         }
                     )
                 )

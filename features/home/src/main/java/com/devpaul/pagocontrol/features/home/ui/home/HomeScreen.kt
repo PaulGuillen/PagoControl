@@ -210,9 +210,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     item {
-                        PagoHeader(
-                            stringResource(R.string.home_title),
-                            { onIntent(HomeUiIntent.Upcoming) })
+                        PagoHeader(stringResource(R.string.home_title))
                     }
                     item {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -435,21 +433,7 @@ fun HomeScreen(
             },
         )
     }
-    if (state.showUpcoming) {
-        AlertDialog(
-            onDismissRequest = { onIntent(HomeUiIntent.DismissUpcoming) },
-            title = { Text(stringResource(R.string.home_upcoming_title)) },
-            text = { Text(stringResource(R.string.home_upcoming_message)) },
-            confirmButton = {
-                TextButton(onClick = { onIntent(HomeUiIntent.DismissUpcoming) }) {
-                    Text(
-                        stringResource(R.string.home_understood),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            },
-        )
-    }
+
 }
 
 @Composable

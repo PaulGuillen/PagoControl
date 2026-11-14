@@ -8,5 +8,4 @@ sealed interface ReportsUiIntent {
     data class Export(val uri: String?) : ReportsUiIntent
     data object PrepareExport : ReportsUiIntent
     data object Dismiss : ReportsUiIntent
-    data object Notifications : ReportsUiIntent
 }

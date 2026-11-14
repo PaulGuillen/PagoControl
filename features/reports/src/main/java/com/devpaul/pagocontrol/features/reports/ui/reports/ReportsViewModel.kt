@@ -64,7 +64,6 @@ class ReportsViewModel(private val exporter: ReportExporter) :
 
             is ReportsUiIntent.Export -> export(intent.uri)
             ReportsUiIntent.Dismiss -> updateState { it.copy(customDialog = false, notice = null) }
-            ReportsUiIntent.Notifications -> updateState { it.copy(notice = ReportsNotice.Notifications) }
         }
     }
 

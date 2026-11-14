@@ -1,10 +1,11 @@
 package com.devpaul.pagocontrol
 
 import android.app.Application
-import com.devpaul.pagocontrol.platform.log.TimberFactory
+import com.devpaul.pagocontrol.notifications.LocalMovementNotifier
 import com.devpaul.pagocontrol.platform.analytics.AppAnalytics
 import com.devpaul.pagocontrol.platform.analytics.FirebaseAnalyticsReporter
 import com.devpaul.pagocontrol.platform.firebase.AppCheckProviderInstaller
+import com.devpaul.pagocontrol.platform.log.TimberFactory
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -25,7 +26,7 @@ class AndroidApplication : Application() {
             this,
             useEmulators = BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()
         )
-        koinInitializer()
+        koinInitializer().koin.get<LocalMovementNotifier>().start()
     }
 
     private fun koinInitializer() = startKoin {

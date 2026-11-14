@@ -1,27 +1,30 @@
 package com.devpaul.pagocontrol.data.notifications
 
-import com.devpaul.pagocontrol.domain.Dashboard
-import com.devpaul.pagocontrol.domain.AutomaticYapePayment
 import com.devpaul.pagocontrol.domain.AutomaticBcpExpense
 import com.devpaul.pagocontrol.domain.AutomaticGmailPayment
+import com.devpaul.pagocontrol.domain.AutomaticYapePayment
+import com.devpaul.pagocontrol.domain.Dashboard
 import com.devpaul.pagocontrol.domain.DashboardResult
-import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.GmailTransactionCandidate
-import com.devpaul.pagocontrol.domain.WalletTransactionCandidate
+import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.domain.Movement
+import com.devpaul.pagocontrol.domain.MovementNotifier
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
+import com.devpaul.pagocontrol.domain.WalletTransactionCandidate
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 @Single(binds = [HomeRepository::class, PaymentNotificationRepository::class, GmailMonitoringRepository::class])
-class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository,
+class RoomPaymentRepository(database: PaymentDatabase, private val notifier: MovementNotifier) :
+    HomeRepository,
     PaymentNotificationRepository, GmailMonitoringRepository {
     private val dao = database.notifications()
 
@@ -80,7 +83,7 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository,
         val automaticPayment = AutomaticYapePayment.recognize(notification)
         val automaticMail = AutomaticGmailPayment.recognize(notification)
         val automaticAmount = automaticPayment?.amountCents ?: automaticMail?.amountCents
-        dao.captureIfEnabled(
+        val recorded = dao.captureIfEnabled(
             NotificationEntity(
                 id = notification.id,
                 packageName = notification.packageName,
@@ -95,11 +98,29 @@ class RoomPaymentRepository(database: PaymentDatabase) : HomeRepository,
                 status = if (automaticAmount != null) "automatic" else "pending",
             )
         )
+        recorded?.let { notifyRecorded(it) }
     }
 
     override suspend fun confirm(id: String, amountCents: Long) {
         require(amountCents != 0L && amountCents in -999_999_999_99L..999_999_999_99L)
-        dao.confirm(id, amountCents)
+        dao.confirmMovement(id, amountCents)?.let { notifyRecorded(it) }
+    }
+
+    private suspend fun notifyRecorded(row: NotificationEntity) {
+        try {
+            notifier.notify(
+                row.toMovement(
+                    SimpleDateFormat(
+                        "dd MMM, HH:mm",
+                        Locale.forLanguageTag("es-PE")
+                    )
+                )
+            )
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            // An unavailable notification must not fail an already committed movement.
+        }
     }
 
     override suspend fun discard(id: String) = dao.discard(id)

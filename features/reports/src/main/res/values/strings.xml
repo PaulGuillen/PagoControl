@@ -55,7 +55,6 @@
     <string name="reports_apply">Aplicar</string>
     <string name="reports_cancel">Cancelar</string>
     <string name="reports_close">Cerrar</string>
-    <string name="reports_notifications_notice">Las notificaciones automáticas se incorporarán en una próxima etapa. Puedes gestionar tu preferencia desde Perfil.</string>
     <string name="reports_export_saved">El reporte se guardó en la ubicación que seleccionaste.</string>
     <string name="reports_export_error">No se pudo guardar el reporte. Inténtalo de nuevo.</string>
     <string name="reports_demo_export">Datos de demostración</string>

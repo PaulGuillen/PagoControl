@@ -14,4 +14,10 @@
     <string name="update_security">Correcciones de seguridad</string>
     <string name="update_performance">Mejoras de rendimiento</string>
     <string name="update_features">Nuevas funcionalidades</string>
+    <string name="movement_channel_name">Ingresos y egresos</string>
+    <string name="movement_channel_description">Avisos de movimientos registrados en PagoControl</string>
+    <string name="movement_income">Ingreso registrado: %1$s</string>
+    <string name="movement_expense">Egreso registrado: %1$s</string>
+    <string name="movement_notification_detail">%1$s · %2$s</string>
+    <string name="movement_notification_private">Tienes un nuevo movimiento registrado</string>
 </resources>

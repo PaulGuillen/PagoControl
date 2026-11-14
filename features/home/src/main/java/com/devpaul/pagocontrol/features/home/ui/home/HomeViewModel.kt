@@ -1,16 +1,16 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
-import com.devpaul.pagocontrol.platform.BaseViewModel
 import androidx.lifecycle.viewModelScope
-import com.devpaul.pagocontrol.session.AuthRepository
 import com.devpaul.pagocontrol.domain.DashboardResult
-import com.devpaul.pagocontrol.domain.HomeRepository
-import com.devpaul.pagocontrol.domain.HomeGuidePreferences
-import kotlinx.coroutines.flow.first
 import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
+import com.devpaul.pagocontrol.domain.HomeGuidePreferences
+import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
-import kotlinx.coroutines.Job
+import com.devpaul.pagocontrol.platform.BaseViewModel
+import com.devpaul.pagocontrol.session.AuthRepository
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
@@ -97,8 +97,6 @@ class HomeViewModel(
                 if (intent.index in 0 until count) updateState { it.copy(selectedBar = intent.index) }
             }
 
-            HomeUiIntent.Upcoming -> updateState { it.copy(showUpcoming = true) }
-            HomeUiIntent.DismissUpcoming -> updateState { it.copy(showUpcoming = false) }
             HomeUiIntent.SignOut -> signOut()
             is HomeUiIntent.SetNotificationSource -> saveNotification {
                 notifications.setSource(intent.packageName, intent.enabled)

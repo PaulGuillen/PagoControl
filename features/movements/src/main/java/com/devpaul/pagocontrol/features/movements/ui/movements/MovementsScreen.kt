@@ -56,9 +56,7 @@ fun MovementsScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    PagoHeader(
-                        stringResource(R.string.movements_title),
-                        { onIntent(MovementsUiIntent.Upcoming) })
+                    PagoHeader(stringResource(R.string.movements_title))
                 }
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically) {

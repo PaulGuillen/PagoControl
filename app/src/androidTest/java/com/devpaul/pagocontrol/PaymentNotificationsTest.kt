@@ -6,6 +6,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.devpaul.pagocontrol.data.notifications.NotificationEntity
 import com.devpaul.pagocontrol.data.notifications.PaymentDatabase
 import com.devpaul.pagocontrol.data.notifications.RoomPaymentRepository
+import com.devpaul.pagocontrol.domain.Movement
+import com.devpaul.pagocontrol.domain.MovementNotifier
 import com.devpaul.pagocontrol.domain.PaymentNotification
 import java.util.Calendar
 import kotlinx.coroutines.flow.first
@@ -17,6 +19,81 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PaymentNotificationsTest {
+    @Test
+    fun notifiesOnlyNewRecordedMovementsAndNeverPendingOrDuplicateCaptures() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val notices = mutableListOf<Movement>()
+            val repository = RoomPaymentRepository(
+                database = database,
+                notifier = MovementNotifier { notices += it })
+            val bank = PaymentNotification(
+                id = "bank-alert", packageName = "com.google.android.gm", source = "Gmail",
+                title = "BCP", text = "Compra S/ 25.00", postedAt = System.currentTimeMillis(),
+                suggestedAmountCents = null,
+            )
+            repository.capture(bank)
+            assertTrue(notices.isEmpty())
+            repository.setGmailEnabled(true)
+            repository.capture(bank)
+            repository.capture(bank)
+            repository.capture(bank.copy(id = "bank-duplicate"))
+            assertEquals(listOf(-2500L), notices.map { it.amountCents })
+            repository.capture(bank.copy(id = "review", title = "Steam", text = "Receipt S/ 30.00"))
+            assertEquals(1, notices.size)
+            repository.confirm(id = "review", amountCents = -3000)
+            repository.confirm(id = "review", amountCents = -3000)
+            repository.confirm(id = "missing", amountCents = 1000)
+            assertEquals(listOf(-2500L, -3000L), notices.map { it.amountCents })
+            repository.capture(
+                bank.copy(
+                    id = "income-review",
+                    title = "Steam",
+                    text = "Receipt S/ 40.00"
+                )
+            )
+            repository.confirm(id = "income-review", amountCents = 4000)
+            assertEquals(4000L, notices.last().amountCents)
+            repository.discard("review")
+            assertEquals(3, notices.size)
+            RoomPaymentRepository(
+                database = database,
+                notifier = MovementNotifier { notices += it })
+                .observeGmailDashboard().first()
+            assertEquals(3, notices.size)
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
+    fun notificationFailureDoesNotUndoMovementOrRepeatConfirmation() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            var attempts = 0
+            val repository =
+                RoomPaymentRepository(database = database, notifier = MovementNotifier {
+                    attempts++
+                    error("Notifications unavailable")
+                })
+            database.notifications().insert(
+                NotificationEntity(
+                    id = "review", packageName = "com.google.android.gm", source = "Gmail",
+                    title = "Receipt", text = "S/ 10.00", postedAt = System.currentTimeMillis(),
+                    suggestedAmountCents = 1000,
+                )
+            )
+            repository.confirm(id = "review", amountCents = 1000)
+            repository.confirm(id = "review", amountCents = 1000)
+            assertEquals(1000L, repository.observeGmailDashboard().first().dashboard.balanceCents)
+            assertEquals(1, attempts)
+        } finally {
+            database.close()
+        }
+    }
+
     @Test
     fun monthlyChartGroupsCurrentYearByMonthAndExcludesPriorYears() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -44,7 +121,9 @@ class PaymentNotificationsTest {
             insert("november", year, 10, -656)
             insert("prior-year", year - 1, 0, 50000)
             val dashboard =
-                RoomPaymentRepository(database).observeGmailDashboard().first().dashboard
+                RoomPaymentRepository(
+                    database = database,
+                    notifier = MovementNotifier {}).observeGmailDashboard().first().dashboard
             assertEquals(12, dashboard.monthlyFlow.size)
             assertEquals(10000L, dashboard.monthlyFlow[0])
             assertEquals(-656L, dashboard.monthlyFlow[10])
@@ -60,7 +139,8 @@ class PaymentNotificationsTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
         try {
-            val repository = RoomPaymentRepository(database)
+            val repository =
+                RoomPaymentRepository(database = database, notifier = MovementNotifier {})
             repeat(21) { index ->
                 database.notifications().insert(
                     NotificationEntity(
@@ -94,7 +174,8 @@ class PaymentNotificationsTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
         try {
-            val repository = RoomPaymentRepository(database)
+            val repository =
+                RoomPaymentRepository(database = database, notifier = MovementNotifier {})
             repository.setGmailEnabled(true)
             val bank = PaymentNotification(
                 "bank",
@@ -131,7 +212,8 @@ class PaymentNotificationsTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
         try {
-            val repository = RoomPaymentRepository(database)
+            val repository =
+                RoomPaymentRepository(database = database, notifier = MovementNotifier {})
             val notification = PaymentNotification(
                 id = "automatic-bcp", packageName = "com.google.android.gm", source = "Gmail",
                 title = "BCP Notificaciones",
@@ -191,7 +273,8 @@ class PaymentNotificationsTest {
             name = databaseName
         ).build()
         try {
-            var repository = RoomPaymentRepository(database)
+            var repository =
+                RoomPaymentRepository(database = database, notifier = MovementNotifier {})
             val notification = PaymentNotification(
                 id = "gmail-transfer",
                 packageName = "com.google.android.gm",
@@ -230,7 +313,7 @@ class PaymentNotificationsTest {
                 klass = PaymentDatabase::class.java,
                 name = databaseName
             ).build()
-            repository = RoomPaymentRepository(database)
+            repository = RoomPaymentRepository(database = database, notifier = MovementNotifier {})
             assertTrue(repository.observeGmailEnabled().first())
             val dashboard = repository.observeGmailDashboard().first().dashboard
             assertEquals(7500L, dashboard.balanceCents)
@@ -253,7 +336,8 @@ class PaymentNotificationsTest {
             val database =
                 Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
             try {
-                val repository = RoomPaymentRepository(database)
+                val repository =
+                    RoomPaymentRepository(database = database, notifier = MovementNotifier {})
                 val notification = PaymentNotification(
                     id = "automatic-yape",
                     packageName = "com.bcp.innovacxion.yapeapp",
@@ -317,7 +401,8 @@ class PaymentNotificationsTest {
                 name = databaseName
             ).build()
             try {
-                var repository = RoomPaymentRepository(database)
+                var repository =
+                    RoomPaymentRepository(database = database, notifier = MovementNotifier {})
                 val notification = PaymentNotification(
                     id = "payment-1",
                     packageName = "test.bank",
@@ -358,7 +443,8 @@ class PaymentNotificationsTest {
                     klass = PaymentDatabase::class.java,
                     name = databaseName
                 ).build()
-                repository = RoomPaymentRepository(database)
+                repository =
+                    RoomPaymentRepository(database = database, notifier = MovementNotifier {})
                 assertEquals(setOf("test.bank"), repository.observeSources().first())
                 val dashboard = repository.loadDashboard().dashboard
                 assertEquals(2000L, dashboard.balanceCents)

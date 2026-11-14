@@ -13,7 +13,7 @@
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Oscuro</string>
     <string name="notifications">Notificaciones</string>
-    <string name="notifications_detail">Preferencia de avisos de movimientos</string>
+    <string name="notifications_detail">Avisos locales de ingresos y egresos registrados</string>
     <string name="help">Centro de ayuda</string>
     <string name="help_detail">Preguntas frecuentes y orientación</string>
     <string name="rate">Calificar PagoControl</string>
@@ -39,8 +39,8 @@
     <string name="comment_count">%1$d/500</string>
     <string name="rating_local">Tu valoración se guarda en este dispositivo. Todavía no se envía a un servidor ni a una tienda.</string>
     <string name="sign_out_detail">Volverás a la pantalla de acceso. Tus preferencias guardadas se conservarán en este dispositivo.</string>
-    <string name="notifications_on">Tu preferencia de avisos está activada. La recepción automática de notificaciones y la detección bancaria se incorporarán en una próxima etapa.</string>
-    <string name="notifications_off">Tu preferencia de avisos está desactivada. Puedes cambiarla desde las preferencias de tu perfil.</string>
+    <string name="notifications_on">Recibirás avisos locales cuando se registre un ingreso o egreso, si Android permite las notificaciones. Los movimientos pendientes de revisión no generan avisos.</string>
+    <string name="notifications_off">Los avisos locales de ingresos y egresos están desactivados. La captura de movimientos conserva su configuración independiente.</string>
     <string name="save_error">No se pudieron guardar los cambios. Inténtalo de nuevo.</string>
     <string name="load_error">No pudimos cargar tus preferencias. Inténtalo de nuevo.</string>
     <string name="save">Guardar</string>
@@ -62,7 +62,7 @@
     <string name="faq_pending_title">¿Cómo reviso una operación pendiente?</string>
     <string name="faq_pending_body">En Movimientos, selecciona Pendientes y toca la operación que quieres revisar. Elige una categoría para confirmar su clasificación. Es una demostración local y no modifica tu cuenta bancaria.</string>
     <string name="faq_notifications_title">¿Qué hace la opción Notificaciones?</string>
-    <string name="faq_notifications_body">Guarda tu preferencia de avisos en este dispositivo. La aplicación todavía no envía avisos ni solicita acceso a tus SMS o notificaciones bancarias.</string>
+    <string name="faq_notifications_body">Activa o desactiva los avisos locales de ingresos y egresos registrados. Android también debe permitir las notificaciones. Los movimientos pendientes no generan avisos y los registros anteriores no se vuelven a notificar.</string>
     <string name="faq_appearance_title">¿Cómo cambio la apariencia?</string>
     <string name="faq_appearance_body">En Perfil, toca Apariencia y elige Sistema, Claro u Oscuro. El cambio se aplica a toda la aplicación y tu elección se conserva al volver a abrirla.</string>
     <string name="faq_rating_title">¿Dónde se guarda mi calificación?</string>
@@ -71,12 +71,14 @@
     <string name="privacy_intro_body">Conoce qué utiliza esta versión de PagoControl, para qué se necesita y cómo puedes gestionar la información en tu dispositivo.</string>
     <string name="privacy_account_title">Datos de tu perfil</string>
     <string name="privacy_account_body">El registro y el acceso usan Firebase Authentication. Tu identificador, nombre, correo y fecha de creación del perfil se guardan en Cloud Firestore. La recuperación envía un enlace por correo. Tu contraseña no se guarda en las preferencias ni en el estado de los formularios de PagoControl.</string>
-    <string name="privacy_movements_title">Movimientos de ejemplo</string>
-    <string name="privacy_movements_body">Los saldos y movimientos que se muestran son ilustrativos. Esta versión no lee tus SMS, no accede a notificaciones de otras aplicaciones y no se conecta a bancos, Yape o Plin. Al compartir movimientos, tú eliges la aplicación que recibirá el texto.</string>
+    <string name="privacy_movements_title">Movimientos registrados</string>
+    <string name="privacy_movements_body">Los movimientos detectados desde las aplicaciones elegidas o Gmail se guardan en este dispositivo. La lectura de notificaciones requiere acceso explícito desde Android. No se leen SMS ni se inicia sesión en tus bancos. Al compartir movimientos, tú eliges la aplicación que recibirá el texto.</string>
     <string name="privacy_preferences_title">Preferencias del dispositivo</string>
-    <string name="privacy_preferences_body">La apariencia y la preferencia de notificaciones se guardan localmente. Activar el interruptor no concede acceso a mensajes ni habilita detección bancaria.</string>
+    <string name="privacy_preferences_body">La apariencia y la preferencia de avisos se guardan localmente. Activar los avisos requiere permiso de Android y no concede acceso a notificaciones de otras aplicaciones. Los avisos de ingresos y egresos ocultan su detalle en la pantalla bloqueada según la configuración del sistema.</string>
     <string name="privacy_rating_title">Valoraciones y comentarios</string>
     <string name="privacy_rating_body">Las estrellas y el comentario opcional se guardan en el dispositivo. Esta versión no los envía a un servidor o a Google Play. Evita incluir claves, números de tarjeta u otros datos sensibles en el comentario.</string>
     <string name="privacy_control_title">Control de la información</string>
     <string name="privacy_control_body">Puedes editar tu perfil y actualizar tus preferencias desde esta pantalla. Cerrar sesión termina el acceso local y conserva las preferencias. Para eliminar los datos locales, usa Borrar almacenamiento en los ajustes de Android; esto restablece la aplicación.</string>
+    <string name="notifications_permission_detail">Permite los avisos de ingresos y egresos en Android</string>
+    <string name="notifications_open_settings">Abrir ajustes de notificaciones</string>
 </resources>

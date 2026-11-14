@@ -59,9 +59,6 @@
     <string name="gmail_review_hint">Verifica el comprobante, el importe en soles y si el dinero entró o salió. Una transferencia recibida es ingreso y una enviada es egreso. Descarta promociones, recordatorios y mensajes repetidos. El texto de la notificación puede estar incompleto.</string>
     <string name="home_error">No pudimos cargar tu resumen.</string>
     <string name="home_retry">Reintentar</string>
-    <string name="home_upcoming_title">Próximamente</string>
-    <string name="home_upcoming_message">Esta acción estará disponible en una próxima etapa.</string>
-    <string name="home_understood">Entendido</string>
     <string name="home_movements">Movimientos</string>
     <string name="home_add">Agregar movimiento</string>
     <string name="home_reports">Reportes</string>
