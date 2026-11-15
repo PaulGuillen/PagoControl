@@ -9,4 +9,5 @@ data class Movement(
     val amountCents: Long,
     val automatic: Boolean = false,
     val ownTransfer: Boolean = false,
+    val packageName: String = "",
 )

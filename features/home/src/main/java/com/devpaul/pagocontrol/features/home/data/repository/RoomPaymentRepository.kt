@@ -282,6 +282,7 @@ class RoomPaymentRepository(
         detail = formatter.format(Date(postedAt)),
         source = source,
         amountCents = amountCents ?: 0,
+        packageName = packageName,
         automatic = status == "automatic",
         ownTransfer = OwnAccountTransfer.matches(title = title, text = text),
     )
