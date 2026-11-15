@@ -26,4 +26,5 @@
     <string name="next_year">Año siguiente</string>
     <string name="apply_month">Aplicar</string>
     <string name="cancel">Cancelar</string>
+    <string name="filters_cleared">Se limpiaron los filtros</string>
 </resources>

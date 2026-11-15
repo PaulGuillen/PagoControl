@@ -1,5 +1,6 @@
 package com.devpaul.pagocontrol.features.movements.ui.movements
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -59,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -82,8 +84,11 @@ fun MovementsScreen(
     onProfile: () -> Unit = {},
     onReports: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val clearedMessage = stringResource(R.string.filters_cleared)
     val resetFilters: () -> Unit = {
         onIntent(MovementsUiIntent.Reset)
+        Toast.makeText(context, clearedMessage, Toast.LENGTH_SHORT).show()
     }
     var showMonthPicker by rememberSaveable { mutableStateOf(false) }
     val visible = state.visible
