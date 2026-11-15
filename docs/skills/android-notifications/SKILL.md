@@ -27,3 +27,5 @@ Emite avisos de ingreso o egreso solo despues de guardar un movimiento automatic
 ## Recuperacion desde Firestore
 
 La descarga inicial, las paginas incrementales y las confirmaciones remotas actualizan Room sin invocar `MovementNotifier`. Conserva los avisos solo en las acciones locales de captura automatica o confirmacion nuevas; volver a abrir Home, recuperar una cuenta o reconocer una subida pendiente no debe volver a notificar movimientos historicos.
+
+Las transferencias propias con frase explicita se muestran solo en Revisar movimientos, nunca en las listas principales ni en totales/graficos. La revision explica la transferencia y permite descartarla sin ofrecer ingreso/egreso.

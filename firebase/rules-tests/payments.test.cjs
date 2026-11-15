@@ -92,3 +92,10 @@ test('profile owner rules still work and remain isolated', async () => {
   }));
   await assertFails(getDoc(doc(env.authenticatedContext('bob').firestore(), 'users/alice')));
 });
+test('own transfers can replace expenses and retain their amount with a revision', async () => {
+  const db = env.authenticatedContext('alice').firestore();
+  await assertSucceeds(save(db, { amountCents: -100 }));
+  await assertSucceeds(save(db, { amountCents: -100, status: 'transfer', writeId: 'own-transfer' }, 2));
+  await assertFails(save(db, { amountCents: null, status: 'transfer' }, 3));
+  await assertSucceeds(save(db, { amountCents: -100, status: 'confirmed', writeId: 'restore-expense' }, 3));
+});

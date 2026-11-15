@@ -1,4 +1,7 @@
 <resources>
+    <string name="home_own_transfer">Transferencia entre mis cuentas</string>
+    <string name="home_own_transfer_action">Es una transferencia entre mis cuentas</string>
+    <string name="home_own_transfer_hint">No afecta tu saldo total, ingresos ni egresos. Si hubo una comisión, regístrala por separado como egreso. Marca ambas partes de la transferencia.</string>
     <string name="home_sync_initial">Recuperando tus movimientos. Puedes seguir usando la app.</string>
     <string name="home_sync_active">Sincronizando cambios con tu cuenta…</string>
     <string name="home_sync_pending">Hay cambios guardados pendientes de sincronizar.</string>

@@ -251,6 +251,10 @@ class HomeViewModelTest {
             pending.value = pending.value.filterNot { it.id == id }
         }
 
+        override suspend fun markOwnTransfer(id: String, amountCents: Long) {
+            pending.value = pending.value.filterNot { it.id == id }
+        }
+
         override suspend fun discard(id: String) {
             pending.value = pending.value.filterNot { it.id == id }
         }

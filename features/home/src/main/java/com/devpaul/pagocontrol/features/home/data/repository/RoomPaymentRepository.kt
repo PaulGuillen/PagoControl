@@ -10,6 +10,7 @@ import com.devpaul.pagocontrol.features.home.domain.entity.Movement
 import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
 import com.devpaul.pagocontrol.features.home.domain.recognition.AutomaticBcpExpense
 import com.devpaul.pagocontrol.features.home.domain.recognition.AutomaticGmailPayment
+import com.devpaul.pagocontrol.features.home.domain.recognition.OwnAccountTransfer
 import com.devpaul.pagocontrol.features.home.domain.recognition.AutomaticYapePayment
 import com.devpaul.pagocontrol.features.home.domain.repository.GmailMonitoringRepository
 import com.devpaul.pagocontrol.features.home.domain.repository.HomeRepository
@@ -68,7 +69,12 @@ class RoomPaymentRepository(
 
     override fun observePending() = forAccount(emptyList<PaymentNotification>()) { uid ->
         dao.observePending(ownerId = uid).map { rows ->
-            rows.map { it.toNotification() }.filter(WalletTransactionCandidate::matches)
+            rows.filter {
+                it.status == "pending" || OwnAccountTransfer.matches(
+                    title = it.title,
+                    text = it.text
+                )
+            }.map { it.toNotification() }.filter(WalletTransactionCandidate::matches)
         }
     }
 
@@ -89,7 +95,12 @@ class RoomPaymentRepository(
             dao.observePending(mail = true, ownerId = uid),
             dao.observeConfirmed(mail = true, ownerId = uid)
         ) { rows, recorded ->
-            rows.map { row ->
+            rows.filter {
+                it.status == "pending" || OwnAccountTransfer.matches(
+                    title = it.title,
+                    text = it.text
+                )
+            }.map { row ->
                 row.toNotification().copy(possibleDuplicate = recorded.any {
                     AutomaticGmailPayment.possibleDuplicate(
                         row.toNotification(),
@@ -139,7 +150,10 @@ class RoomPaymentRepository(
         ) return
         val automaticPayment = AutomaticYapePayment.recognize(notification)
         val automaticMail = AutomaticGmailPayment.recognize(notification)
-        val automaticAmount = automaticPayment?.amountCents ?: automaticMail?.amountCents
+        val ownTransfer =
+            OwnAccountTransfer.matches(title = notification.title, text = notification.text)
+        val automaticAmount = if (ownTransfer) AutomaticGmailPayment.suggestedAmount(notification)
+        else automaticPayment?.amountCents ?: automaticMail?.amountCents
         val recorded = dao.captureIfEnabled(
             NotificationEntity(
                 id = notification.id,
@@ -153,7 +167,9 @@ class RoomPaymentRepository(
                     notification
                 ) else WalletTransactionCandidate.suggestedAmount(notification),
                 amountCents = automaticAmount,
-                status = if (automaticAmount != null) "automatic" else "pending",
+                status = when {
+                    ownTransfer && automaticAmount != null -> "transfer"; automaticAmount != null -> "automatic"; else -> "pending"
+                },
             )
         )
         recorded?.let { notifyRecorded(it) }
@@ -165,7 +181,16 @@ class RoomPaymentRepository(
             ?.let { notifyRecorded(it) }
     }
 
+    override suspend fun markOwnTransfer(id: String, amountCents: Long) {
+        require(amountCents != 0L && amountCents in -99_999_999_999L..99_999_999_999L)
+        val uid = ownerId()
+        val row = dao.find(id = id, ownerId = uid) ?: return
+        require(OwnAccountTransfer.matches(title = row.title, text = row.text))
+        dao.markOwnTransfer(id = id, amountCents = amountCents, ownerId = uid)
+    }
+
     private suspend fun notifyRecorded(row: NotificationEntity) {
+        if (row.status == "transfer") return
         if (auth.session.value?.id != row.ownerId) return
         try {
             notifier.notify(
@@ -189,8 +214,10 @@ class RoomPaymentRepository(
         rows: List<NotificationEntity>,
         allMovements: Boolean = false
     ): DashboardResult.Success {
+        val financialRows =
+            rows.filter { !OwnAccountTransfer.matches(title = it.title, text = it.text) }
         val now = Calendar.getInstance()
-        val monthRows = rows.filter { row ->
+        val monthRows = financialRows.filter { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
             date.get(Calendar.YEAR) == now.get(Calendar.YEAR) && date.get(Calendar.MONTH) == now.get(
                 Calendar.MONTH
@@ -209,7 +236,7 @@ class RoomPaymentRepository(
         val monthly = MutableList(12) { 0L }
         val weeklyIncome = MutableList(7) { 0L }
         val monthlyIncome = MutableList(12) { 0L }
-        rows.forEach { row ->
+        financialRows.forEach { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
             val end = (weekStart.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 7) }
             if (row.postedAt >= weekStart.timeInMillis && row.postedAt < end.timeInMillis) {
@@ -218,7 +245,7 @@ class RoomPaymentRepository(
                 weeklyIncome[index] += (row.amountCents ?: 0).coerceAtLeast(0)
             }
         }
-        rows.forEach { row ->
+        financialRows.forEach { row ->
             val date = Calendar.getInstance().apply { timeInMillis = row.postedAt }
             if (date.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
                 val index = date.get(Calendar.MONTH)
@@ -229,18 +256,18 @@ class RoomPaymentRepository(
         val formatter = SimpleDateFormat("dd MMM, HH:mm", Locale.forLanguageTag("es-PE"))
         return DashboardResult.Success(
             Dashboard(
-                balanceCents = rows.sumOf { it.amountCents ?: 0 },
+                balanceCents = financialRows.sumOf { it.amountCents ?: 0 },
                 incomeCents = income.sumOf { it.amountCents ?: 0 },
                 expenseCents = -expenses.sumOf { it.amountCents ?: 0 },
                 incomeCount = income.size, expenseCount = expenses.size,
                 weeklyFlow = weekly, monthlyFlow = monthly,
-                movements = (if (allMovements) rows else rows.take(20)).map {
+                movements = (if (allMovements) financialRows else financialRows.take(20)).map {
                     it.toMovement(
                         formatter
                     )
                 },
                 weeklyIncomeFlow = weeklyIncome, monthlyIncomeFlow = monthlyIncome,
-                receivedMovements = rows.filter { (it.amountCents ?: 0) > 0 }.take(20)
+                receivedMovements = financialRows.filter { (it.amountCents ?: 0) > 0 }.take(20)
                     .map { it.toMovement(formatter) },
             )
         )
@@ -253,8 +280,11 @@ class RoomPaymentRepository(
                 AutomaticYapePayment.recognize(toNotification())?.sender
                     ?: AutomaticGmailPayment.recognize(toNotification())?.title ?: title
             } else title.ifBlank { source },
-        detail = formatter.format(Date(postedAt)), source = source,
-        amountCents = amountCents ?: 0, automatic = status == "automatic",
+        detail = formatter.format(Date(postedAt)),
+        source = source,
+        amountCents = amountCents ?: 0,
+        automatic = status == "automatic",
+        ownTransfer = OwnAccountTransfer.matches(title = title, text = text),
     )
 
     private fun NotificationEntity.toNotification() = PaymentNotification(

@@ -58,9 +58,11 @@ internal object FirestorePaymentCodec {
         require(row.id.length in 1..200 && row.packageName.length in 1..200)
         require(row.source.length <= 200 && row.title.length <= 200 && row.text.length <= 4000)
         require(row.postedAt >= 0)
-        require(row.status in setOf("pending", "automatic", "confirmed", "discarded"))
+        require(row.status in setOf("pending", "automatic", "confirmed", "discarded", "transfer"))
         require(row.amountCents == null || row.amountCents in -99_999_999_999L..99_999_999_999L)
         require(row.suggestedAmountCents == null || row.suggestedAmountCents in -99_999_999_999L..99_999_999_999L)
-        if (row.status == "confirmed" || row.status == "automatic") require(row.amountCents != null && row.amountCents != 0L)
+        if (row.status == "confirmed" || row.status == "automatic" || row.status == "transfer") require(
+            row.amountCents != null && row.amountCents != 0L
+        )
     }
 }

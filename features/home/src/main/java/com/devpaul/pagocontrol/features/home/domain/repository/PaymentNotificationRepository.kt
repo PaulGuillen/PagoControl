@@ -14,5 +14,7 @@ interface PaymentNotificationRepository {
 
     suspend fun confirm(id: String, amountCents: Long)
 
+    suspend fun markOwnTransfer(id: String, amountCents: Long)
+
     suspend fun discard(id: String)
 }

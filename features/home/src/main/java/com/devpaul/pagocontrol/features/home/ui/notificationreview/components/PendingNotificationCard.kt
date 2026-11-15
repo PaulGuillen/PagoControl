@@ -31,6 +31,7 @@ import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.features.home.R
 import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
+import com.devpaul.pagocontrol.features.home.domain.recognition.OwnAccountTransfer
 import com.devpaul.pagocontrol.features.home.domain.validation.PaymentAmount
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
 import java.math.BigDecimal
@@ -127,30 +128,43 @@ fun PendingNotificationCard(
                     reviewing = false
                 }) { Text(stringResource(if (mail && notification.possibleDuplicate) R.string.gmail_already_recorded else R.string.notifications_discard)) }
                 val cents = PaymentAmount.parse(amount)
-                Button(enabled = cents != null && !saving, onClick = {
-                    cents?.let {
-                        onIntent(
-                            HomeUiIntent.ConfirmPayment(
-                                id = notification.id,
-                                amountCents = it,
-                                mail = mail
+                if (OwnAccountTransfer.matches(
+                        title = notification.title,
+                        text = notification.text
+                    )
+                ) {
+                    Text(stringResource(R.string.home_own_transfer))
+                    Text(
+                        stringResource(R.string.home_own_transfer_hint),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                } else {
+                    Button(enabled = cents != null && !saving, onClick = {
+                        cents?.let {
+                            onIntent(
+                                HomeUiIntent.ConfirmPayment(
+                                    id = notification.id,
+                                    amountCents = it,
+                                    mail = mail
+                                )
                             )
-                        )
-                    }
-                    reviewing = false
-                }) { Text(stringResource(R.string.notifications_income)) }
-                if (mail) Button(enabled = cents != null && !saving, onClick = {
-                    cents?.let {
-                        onIntent(
-                            HomeUiIntent.ConfirmPayment(
-                                id = notification.id,
-                                amountCents = -it,
-                                mail = true
+                        }
+                        reviewing = false
+                    }) { Text(stringResource(R.string.notifications_income)) }
+                    if (mail) Button(enabled = cents != null && !saving, onClick = {
+                        cents?.let {
+                            onIntent(
+                                HomeUiIntent.ConfirmPayment(
+                                    id = notification.id,
+                                    amountCents = -it,
+                                    mail = true
+                                )
                             )
-                        )
-                    }
-                    reviewing = false
-                }) { Text(stringResource(R.string.gmail_confirm_expense)) }
+                        }
+                        reviewing = false
+                    }) { Text(stringResource(R.string.gmail_confirm_expense)) }
+                }
+
             }
         },
         confirmButton = {

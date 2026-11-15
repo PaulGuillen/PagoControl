@@ -6,6 +6,18 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class FirestorePaymentCodecTest {
+    @Test
+    fun ownTransferClassificationSurvivesRemoteRoundTrip() {
+        val transfer = row.copy(status = "transfer")
+        val restored = FirestorePaymentCodec.decode(
+            ownerId = transfer.ownerId,
+            documentId = FirestorePaymentCodec.documentId(transfer.id),
+            data = FirestorePaymentCodec.encode(row = transfer, revision = 10),
+        )
+        assertEquals("transfer", restored.status)
+        assertEquals(transfer.amountCents, restored.amountCents)
+    }
+
     private val row = NotificationEntity(
         id = "payment/unsafe-original-id", packageName = "com.google.android.gm", source = "Gmail",
         title = "Bank", text = "Receipt", postedAt = 123, suggestedAmountCents = 100,

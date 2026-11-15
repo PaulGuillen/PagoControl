@@ -21,3 +21,9 @@ Entrega contratos y casos de uso con pruebas de invariantes, límites y resultad
 ## Propiedad del dominio
 
 Mantiene las entidades, contratos, validaciones y casos de uso propios en `features/<nombre>/domain/`, siguiendo Auth. Home conserva alli su dashboard, movimientos, captura de pagos y contratos de sincronizacion. Extrae a `core-domain` solo modelos, contratos o eventos realmente globales usados por varias capacidades. Consumir un contrato desde la composicion de app no convierte automaticamente el contrato de una feature en global.
+
+## Transferencias entre cuentas propias
+
+En Home, clasifica como transferencia propia solo cuando el titulo o mensaje original contenga la frase explicita `transferencia entre mis cuentas` (sin distinguir mayusculas y tolerando espacios). Una transferencia recibida o enviada por si sola no prueba que las cuentas sean propias. No muestres acciones de transferencia propia en movimientos comunes ni botones de confirmar ingreso/egreso en las filas. Conserva el importe e historial, excluye estas transferencias del saldo consolidado, conteos y graficos, y no generes avisos de ingreso/egreso. Usa la frase del comprobante tambien al leer registros existentes para que una clasificacion manual anterior no convierta una compra comun en transferencia. Las comisiones son egresos separados.
+
+Las transferencias propias con frase explicita se muestran solo en Revisar movimientos, nunca en las listas principales ni en totales/graficos. La revision explica la transferencia y permite descartarla sin ofrecer ingreso/egreso.

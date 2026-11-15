@@ -105,6 +105,10 @@ class HomeViewModel(
                 notifications.setSource(intent.packageName, intent.enabled)
             }
 
+            is HomeUiIntent.OwnTransfer -> saveNotification(mail = intent.mail) {
+                notifications.markOwnTransfer(id = intent.id, amountCents = intent.amountCents)
+            }
+
             is HomeUiIntent.ConfirmPayment -> saveNotification(mail = intent.mail) {
                 notifications.confirm(intent.id, intent.amountCents)
             }

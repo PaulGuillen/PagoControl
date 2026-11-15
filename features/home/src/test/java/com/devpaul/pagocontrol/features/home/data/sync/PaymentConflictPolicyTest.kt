@@ -6,6 +6,28 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PaymentConflictPolicyTest {
+    @Test
+    fun ownTransferCorrectionSurvivesAnOlderIncomeOrExpenseAcknowledgement() {
+        assertFalse(
+            PaymentConflictPolicy.keepRemote(
+                local = local.copy(status = "transfer"),
+                remote = local.copy(remoteRevision = 10)
+            )
+        )
+        assertTrue(
+            PaymentConflictPolicy.keepRemote(
+                local = local.copy(status = "pending"),
+                remote = local.copy(status = "transfer", remoteRevision = 10)
+            )
+        )
+        assertTrue(
+            PaymentConflictPolicy.keepRemote(
+                local = local.copy(status = "transfer"),
+                remote = local.copy(status = "discarded", remoteRevision = 10)
+            )
+        )
+    }
+
     private val local = NotificationEntity(
         id = "p", packageName = "mail", source = "Mail", title = "Receipt", text = "Receipt",
         postedAt = 1, suggestedAmountCents = 100, amountCents = 100, status = "confirmed",

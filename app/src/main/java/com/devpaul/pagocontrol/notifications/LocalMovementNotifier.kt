@@ -57,6 +57,7 @@ class LocalMovementNotifier(
     }
 
     override suspend fun notify(movement: Movement) {
+        if (movement.ownTransfer) return
         if (movement.amountCents == 0L) return
         val user = auth.session.value ?: return
         if (!profiles.observe(user.id).first().notificationsEnabled) return

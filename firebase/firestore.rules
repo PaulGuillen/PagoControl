@@ -48,8 +48,8 @@ service cloud.firestore {
             && d.text is string && d.text.size() <= 4000
             && d.postedAt is int && d.postedAt >= 0
             && validAmount(d.suggestedAmountCents) && validAmount(d.amountCents)
-            && d.status in ['pending', 'confirmed', 'automatic', 'discarded']
-            && (!(d.status in ['confirmed', 'automatic']) || (d.amountCents is int && d.amountCents != 0))
+            && d.status in ['pending', 'confirmed', 'automatic', 'discarded', 'transfer']
+            && (!(d.status in ['confirmed', 'automatic', 'transfer']) || (d.amountCents is int && d.amountCents != 0))
             && d.writeId is string && d.writeId.size() > 0 && d.writeId.size() <= 100
             && d.revision is int && d.revision > 0 && d.updatedAt == request.time;
         }

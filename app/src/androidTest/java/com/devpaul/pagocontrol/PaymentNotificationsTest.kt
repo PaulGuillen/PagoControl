@@ -24,6 +24,111 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PaymentNotificationsTest {
+    @Test
+    fun automaticOwnTransferRequiresPhraseAndOldIncorrectLabelsDoNotHideExpenses() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val notices = mutableListOf<Movement>()
+            val repository = RoomPaymentRepository(
+                database = database,
+                auth = auth,
+                notifier = MovementNotifier { notices += it })
+            repository.setGmailEnabled(true)
+            repository.capture(
+                PaymentNotification(
+                    id = "own",
+                    packageName = "com.google.android.gm",
+                    source = "Gmail",
+                    title = "BCP Notificaciones",
+                    text = "Transferencia entre mis cuentas S/ 100.00",
+                    postedAt = System.currentTimeMillis(),
+                    suggestedAmountCents = 10000,
+                )
+            )
+            assertEquals("transfer", database.notifications().find("own")?.status)
+            assertTrue(notices.isEmpty())
+            database.notifications().insert(
+                NotificationEntity(
+                    id = "old-wrong-label",
+                    packageName = "com.google.android.gm",
+                    source = "Gmail",
+                    title = "BCP",
+                    text = "Compra OPENAI S/ 89.72",
+                    postedAt = System.currentTimeMillis(),
+                    suggestedAmountCents = 8972,
+                    amountCents = -8972,
+                    status = "transfer",
+                )
+            )
+            val dashboard = repository.observeGmailDashboard().first().dashboard
+            assertEquals(-8972L, dashboard.balanceCents)
+            assertEquals(8972L, dashboard.expenseCents)
+            assertEquals(0, dashboard.movements.count { it.ownTransfer })
+            assertEquals(
+                false,
+                dashboard.movements.single { it.id == "old-wrong-label" }.ownTransfer
+            )
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
+    fun ownTransfersRemainVisibleButDoNotAffectTotalsChartsOrEmitAlerts() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.inMemoryDatabaseBuilder(context, PaymentDatabase::class.java).build()
+        try {
+            val notices = mutableListOf<Movement>()
+            val repository = RoomPaymentRepository(
+                database = database,
+                auth = auth,
+                notifier = MovementNotifier { notices += it })
+
+            suspend fun insert(id: String, amount: Long, status: String = "confirmed") {
+                database.notifications().insert(
+                    NotificationEntity(
+                        id = id,
+                        packageName = "com.google.android.gm",
+                        source = "Gmail",
+                        title = id,
+                        text = if (id.startsWith("transfer")) "Transferencia entre mis cuentas" else "Receipt",
+                        postedAt = System.currentTimeMillis(),
+                        suggestedAmountCents = amount,
+                        amountCents = amount,
+                        status = status,
+                    )
+                )
+            }
+            insert(id = "income", amount = 10000)
+            insert(id = "expense", amount = -1000)
+            insert(id = "transfer-out", amount = -50000)
+            insert(id = "transfer-in", amount = 50000, status = "pending")
+            repository.markOwnTransfer(id = "transfer-out", amountCents = -50000)
+            repository.markOwnTransfer(id = "transfer-in", amountCents = 50000)
+            val dashboard = repository.observeGmailDashboard().first().dashboard
+            assertEquals(9000L, dashboard.balanceCents)
+            assertEquals(10000L, dashboard.incomeCents)
+            assertEquals(1000L, dashboard.expenseCents)
+            assertEquals(1, dashboard.incomeCount)
+            assertEquals(1, dashboard.expenseCount)
+            assertEquals(9000L, dashboard.weeklyFlow.sum())
+            assertEquals(9000L, dashboard.monthlyFlow.sum())
+            assertEquals(10000L, dashboard.weeklyIncomeFlow.sum())
+            assertEquals(0, dashboard.movements.count { it.ownTransfer })
+            assertEquals(2, dashboard.movements.size)
+            assertEquals(2, repository.observeGmailPending().first().size)
+            assertTrue(notices.isEmpty())
+            assertTrue(database.notifications().pendingWrites("").all { it.pendingWriteId != null })
+            repository.confirm(id = "transfer-in", amountCents = 50000)
+            assertEquals(10000L, repository.observeGmailDashboard().first().dashboard.incomeCents)
+            repository.discard("transfer-out")
+            assertEquals(2, repository.observeGmailDashboard().first().dashboard.movements.size)
+        } finally {
+            database.close()
+        }
+    }
+
     private val auth = object : AuthRepository {
         override val session = MutableStateFlow<UserSession?>(
             UserSession(

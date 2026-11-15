@@ -8,4 +8,5 @@ data class Movement(
     val source: String,
     val amountCents: Long,
     val automatic: Boolean = false,
+    val ownTransfer: Boolean = false,
 )

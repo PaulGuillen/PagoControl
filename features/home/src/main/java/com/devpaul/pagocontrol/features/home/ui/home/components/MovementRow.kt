@@ -28,7 +28,7 @@ import com.devpaul.pagocontrol.features.home.domain.entity.Movement
 fun MovementRow(
     movement: Movement,
     deleting: Boolean = false,
-    onDelete: (() -> Unit)? = null
+    onDelete: (() -> Unit)? = null,
 ) {
     val title = movement.title.lineSequence().firstOrNull { it.isNotBlank() }?.trim().orEmpty()
     PagoCard(Modifier.fillMaxWidth()) {
@@ -75,9 +75,15 @@ fun MovementRow(
                 InstitutionBadge(movement.source)
             }
             Text(
-                text = formatSoles(movement.amountCents, signed = true),
+                text = formatSoles(movement.amountCents, signed = !movement.ownTransfer),
                 style = MaterialTheme.typography.titleMedium,
-                color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                color = if (!movement.ownTransfer && movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        if (movement.ownTransfer) {
+            Text(
+                stringResource(R.string.home_own_transfer),
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }

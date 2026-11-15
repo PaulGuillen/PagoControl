@@ -16,16 +16,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PaymentNotificationDao {
-    @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status = 'pending' AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
+    @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status IN ('pending', 'transfer', 'confirmed', 'automatic') AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
     fun observePending(mail: Boolean = false, ownerId: String = ""): Flow<List<NotificationEntity>>
 
-    @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status IN ('confirmed', 'automatic') AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
+    @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status IN ('confirmed', 'automatic', 'transfer') AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
     fun observeConfirmed(
         mail: Boolean = false,
         ownerId: String = ""
     ): Flow<List<NotificationEntity>>
 
-    @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status IN ('confirmed', 'automatic') AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
+    @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status IN ('confirmed', 'automatic', 'transfer') AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
     suspend fun confirmed(mail: Boolean = false, ownerId: String = ""): List<NotificationEntity>
 
     @Query("SELECT packageName FROM notification_sources WHERE ownerId = :ownerId")
@@ -74,13 +74,21 @@ interface PaymentNotificationDao {
     @Query("DELETE FROM notification_sources WHERE ownerId = :ownerId AND packageName = :packageName")
     suspend fun disable(packageName: String, ownerId: String = "")
 
-    @Query("UPDATE payment_notifications SET status = 'confirmed', amountCents = :amountCents, pendingWriteId = :writeId WHERE ownerId = :ownerId AND id = :id AND status = 'pending'")
+    @Query("UPDATE payment_notifications SET status = 'confirmed', amountCents = :amountCents, pendingWriteId = :writeId WHERE ownerId = :ownerId AND id = :id AND status IN ('pending', 'transfer')")
     suspend fun confirm(
         id: String,
         amountCents: Long,
         ownerId: String = "",
         writeId: String = UUID.randomUUID().toString()
     ): Int
+
+    @Query("UPDATE payment_notifications SET status = 'transfer', amountCents = :amountCents, pendingWriteId = :writeId WHERE ownerId = :ownerId AND id = :id AND status IN ('pending', 'confirmed', 'automatic')")
+    suspend fun markOwnTransfer(
+        id: String,
+        amountCents: Long,
+        ownerId: String,
+        writeId: String = UUID.randomUUID().toString()
+    )
 
     @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND id = :id")
     suspend fun find(id: String, ownerId: String = ""): NotificationEntity?
@@ -96,7 +104,7 @@ interface PaymentNotificationDao {
             ownerId = ownerId
         ) else null
 
-    @Query("UPDATE payment_notifications SET status = 'discarded', title = '', text = '', pendingWriteId = :writeId WHERE ownerId = :ownerId AND id = :id AND (status = 'pending' OR (packageName = 'com.google.android.gm' AND status IN ('confirmed', 'automatic')))")
+    @Query("UPDATE payment_notifications SET status = 'discarded', title = '', text = '', pendingWriteId = :writeId WHERE ownerId = :ownerId AND id = :id AND (status = 'pending' OR (packageName = 'com.google.android.gm' AND status IN ('confirmed', 'automatic', 'transfer')))")
     suspend fun discard(
         id: String,
         ownerId: String = "",
