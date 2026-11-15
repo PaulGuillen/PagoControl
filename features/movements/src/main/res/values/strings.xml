@@ -11,7 +11,7 @@
     <string name="net_amount">%1$s neto</string>
     <string name="load_more">Cargar más antiguos</string>
     <string name="close">Cerrar</string>
-    <string name="net">Neto Caja</string>
+    <string name="net">Total</string>
     <string name="wallet">Billetera digital</string>
     <string name="gmail">Gmail</string>
     <string name="balance_channel">Balance mensual: %1$s</string>
