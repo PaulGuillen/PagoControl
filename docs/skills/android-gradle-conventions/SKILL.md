@@ -17,3 +17,11 @@ description: Configurar catálogo de versiones, plugins de convención, toolchai
 ## Comprobar y entregar
 
 Lista tareas reales, compila una librería Kotlin y una feature Android, y genera una variante debug. Entrega matriz de variantes, catálogo sin versiones duplicadas injustificadas y explicación de propiedades locales/CI.
+
+## Dependencias centralizadas con DependenceUtil
+
+Declara las librerias externas y sus configuraciones de consumo en `buildSrc/src/main/kotlin/dependence/DependenceUtil.kt`, mediante funciones de extension `Project` como `composeImplementation()`, `firestoreImplementation()` o `roomImplementation()`. Resuelve alias desde el catalogo `libs.versions.toml`; no dupliques coordenadas ni versiones. Los build.gradle.kts de producto llaman funciones o aplican convenciones, sin bloques implementation(libs...) repetidos.
+
+Los plugins `plugin.feature`, `plugin.application`, `plugin.compose`, `plugin.koin` y `plugin.kotlin.lib` llaman las funciones comunes a sus consumidores. Las features reciben Compose, navegacion, Koin y pruebas desde sus convenciones. Firebase, Room o DataStore se agregan con funciones solo a quienes los usan. Conserva las dependencias project(...) visibles en los modulos o su convencion compartida y la configuracion particular (namespace, buildTypes, exportacion de esquemas) en el propietario. Los artefactos Gradle necesarios para compilar buildSrc permanecen en buildSrc/build.gradle.kts: ese build no puede usar funciones que todavia esta compilando. AndroidBase es referencia y no se modifica.
+
+Al refactorizar, conserva los scopes implementation, ksp, debugImplementation y androidTestImplementation, los BOM y el grafo entre modulos. Evita que dos convenciones declaren el mismo grupo en un consumidor. Valida compilacion debug, compilacion de pruebas instrumentadas, unit tests y una variante release para comprobar los scopes.

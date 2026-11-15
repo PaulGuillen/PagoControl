@@ -1,6 +1,9 @@
 package plugin
 
 import Config
+import dependence.applicationImplementation
+import dependence.composeImplementation
+import dependence.unitTestingImplementation
 
 plugins {
     id("com.android.application")
@@ -20,3 +23,7 @@ android {
     }
     buildFeatures { compose = true; buildConfig = true }
 }
+
+composeImplementation()
+applicationImplementation()
+unitTestingImplementation()

@@ -1,3 +1,6 @@
+import dependence.firebaseAuthImplementation
+import dependence.firestoreImplementation
+
 plugins { id("plugin.feature") }
 android {
     namespace = "com.devpaul.pagocontrol.features.auth"
@@ -11,9 +14,6 @@ android {
         release { buildConfigField("String", "FIREBASE_EMULATOR_HOST", "\"\"") }
     }
 }
-dependencies {
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
-    implementation(libs.coroutines.play.services)
-}
+
+firestoreImplementation()
+firebaseAuthImplementation()

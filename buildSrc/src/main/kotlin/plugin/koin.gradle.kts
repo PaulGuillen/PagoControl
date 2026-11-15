@@ -1,14 +1,9 @@
 package plugin
 
-import org.gradle.api.artifacts.VersionCatalogsExtension
+import dependence.koinImplementation
 
 plugins { id("com.google.devtools.ksp") }
 
-val koinLibs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-
-dependencies {
-    "implementation"(koinLibs.findLibrary("koin-annotations").get())
-    "ksp"(koinLibs.findLibrary("koin-compiler").get())
-}
+koinImplementation()
 
 ksp { arg("KOIN_DEFAULT_MODULE", "false") }
