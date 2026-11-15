@@ -21,7 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Single
 
@@ -45,10 +47,10 @@ class LocalMovementNotifier(
             )
         }
         scope.launch {
-            auth.session.collectLatest { user ->
+            auth.session.map { it?.id }.distinctUntilChanged().collectLatest { userId ->
                 manager.cancelAll()
-                if (user != null) {
-                    profiles.observe(user.id).catch { manager.cancelAll() }.collect { preferences ->
+                if (userId != null) {
+                    profiles.observe(userId).catch { manager.cancelAll() }.collect { preferences ->
                         if (!preferences.notificationsEnabled) manager.cancelAll()
                     }
                 }
