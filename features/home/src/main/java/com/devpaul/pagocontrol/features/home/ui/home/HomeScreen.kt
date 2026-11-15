@@ -53,6 +53,7 @@ import com.devpaul.pagocontrol.designsystem.PagoDock
 import com.devpaul.pagocontrol.designsystem.PagoHeader
 import com.devpaul.pagocontrol.features.home.R
 import com.devpaul.pagocontrol.features.home.domain.entity.PaymentSyncState
+import com.devpaul.pagocontrol.features.home.ui.home.components.AllMovementsScreen
 import com.devpaul.pagocontrol.features.home.ui.home.components.FlowCard
 import com.devpaul.pagocontrol.features.home.ui.home.components.GmailMonitoringCard
 import com.devpaul.pagocontrol.features.home.ui.home.components.HomeGuideOverlay
@@ -100,6 +101,7 @@ fun HomeScreen(
     val mail = state.section == HomeSection.Mail
     val listState = rememberLazyListState()
     val ready = (if (mail) state.gmailContent else state.content) is HomeContent.Ready
+    var showAllMovements by rememberSaveable(state.section) { mutableStateOf(false) }
     var showMovementReview by rememberSaveable(state.section) { mutableStateOf(false) }
     var reviewedIds by rememberSaveable(state.section) { mutableStateOf(arrayListOf<String>()) }
     val pendingNotifications =
@@ -177,7 +179,21 @@ fun HomeScreen(
         )
         return
     }
-    Box(Modifier.fillMaxSize()) {
+    if (showAllMovements) {
+        val content = (if (mail) state.gmailContent else state.content) as? HomeContent.Ready
+        AllMovementsScreen(
+            movements = content?.dashboard?.let {
+                if (mail) it.movements else it.receivedMovements
+            }.orEmpty(),
+            mail = mail,
+            saving = state.savingNotification,
+            onDelete = { movement ->
+                deletingId = movement.id
+                deletingTitle = movement.title
+            },
+            onBack = { showAllMovements = false },
+        )
+    } else Box(Modifier.fillMaxSize()) {
         Scaffold(
             modifier = if (guiding) Modifier.clearAndSetSemantics {} else Modifier,
             containerColor = MaterialTheme.colorScheme.background,
@@ -376,20 +392,30 @@ fun HomeScreen(
                                     )
                                 }
                             }
-                            item {
-                                Column(Modifier.onGloballyPositioned {
-                                    guideTargets[3] = it.boundsInRoot()
-                                }) {
-                                    Text(
-                                        stringResource(if (mail) R.string.gmail_recent else R.string.home_recent),
-                                        style = MaterialTheme.typography.headlineSmall
-                                    )
-                                }
-                            }
                             val movements =
                                 if (mail) dashboard.movements else dashboard.receivedMovements
+                            item {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().onGloballyPositioned {
+                                        guideTargets[3] = it.boundsInRoot()
+                                    },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                ) {
+                                    Text(
+                                        stringResource(if (mail) R.string.gmail_recent else R.string.home_recent),
+                                        modifier = Modifier.weight(1f),
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                    if (movements.size > RECENT_MOVEMENTS_LIMIT) {
+                                        TextButton(onClick = { showAllMovements = true }) {
+                                            Text(stringResource(R.string.home_view_all))
+                                        }
+                                    }
+                                }
+                            }
                             if (movements.isEmpty()) item { Text(stringResource(if (mail) R.string.gmail_empty else R.string.home_empty)) }
-                            items(items = movements, key = { it.id }) { movement ->
+                            items(items = movements.take(RECENT_MOVEMENTS_LIMIT), key = { it.id }) { movement ->
                                 MovementRow(
                                     movement = movement,
                                     deleting = state.savingNotification,
@@ -441,3 +467,5 @@ fun HomeScreen(
     }
 
 }
+
+private const val RECENT_MOVEMENTS_LIMIT = 3

@@ -135,4 +135,7 @@
     <string name="gmail_flow">Ingresos y egresos por semana / mes</string>
     <string name="home_chart_year">Meses de %1$d</string>
     <string name="notifications_review_message">Mensaje de la notificaci&#243;n</string>
+    <string name="home_view_all">Ver todo</string>
+    <string name="home_all_payments">Todos los cobros</string>
+    <string name="gmail_all_transactions">Todas las transacciones</string>
 </resources>

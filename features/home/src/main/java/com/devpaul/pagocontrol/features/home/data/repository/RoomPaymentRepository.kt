@@ -87,7 +87,7 @@ class RoomPaymentRepository(
     override fun observeGmailDashboard(): Flow<DashboardResult.Success> =
         forAccount(dashboard(emptyList())) { uid ->
             dao.observeConfirmed(mail = true, ownerId = uid)
-                .map { dashboard(it, allMovements = true) }
+                .map { dashboard(it) }
         }
 
     override fun observeGmailPending() = forAccount(emptyList<PaymentNotification>()) { uid ->
@@ -211,8 +211,7 @@ class RoomPaymentRepository(
     override suspend fun discard(id: String) = dao.discard(id = id, ownerId = ownerId())
 
     private fun dashboard(
-        rows: List<NotificationEntity>,
-        allMovements: Boolean = false
+        rows: List<NotificationEntity>
     ): DashboardResult.Success {
         val financialRows =
             rows.filter { !OwnAccountTransfer.matches(title = it.title, text = it.text) }
@@ -261,13 +260,13 @@ class RoomPaymentRepository(
                 expenseCents = -expenses.sumOf { it.amountCents ?: 0 },
                 incomeCount = income.size, expenseCount = expenses.size,
                 weeklyFlow = weekly, monthlyFlow = monthly,
-                movements = (if (allMovements) financialRows else financialRows.take(20)).map {
+                movements = financialRows.map {
                     it.toMovement(
                         formatter
                     )
                 },
                 weeklyIncomeFlow = weeklyIncome, monthlyIncomeFlow = monthlyIncome,
-                receivedMovements = financialRows.filter { (it.amountCents ?: 0) > 0 }.take(20)
+                receivedMovements = financialRows.filter { (it.amountCents ?: 0) > 0 }
                     .map { it.toMovement(formatter) },
             )
         )
