@@ -52,6 +52,7 @@ import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.PagoDock
 import com.devpaul.pagocontrol.designsystem.PagoHeader
 import com.devpaul.pagocontrol.features.home.R
+import com.devpaul.pagocontrol.features.home.domain.entity.PaymentSyncState
 import com.devpaul.pagocontrol.features.home.ui.home.components.FlowCard
 import com.devpaul.pagocontrol.features.home.ui.home.components.GmailMonitoringCard
 import com.devpaul.pagocontrol.features.home.ui.home.components.HomeGuideOverlay
@@ -80,6 +81,8 @@ fun HomeScreen(
     onProfile: () -> Unit = {},
     onReports: () -> Unit = {},
     notificationAccessGranted: Boolean = rememberNotificationAccess(),
+    syncState: PaymentSyncState = PaymentSyncState(),
+    onSync: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var settingsFailed by remember { mutableStateOf(false) }
@@ -208,12 +211,26 @@ fun HomeScreen(
                                 style = MaterialTheme.typography.headlineMedium
                             )
                             Text(
-                                text = stringResource(R.string.home_demo),
+                                text = stringResource(
+                                    when {
+                                        syncState.hasError -> R.string.home_sync_error
+                                        syncState.isSyncing && !syncState.initialDownloadComplete -> R.string.home_sync_initial
+                                        syncState.isSyncing -> R.string.home_sync_active
+                                        syncState.pendingWrites > 0 -> R.string.home_sync_pending
+                                        syncState.initialDownloadComplete -> R.string.home_sync_complete
+                                        else -> R.string.home_sync_local
+                                    }
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             TextButton(onClick = { onIntent(HomeUiIntent.ShowGuide) }) {
                                 Text(stringResource(R.string.home_guide_help))
+                            }
+                            if (syncState.hasError) {
+                                TextButton(onClick = onSync, enabled = !syncState.isSyncing) {
+                                    Text(stringResource(R.string.home_sync_action))
+                                }
                             }
                         }
                     }

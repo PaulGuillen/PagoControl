@@ -15,9 +15,9 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
-import com.devpaul.pagocontrol.domain.Dashboard
-import com.devpaul.pagocontrol.domain.Movement
-import com.devpaul.pagocontrol.domain.PaymentNotification
+import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
+import com.devpaul.pagocontrol.features.home.domain.entity.Movement
+import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
 import com.devpaul.pagocontrol.features.home.ui.home.HomeScreen
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiState

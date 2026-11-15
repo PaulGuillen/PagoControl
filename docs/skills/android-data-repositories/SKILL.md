@@ -17,3 +17,7 @@ description: Implementar repositorios y fuentes de datos con mapeo entre DTO y d
 ## Comprobar y entregar
 
 Verifica mapeos, datos corruptos, actualización parcial, cancelación y cambio de cuenta. Entrega implementación, registro DI y pruebas de comportamiento del contrato; no pruebes únicamente que una llamada fue delegada.
+
+## Ubicacion por funcionalidad
+
+Sigue la estructura de Auth para las demas features: los contratos exclusivos van en `features/<nombre>/domain/repository/`, sus entidades en `domain/entity/` y las implementaciones en `data/repository/`. Firebase y Room se consumen desde `data/datasource/remote/` y `data/datasource/local/`; DTO, entidades Room y mapeadores pertenecen a data. Los proveedores Koin, dependencias Gradle, esquemas y pruebas se registran dentro de la feature propietaria. `core-domain` y `core-data` contienen solo capacidades globales compartidas, no todo el negocio o almacenamiento de la app.

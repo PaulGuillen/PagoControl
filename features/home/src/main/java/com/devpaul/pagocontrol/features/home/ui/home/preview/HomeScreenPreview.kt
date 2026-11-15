@@ -3,7 +3,7 @@ package com.devpaul.pagocontrol.features.home.ui.home.preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
-import com.devpaul.pagocontrol.domain.Dashboard
+import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
 import com.devpaul.pagocontrol.features.home.ui.home.HomeScreen
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiState
 import com.devpaul.pagocontrol.features.home.ui.home.model.HomeContent

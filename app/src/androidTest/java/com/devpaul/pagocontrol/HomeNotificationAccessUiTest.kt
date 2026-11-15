@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
-import com.devpaul.pagocontrol.domain.Dashboard
+import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
 import com.devpaul.pagocontrol.features.home.ui.home.HomeScreen
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiState

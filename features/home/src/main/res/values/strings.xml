@@ -1,4 +1,11 @@
 <resources>
+    <string name="home_sync_initial">Recuperando tus movimientos. Puedes seguir usando la app.</string>
+    <string name="home_sync_active">Sincronizando cambios con tu cuenta…</string>
+    <string name="home_sync_pending">Hay cambios guardados pendientes de sincronizar.</string>
+    <string name="home_sync_complete">Datos locales · Sincronizado con tu cuenta</string>
+    <string name="home_sync_local">Datos guardados en este dispositivo</string>
+    <string name="home_sync_error">No se pudo sincronizar. Tus cambios locales están guardados.</string>
+    <string name="home_sync_action">Reintentar</string>
     <string name="home_guide_help">¿Cómo funciona Inicio?</string>
     <string name="home_guide_step">Guía de Inicio · %1$d de 4</string>
     <string name="home_guide_cancel">Cancelar</string>
@@ -26,7 +33,6 @@
     <string name="home_title">Inicio</string>
     <string name="home_sign_out">Cerrar sesión</string>
     <string name="home_greeting">Hola, %1$s 👋</string>
-    <string name="home_demo">Datos locales de este dispositivo · Sin sincronización</string>
     <string name="home_balance">COBROS RECIBIDOS ESTE MES</string>
     <string name="home_income_count">%1$d cobros este mes</string>
     <string name="home_flow">Cobros por semana / mes</string>

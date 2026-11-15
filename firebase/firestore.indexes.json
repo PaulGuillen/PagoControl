@@ -1,0 +1,9 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "payments", "fieldPath": "text", "indexes": [] },
+    { "collectionGroup": "payments", "fieldPath": "title", "indexes": [] },
+    { "collectionGroup": "payments", "fieldPath": "source", "indexes": [] },
+    { "collectionGroup": "payments", "fieldPath": "writeId", "indexes": [] }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "pagocontrol-firestore-rules-tests",
+  "private": true,
+  "scripts": {
+    "test": "firebase emulators:exec --config ../sync-tests.json --only firestore --project demo-pagocontrol-sync \"node --test payments.test.cjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "6.0.0",
+    "firebase": "13.1.0",
+    "firebase-tools": "15.34.1"
+  }
+}

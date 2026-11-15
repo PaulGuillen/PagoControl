@@ -22,7 +22,7 @@ import com.devpaul.pagocontrol.designsystem.InstitutionBadge
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.features.home.R
-import com.devpaul.pagocontrol.domain.Movement
+import com.devpaul.pagocontrol.features.home.domain.entity.Movement
 
 @Composable
 fun MovementRow(

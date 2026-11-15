@@ -19,6 +19,55 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time;
       allow update: if ownsProfile() && validProfile()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']);
+
+      match /paymentSync/{stateId} {
+        allow get: if ownsProfile() && stateId == 'state';
+        allow create, update: if ownsProfile() && stateId == 'state'
+          && request.resource.data.keys().hasOnly(['schemaVersion', 'revision', 'updatedAt'])
+          && request.resource.data.schemaVersion == 1
+          && request.resource.data.revision is int
+          && request.resource.data.revision > (exists(/databases/$(database)/documents/users/$(userId)/paymentSync/state) ? resource.data.revision : 0)
+          && request.resource.data.revision <= (exists(/databases/$(database)/documents/users/$(userId)/paymentSync/state) ? resource.data.revision : 0) + 20
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      match /payments/{paymentId} {
+        function validAmount(value) {
+          return value == null || (value is int && value >= -99999999999 && value <= 99999999999);
+        }
+        function validPayment() {
+          let d = request.resource.data;
+          return d.keys().hasAll(['schemaVersion', 'id', 'packageName', 'source', 'title', 'text', 'postedAt', 'suggestedAmountCents', 'amountCents', 'status', 'revision', 'writeId', 'updatedAt'])
+            && d.keys().hasOnly(['schemaVersion', 'id', 'packageName', 'source', 'title', 'text', 'postedAt', 'suggestedAmountCents', 'amountCents', 'status', 'revision', 'writeId', 'updatedAt'])
+            && d.schemaVersion == 1
+            && paymentId.matches('[a-f0-9]{64}')
+            && d.id is string && d.id.size() > 0 && d.id.size() <= 200
+            && d.packageName is string && d.packageName.size() > 0 && d.packageName.size() <= 200
+            && d.source is string && d.source.size() <= 200
+            && d.title is string && d.title.size() <= 200
+            && d.text is string && d.text.size() <= 4000
+            && d.postedAt is int && d.postedAt >= 0
+            && validAmount(d.suggestedAmountCents) && validAmount(d.amountCents)
+            && d.status in ['pending', 'confirmed', 'automatic', 'discarded']
+            && (!(d.status in ['confirmed', 'automatic']) || (d.amountCents is int && d.amountCents != 0))
+            && d.writeId is string && d.writeId.size() > 0 && d.writeId.size() <= 100
+            && d.revision is int && d.revision > 0 && d.updatedAt == request.time;
+        }
+        function validRevision() {
+          let path = /databases/$(database)/documents/users/$(userId)/paymentSync/state;
+          let previous = exists(path) ? get(path).data.revision : 0;
+          return request.resource.data.revision > previous
+            && request.resource.data.revision <= getAfter(path).data.revision;
+        }
+        allow get, list: if ownsProfile();
+        allow create: if ownsProfile() && validPayment() && validRevision();
+        allow update: if ownsProfile() && validPayment() && validRevision()
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.packageName == resource.data.packageName
+          && request.resource.data.postedAt == resource.data.postedAt
+          && (resource.data.status != 'discarded' || request.resource.data.status == 'discarded');
+        // Keep discarded records as tombstones so disconnected devices cannot resurrect them.
+      }
     }
   }
 }

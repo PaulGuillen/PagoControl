@@ -1,6 +1,6 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
-import com.devpaul.pagocontrol.domain.PaymentNotification
+import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
 import com.devpaul.pagocontrol.features.home.ui.home.model.HomeContent
 import com.devpaul.pagocontrol.features.home.ui.home.model.HomeSection
 import com.devpaul.pagocontrol.features.home.ui.home.util.currentChartBar

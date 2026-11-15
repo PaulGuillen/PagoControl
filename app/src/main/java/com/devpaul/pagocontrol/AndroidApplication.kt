@@ -1,6 +1,7 @@
 package com.devpaul.pagocontrol
 
 import android.app.Application
+import com.devpaul.pagocontrol.features.home.domain.repository.PaymentSyncRepository
 import com.devpaul.pagocontrol.notifications.LocalMovementNotifier
 import com.devpaul.pagocontrol.platform.analytics.AppAnalytics
 import com.devpaul.pagocontrol.platform.analytics.FirebaseAnalyticsReporter
@@ -26,7 +27,9 @@ class AndroidApplication : Application() {
             this,
             useEmulators = BuildConfig.FIREBASE_EMULATOR_HOST.isNotBlank()
         )
-        koinInitializer().koin.get<LocalMovementNotifier>().start()
+        val koin = koinInitializer().koin
+        koin.get<LocalMovementNotifier>().start()
+        koin.get<PaymentSyncRepository>()
     }
 
     private fun koinInitializer() = startKoin {

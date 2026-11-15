@@ -4,9 +4,9 @@ import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import com.devpaul.pagocontrol.domain.PaymentAmount
-import com.devpaul.pagocontrol.domain.PaymentNotification
-import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
+import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
+import com.devpaul.pagocontrol.features.home.domain.repository.PaymentNotificationRepository
+import com.devpaul.pagocontrol.features.home.domain.validation.PaymentAmount
 import java.security.MessageDigest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

@@ -16,4 +16,8 @@ description: Modelar entidades, contratos, casos de uso y errores de negocio en 
 
 ## Comprobar y entregar
 
-Entrega contratos y casos de uso con pruebas de invariantes, límites y resultados negativos. El módulo debe compilar y probarse sin SDK Android ni servicios remotos. Documenta garantías que dependen del servidor, como cuotas y unicidad global.
+Entrega contratos y casos de uso con pruebas de invariantes, límites y resultados negativos. Las reglas de dominio deben probarse sin clases Android ni servicios remotos, aunque domain viva dentro de un módulo Android de feature. Documenta garantías que dependen del servidor, como cuotas y unicidad global.
+
+## Propiedad del dominio
+
+Mantiene las entidades, contratos, validaciones y casos de uso propios en `features/<nombre>/domain/`, siguiendo Auth. Home conserva alli su dashboard, movimientos, captura de pagos y contratos de sincronizacion. Extrae a `core-domain` solo modelos, contratos o eventos realmente globales usados por varias capacidades. Consumir un contrato desde la composicion de app no convierte automaticamente el contrato de una feature en global.

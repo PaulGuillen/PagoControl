@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.features.home.R
-import com.devpaul.pagocontrol.domain.Dashboard
+import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
 import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
 import java.util.Calendar
 import kotlin.math.abs

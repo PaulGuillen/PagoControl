@@ -17,3 +17,7 @@ description: Implementar una funcionalidad Android completa conectando dominio, 
 ## Entregables y cierre
 
 Entrega un flujo navegable y sus pruebas de comportamiento crítico. Comprueba compilación del módulo y de la app consumidora. Informa cambios de contratos y configuración requerida; no consideres completada una feature que solo tiene carpetas o previews.
+
+## Capas de la feature
+
+Crea `data/`, `domain/` y `ui/` dentro del paquete de la feature como en Auth. Los contratos/entidades/reglas exclusivos viven en domain; las implementaciones, mapeadores y fuentes Firebase/Room viven en data y se registran en su FeatureModule. No envies esos tipos a core-domain o core-data por defecto: core se reserva a capacidades y eventos globales compartidos. La UI conserva su organizacion por pantalla y componentes.

@@ -1,9 +1,6 @@
 package com.devpaul.pagocontrol.data
 
 import com.devpaul.pagocontrol.data.local.DemoAuthRepository
-import com.devpaul.pagocontrol.data.local.DemoHomeRepository
-
-import com.devpaul.pagocontrol.domain.DashboardResult
 import com.devpaul.pagocontrol.session.SignInResult
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -22,15 +19,11 @@ class DemoSessionTest {
     }
 
     @Test
-    fun dashboardRequiresSessionAndLogoutRevokesIt() = runTest {
+    fun logoutClearsSessionAndNewInstancesStartSignedOut() = runTest {
         val auth = DemoAuthRepository()
-        val home = DemoHomeRepository(auth)
-        assertEquals(DashboardResult.SessionRequired, home.loadDashboard())
         assertEquals(SignInResult.Success, auth.signIn("", ""))
-        assertTrue(home.loadDashboard() is DashboardResult.Success)
         auth.signOut()
         assertNull(auth.session.value)
-        assertEquals(DashboardResult.SessionRequired, home.loadDashboard())
         assertNull(DemoAuthRepository().session.value)
     }
 }

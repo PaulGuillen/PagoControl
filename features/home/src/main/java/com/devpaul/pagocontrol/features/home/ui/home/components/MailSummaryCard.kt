@@ -13,7 +13,7 @@ import androidx.compose.ui.semantics.contentDescription
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.features.home.R
-import com.devpaul.pagocontrol.domain.Dashboard
+import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
 
 @Composable
 fun MailSummaryCard(income: Boolean, dashboard: Dashboard, modifier: Modifier) {

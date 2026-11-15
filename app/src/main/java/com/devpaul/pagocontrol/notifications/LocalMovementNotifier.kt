@@ -12,9 +12,9 @@ import androidx.core.app.NotificationCompat
 import com.devpaul.pagocontrol.MainActivity
 import com.devpaul.pagocontrol.R
 import com.devpaul.pagocontrol.designsystem.formatSoles
-import com.devpaul.pagocontrol.domain.Movement
-import com.devpaul.pagocontrol.domain.MovementNotifier
 import com.devpaul.pagocontrol.domain.ProfileRepository
+import com.devpaul.pagocontrol.features.home.domain.entity.Movement
+import com.devpaul.pagocontrol.features.home.domain.repository.MovementNotifier
 import com.devpaul.pagocontrol.session.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

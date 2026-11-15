@@ -28,9 +28,9 @@ settings.gradle.kts
 
 - `app`: punto de entrada, composicion de dependencias, configuracion global y ensamblaje del grafo principal. Ubicar las pantallas y la logica de cada funcionalidad en su feature.
 - `buildSrc`: plugins de convencion y configuracion compartida de compilacion. Reutilizar convenciones para application, bibliotecas Android, bibliotecas Kotlin y features; evitar copiar bloques Gradle entre modulos.
-- `features/<funcionalidad>`: modulo Android independiente por capacidad del producto, con pantallas, estado de UI, ViewModels y coordinacion propios. Varias pantallas del mismo flujo pueden pertenecer al mismo modulo.
-- `core-domain`: modelos de negocio, casos de uso y contratos de repositorios, sin dependencias de Android, UI ni implementaciones de datos.
-- `core-data`: implementaciones de repositorios, fuentes remotas/locales, persistencia y mapeadores; depende de los contratos de dominio.
+- `features/<funcionalidad>`: modulo Android independiente por capacidad del producto, con capas `data/`, `domain/` y `ui/` propias, como Auth. Incluye sus repositorios, fuentes Firebase/Room, entidades, reglas y coordinacion. Varias pantallas del mismo flujo pueden pertenecer al mismo modulo.
+- `core-domain`: solo contratos, modelos y eventos globales usados por varias capacidades, sin dependencias de Android, UI ni implementaciones de datos. El dominio exclusivo de Home, Auth u otra feature pertenece a `features/<nombre>/domain/`.
+- `core-data`: implementaciones y persistencia de capacidades globales compartidas. Los repositorios, fuentes remotas/locales, bases Room y mapeadores de una feature pertenecen a su propio `data/`, no a este modulo.
 - `core-designsystem`: tema, componentes visuales y recursos compartidos.
 - `core-platform`: integraciones y utilidades Android compartidas que no pertenecen a una funcionalidad concreta.
 - `navigation`: rutas y contratos compartidos. El ensamblaje de destinos concretos puede vivir en app para evitar dependencias circulares.
@@ -51,7 +51,8 @@ features/auth/.../features/auth/
     LoginViewModel.kt
     LoginUiState.kt
     LoginUiIntent.kt
-    LoginError.kt
+    model/
+      LoginError.kt
 features/home/.../features/home/
   HomeGraph.kt
   HomeModule.kt
@@ -60,7 +61,17 @@ features/home/.../features/home/
     HomeViewModel.kt
     HomeUiState.kt
     HomeUiIntent.kt
-    HomeContent.kt
+    components/
+      HomeGuideOverlay.kt
+      model/
+        HomeGuideAction.kt
+    model/
+      HomeContent.kt
+      HomeSection.kt
+    util/
+      HomeChartSelection.kt
+    preview/
+      HomeScreenPreview.kt
 ```
 
 Usa el nombre de la pantalla para sus tipos: `LoginUiState`, `LoginUiIntent` y `LoginError`, aunque la feature se llame auth. El nombre del archivo coincide con el tipo principal. Cada data class, sealed class/interface o enum de nivel superior tiene su propio archivo; no declares los contratos dentro del archivo del ViewModel. Las variantes anidadas permanecen en su contrato sealed. Crea tipos de error o contenido solo cuando la pantalla los necesite; el arbol ilustra las responsabilidades, no exige archivos vacios.
@@ -114,3 +125,17 @@ Declara las referencias a clases, funciones, anotaciones y propiedades externas 
 La preferencia del usuario es el formato de `Reformat Code` (`Ctrl + Alt + L`) de Android Studio. Al crear o modificar codigo, aplica el formateador del IDE con el esquema del proyecto; respeta `.idea/codeStyles/Project.xml` y `.idea/codeStyles/codeStyleConfig.xml` cuando existan. Esto incluye pantallas como `RegisterScreen.kt`, componentes, previews, pruebas y scripts Gradle Kotlin, asi como XML y otros formatos compatibles. Deja al formateador decidir sangria, espacios, saltos de linea y distribucion de argumentos; no comprimas manualmente llamadas o declaraciones largas despues de formatear.
 
 Para ejecucion por consola, usa `bin/format.bat` (Windows) o el equivalente del IDE con `-s <esquema.xml>` y rutas explicitas del codigo de producto. Si Android Studio esta abierto y bloquea otra instancia, usa directorios temporales separados de configuracion y sistema para el formateador, sin cerrar el IDE del usuario. Evita sustituirlo por otro formateador con reglas distintas. Conserva las reglas de imports y argumentos con nombre: el formato no las reemplaza. Excluye archivos generados, builds, dependencias y `docs/skills/AndroidBase` salvo pedido explicito. En tareas de documentacion sobre esta preferencia, actualiza solo los skills pertinentes de `docs/skills`.
+
+## Separacion de pantallas y componentes
+
+En el nivel directo de `ui/<pantalla>/`, conserva solo `<Pantalla>Screen.kt`, `<Pantalla>ViewModel.kt`, `<Pantalla>UiState.kt`, `<Pantalla>UiIntent.kt` y, si el flujo los necesita, `<Pantalla>Effect.kt` o `<Pantalla>UiEvent.kt`. La pantalla ensambla los componentes; extrae tarjetas, filas, overlays y controles visuales a `components/`, con un archivo por componente principal y nombre coincidente. Usa la visibilidad predeterminada para los composables consumidos desde otros archivos; no les agregues `internal` por rutina. Las previews y detalles privados pueden conservar `private`.
+
+Los modelos auxiliares de estado o contenido van en `model/`; los modelos exclusivos de un componente, en `components/model/`. Separa cada data class o enum en su archivo, sin mezclarlo con composables. Ubica utilidades en `util/` y previews en `preview/` cuando ayuden a mantener limpia la pantalla. No crees carpetas, estados, ViewModels o eventos vacios. Una pantalla secundaria completa usa su propio paquete `ui/<pantalla>/`, aunque reciba estado y callbacks del flujo padre.
+
+Al mover archivos, actualiza package, imports, previews, consumidores y pruebas; refleja los paquetes de utilidades en sus pruebas. En Home, `HomeGuideAction` esta separado de `HomeGuideOverlay`, los componentes viven en `ui/home/components/` y la revision en `ui/notificationreview/`. No cambies AndroidBase al documentar o aplicar esta preferencia al producto.
+
+## Capas propias de cada feature
+
+La referencia para organizar Home es Auth: `features/home/.../home/data/` contiene `datasource/local/`, `datasource/remote/`, `repository/`, `mapper/` y `sync/`; `domain/` contiene `entity/`, `repository/`, validaciones y reglas de reconocimiento; `ui/` conserva las pantallas y componentes. No coloques el dominio o la persistencia de Home en core por usar Firebase, Room o servicios Android. Los SDK y DTO quedan en data; domain no importa Firebase, Room, Context ni Compose. Usa casos de uso cuando aporten reglas u orquestacion, sin crear delegaciones vacias.
+
+Registra los proveedores y componentes en el `<Feature>Module`, declara sus dependencias Firebase/Room en el Gradle de la feature y mueve tambien pruebas, manifiestos de pruebas y esquemas Room. Conserva el nombre del archivo de base de datos, las migraciones y los esquemas historicos al cambiar paquetes; el directorio de exportacion usa el nombre cualificado completo de la clase Database. La composicion de app puede conectar los contratos publicos de Home con servicios globales, sin crear dependencias de core hacia la feature ni dependencias directas entre features. Reserva core para capacidades realmente compartidas.

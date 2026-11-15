@@ -1,11 +1,11 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
 import androidx.lifecycle.viewModelScope
-import com.devpaul.pagocontrol.domain.DashboardResult
-import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
-import com.devpaul.pagocontrol.domain.HomeGuidePreferences
-import com.devpaul.pagocontrol.domain.HomeRepository
-import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
+import com.devpaul.pagocontrol.features.home.domain.entity.DashboardResult
+import com.devpaul.pagocontrol.features.home.domain.repository.GmailMonitoringRepository
+import com.devpaul.pagocontrol.features.home.domain.repository.HomeGuidePreferences
+import com.devpaul.pagocontrol.features.home.domain.repository.HomeRepository
+import com.devpaul.pagocontrol.features.home.domain.repository.PaymentNotificationRepository
 import com.devpaul.pagocontrol.features.home.ui.home.model.HomeContent
 import com.devpaul.pagocontrol.features.home.ui.home.util.currentChartBar
 import com.devpaul.pagocontrol.features.home.ui.home.util.currentChartDate

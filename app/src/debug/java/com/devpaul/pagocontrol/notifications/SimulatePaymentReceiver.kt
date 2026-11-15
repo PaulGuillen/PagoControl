@@ -3,25 +3,27 @@ package com.devpaul.pagocontrol.notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.devpaul.pagocontrol.data.notifications.PaymentDatabase
-import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
-import com.devpaul.pagocontrol.domain.GmailTransactionCandidate
-import com.devpaul.pagocontrol.domain.PaymentAmount
-import com.devpaul.pagocontrol.domain.PaymentNotification
-import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
+import com.devpaul.pagocontrol.features.home.data.datasource.local.PaymentDatabase
+import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
+import com.devpaul.pagocontrol.features.home.domain.repository.GmailMonitoringRepository
+import com.devpaul.pagocontrol.features.home.domain.repository.PaymentNotificationRepository
+import com.devpaul.pagocontrol.features.home.domain.validation.GmailTransactionCandidate
+import com.devpaul.pagocontrol.features.home.domain.validation.PaymentAmount
+import com.devpaul.pagocontrol.session.AuthRepository
+import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.UUID
 
 /** Local fixtures for development builds. Not packaged in release. */
 class SimulatePaymentReceiver : BroadcastReceiver(), KoinComponent {
     private val repository: PaymentNotificationRepository by inject()
     private val gmail: GmailMonitoringRepository by inject()
     private val database: PaymentDatabase by inject()
+    private val auth: AuthRepository by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
         val pending = goAsync()
@@ -31,7 +33,8 @@ class SimulatePaymentReceiver : BroadcastReceiver(), KoinComponent {
             try {
                 if (scenario == "clear") {
                     val ids = database.openHelper.readableDatabase.query(
-                        "SELECT id FROM payment_notifications WHERE id LIKE 'debug-sim-%'"
+                        "SELECT id FROM payment_notifications WHERE ownerId = ? AND id LIKE 'debug-sim-%'",
+                        arrayOf(auth.session.value?.id ?: "")
                     ).use { cursor ->
                         buildList {
                             while (cursor.moveToNext()) add(

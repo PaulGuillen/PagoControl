@@ -27,12 +27,19 @@ import androidx.navigation.compose.rememberNavController
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.domain.AppearanceRepository
 import com.devpaul.pagocontrol.domain.ThemeMode
+import com.devpaul.pagocontrol.features.home.domain.repository.PaymentSyncRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     private val appearance: AppearanceRepository by inject()
+    private val paymentSync: PaymentSyncRepository by inject()
+
+    override fun onStart() {
+        super.onStart()
+        paymentSync.requestSync()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,22 +1,22 @@
 package com.devpaul.pagocontrol.features.home
 
-import com.devpaul.pagocontrol.navigation.route.HomeRoute
-
-import com.devpaul.pagocontrol.features.home.ui.home.HomeScreen
-import com.devpaul.pagocontrol.features.home.ui.home.HomeViewModel
-
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
-import kotlinx.coroutines.delay
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.devpaul.pagocontrol.features.home.domain.repository.PaymentSyncRepository
+import com.devpaul.pagocontrol.features.home.ui.home.HomeScreen
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
+import com.devpaul.pagocontrol.features.home.ui.home.HomeViewModel
+import com.devpaul.pagocontrol.navigation.route.HomeRoute
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 fun NavGraphBuilder.homeGraph(
     name: String,
@@ -32,6 +32,8 @@ fun NavGraphBuilder.homeGraph(
             if (authorized) {
                 val viewModel = koinViewModel<HomeViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
+                val sync = koinInject<PaymentSyncRepository>()
+                val syncState by sync.state.collectAsStateWithLifecycle()
                 val lifecycle = LocalLifecycleOwner.current.lifecycle
                 LaunchedEffect(viewModel, lifecycle) {
                     lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -50,6 +52,8 @@ fun NavGraphBuilder.homeGraph(
                     onMovements = onMovements,
                     onProfile = onProfile,
                     onReports = onReports,
+                    syncState = syncState,
+                    onSync = sync::requestSync,
                 )
             }
         }

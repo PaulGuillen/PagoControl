@@ -20,7 +20,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.features.home.R
-import com.devpaul.pagocontrol.domain.Dashboard
+import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
 
 @Composable
 fun ReceivedPaymentsCard(dashboard: Dashboard) {
