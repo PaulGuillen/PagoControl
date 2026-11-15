@@ -1,5 +1,7 @@
 package com.devpaul.pagocontrol.features.home.data.repository
 
+import com.devpaul.pagocontrol.domain.MovementHistoryRepository
+import com.devpaul.pagocontrol.domain.RecordedMovement
 import com.devpaul.pagocontrol.features.home.data.datasource.local.PaymentDatabase
 import com.devpaul.pagocontrol.features.home.data.datasource.local.entity.NotificationEntity
 import com.devpaul.pagocontrol.features.home.data.datasource.local.entity.NotificationSourceEntity
@@ -36,13 +38,13 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@Single(binds = [HomeRepository::class, PaymentNotificationRepository::class, GmailMonitoringRepository::class])
+@Single(binds = [HomeRepository::class, PaymentNotificationRepository::class, GmailMonitoringRepository::class, MovementHistoryRepository::class])
 class RoomPaymentRepository(
     database: PaymentDatabase,
     private val notifier: MovementNotifier,
     private val auth: AuthRepository
 ) :
-    HomeRepository,
+    HomeRepository, MovementHistoryRepository,
     PaymentNotificationRepository, GmailMonitoringRepository {
     private val dao = database.notifications()
 
@@ -65,6 +67,30 @@ class RoomPaymentRepository(
     override fun observeDashboard(): Flow<DashboardResult.Success> =
         forAccount(dashboard(emptyList())) { uid ->
             dao.observeConfirmed(ownerId = uid).map { dashboard(it) }
+        }
+
+    override fun observeMovementHistory(): Flow<List<RecordedMovement>> =
+        forAccount(emptyList()) { uid ->
+            combine(
+                dao.observeConfirmed(ownerId = uid),
+                dao.observeConfirmed(mail = true, ownerId = uid),
+            ) { wallet, gmail ->
+                val formatter = SimpleDateFormat("dd MMM, HH:mm", Locale.forLanguageTag("es-PE"))
+                (wallet + gmail).filterNot {
+                    OwnAccountTransfer.matches(title = it.title, text = it.text)
+                }.sortedByDescending { it.postedAt }.map { row ->
+                    RecordedMovement(
+                        id = row.id,
+                        title = row.toMovement(formatter).title,
+                        source = row.source,
+                        packageName = row.packageName,
+                        amountCents = row.amountCents ?: 0,
+                        postedAt = row.postedAt,
+                        notificationTitle = row.title,
+                        notificationText = row.text,
+                    )
+                }
+            }
         }
 
     override fun observePending() = forAccount(emptyList<PaymentNotification>()) { uid ->
