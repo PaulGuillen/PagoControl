@@ -35,6 +35,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FilterAltOff
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -72,6 +73,7 @@ import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.PagoDock
 import com.devpaul.pagocontrol.designsystem.formatSoles
 import com.devpaul.pagocontrol.features.movements.R
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -90,6 +92,7 @@ fun MovementsScreen(
         onIntent(MovementsUiIntent.Reset)
         Toast.makeText(context, clearedMessage, Toast.LENGTH_SHORT).show()
     }
+    val currentMonth = state.month == YearMonth.now()
     var showMonthPicker by rememberSaveable { mutableStateOf(false) }
     val visible = state.visible
     val locale = Locale.forLanguageTag("es-PE")
@@ -195,6 +198,10 @@ fun MovementsScreen(
                             }
                             FilledTonalButton(
                                 onClick = { showMonthPicker = true },
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = if (currentMonth) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = if (currentMonth) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSecondaryContainer,
+                                ),
                             ) {
                                 Icon(Icons.Outlined.CalendarMonth, null, Modifier.size(18.dp))
                                 Spacer(Modifier.width(8.dp))
