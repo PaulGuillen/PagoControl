@@ -55,3 +55,11 @@ Para ejecucion por consola, usa `bin/format.bat` (Windows) o el equivalente del 
 ## Toolbar y avisos de movimientos
 
 `PagoHeader` conserva marca y titulo, sin icono de notificaciones ni dialogos de proximamente asociados. Los avisos de ingresos y egresos son notificaciones locales controladas desde Perfil. El interruptor refleja tanto la preferencia guardada como la autorizacion de Android/canal, permite solicitar el permiso o abrir ajustes y actualiza su estado al volver a la pantalla. Las previews no consultan servicios reales del sistema para determinar permisos.
+
+## Separacion de pantallas y componentes
+
+En el nivel directo de `ui/<pantalla>/`, conserva solo `<Pantalla>Screen.kt`, `<Pantalla>ViewModel.kt`, `<Pantalla>UiState.kt`, `<Pantalla>UiIntent.kt` y, si el flujo los necesita, `<Pantalla>Effect.kt` o `<Pantalla>UiEvent.kt`. La pantalla ensambla los componentes; extrae tarjetas, filas, overlays y controles visuales a `components/`, con un archivo por componente principal y nombre coincidente. Usa la visibilidad predeterminada para los composables consumidos desde otros archivos; no les agregues `internal` por rutina. Las previews y detalles privados pueden conservar `private`.
+
+Los modelos auxiliares de estado o contenido van en `model/`; los modelos exclusivos de un componente, en `components/model/`. Separa cada data class o enum en su archivo, sin mezclarlo con composables. Ubica utilidades en `util/` y previews en `preview/` cuando ayuden a mantener limpia la pantalla. No crees carpetas, estados, ViewModels o eventos vacios. Una pantalla secundaria completa usa su propio paquete `ui/<pantalla>/`, aunque reciba estado y callbacks del flujo padre.
+
+Al mover archivos, actualiza package, imports, previews, consumidores y pruebas; refleja los paquetes de utilidades en sus pruebas. En Home, `HomeGuideAction` esta separado de `HomeGuideOverlay`, los componentes viven en `ui/home/components/` y la revision en `ui/notificationreview/`. No cambies AndroidBase al documentar o aplicar esta preferencia al producto.

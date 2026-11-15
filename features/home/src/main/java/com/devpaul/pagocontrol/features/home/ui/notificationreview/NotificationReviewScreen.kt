@@ -1,4 +1,4 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.notificationreview
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.devpaul.pagocontrol.domain.PaymentNotification
 import com.devpaul.pagocontrol.features.home.R
+import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
+import com.devpaul.pagocontrol.features.home.ui.notificationreview.components.PendingNotificationCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NotificationReviewScreen(
+fun NotificationReviewScreen(
     notifications: List<PaymentNotification>,
     saving: Boolean,
     mail: Boolean,

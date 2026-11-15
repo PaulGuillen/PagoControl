@@ -4,7 +4,6 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,27 +15,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material.icons.outlined.ArrowUpward
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,35 +39,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.devpaul.pagocontrol.designsystem.InstitutionAvatar
-import com.devpaul.pagocontrol.designsystem.InstitutionBadge
 import com.devpaul.pagocontrol.designsystem.PagoCard
-import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.PagoDock
 import com.devpaul.pagocontrol.designsystem.PagoHeader
-import com.devpaul.pagocontrol.designsystem.formatSoles
-import com.devpaul.pagocontrol.domain.Dashboard
-import com.devpaul.pagocontrol.domain.Movement
 import com.devpaul.pagocontrol.features.home.R
-import java.util.Calendar
-import kotlin.math.abs
-
+import com.devpaul.pagocontrol.features.home.ui.home.components.FlowCard
+import com.devpaul.pagocontrol.features.home.ui.home.components.GmailMonitoringCard
+import com.devpaul.pagocontrol.features.home.ui.home.components.HomeGuideOverlay
+import com.devpaul.pagocontrol.features.home.ui.home.components.HomeSectionTabs
+import com.devpaul.pagocontrol.features.home.ui.home.components.MailBalanceCard
+import com.devpaul.pagocontrol.features.home.ui.home.components.MailReviewTitle
+import com.devpaul.pagocontrol.features.home.ui.home.components.MailSummaryCard
+import com.devpaul.pagocontrol.features.home.ui.home.components.MovementRow
+import com.devpaul.pagocontrol.features.home.ui.home.components.NotificationAccessCard
+import com.devpaul.pagocontrol.features.home.ui.home.components.NotificationControls
+import com.devpaul.pagocontrol.features.home.ui.home.components.ReceivedPaymentsCard
+import com.devpaul.pagocontrol.features.home.ui.home.components.model.HomeGuideAction
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeContent
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeSection
+import com.devpaul.pagocontrol.features.home.ui.home.util.rememberNotificationAccess
+import com.devpaul.pagocontrol.features.home.ui.notificationreview.NotificationReviewScreen
 
 @Composable
 fun HomeScreen(
@@ -90,7 +79,7 @@ fun HomeScreen(
     onMovements: () -> Unit = {},
     onProfile: () -> Unit = {},
     onReports: () -> Unit = {},
-    notificationAccessGranted: Boolean = rememberNotificationAccess()
+    notificationAccessGranted: Boolean = rememberNotificationAccess(),
 ) {
     val context = LocalContext.current
     var settingsFailed by remember { mutableStateOf(false) }
@@ -435,331 +424,3 @@ fun HomeScreen(
     }
 
 }
-
-@Composable
-private fun MailBalanceCard(dashboard: Dashboard) {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                stringResource(R.string.gmail_balance),
-                style = MaterialTheme.typography.labelLarge
-            )
-            Text(formatSoles(dashboard.balanceCents), style = MaterialTheme.typography.displaySmall)
-            Text(
-                stringResource(R.string.gmail_balance_hint),
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
-}
-
-@Composable
-private fun MailSummaryCard(income: Boolean, dashboard: Dashboard, modifier: Modifier) {
-    val tint =
-        if (income) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
-    val amount = if (income) dashboard.incomeCents else -dashboard.expenseCents
-    val count = if (income) dashboard.incomeCount else dashboard.expenseCount
-    PagoCard(modifier) {
-        Icon(
-            imageVector = if (income) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward,
-            contentDescription = null,
-            tint = tint
-        )
-        Text(
-            stringResource(if (income) R.string.gmail_income else R.string.gmail_expense),
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            text = formatSoles(amount, signed = true),
-            color = tint,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = stringResource(
-                if (income) R.string.home_income_count else R.string.gmail_expense_count,
-                count
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-private fun ReceivedPaymentsCard(dashboard: Dashboard) {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(stringResource(R.string.home_balance), style = MaterialTheme.typography.labelLarge)
-            Text(formatSoles(dashboard.incomeCents), style = MaterialTheme.typography.displaySmall)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CheckCircle,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Text(
-                    stringResource(R.string.home_income_count, dashboard.incomeCount),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun FlowCard(
-    dashboard: Dashboard,
-    monthly: Boolean,
-    selected: Int,
-    onIntent: (HomeUiIntent) -> Unit,
-    mail: Boolean = false
-) {
-    val values = if (monthly) dashboard.monthlyIncomeFlow else dashboard.weeklyIncomeFlow
-    val netValues = if (monthly) dashboard.monthlyFlow else dashboard.weeklyFlow
-    val expenses = values.mapIndexed { index, income ->
-        (income - netValues.getOrElse(index) { 0L }).coerceAtLeast(0)
-    }
-    val incomeLabel = stringResource(R.string.gmail_income)
-    val expenseLabel = stringResource(R.string.gmail_expense)
-    val labels = stringArrayResource(if (monthly) R.array.home_months else R.array.home_days)
-    val monthScroll = rememberScrollState()
-    val monthCellWidth = with(LocalDensity.current) { 56.dp.roundToPx() }
-    LaunchedEffect(monthly, selected) {
-        if (monthly) monthScroll.animateScrollTo((selected - 2).coerceAtLeast(0) * monthCellWidth)
-    }
-    PagoCard(Modifier.fillMaxWidth()) {
-        Text(
-            stringResource(if (mail) R.string.gmail_flow else R.string.home_flow),
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(false, true).forEach { isMonthly ->
-                Surface(
-                    color = if (monthly == isMonthly) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (monthly == isMonthly) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.semantics { this.selected = monthly == isMonthly }
-                        .clickable(role = Role.Tab) { onIntent(HomeUiIntent.SelectPeriod(isMonthly)) },
-                ) {
-                    Text(
-                        text = stringResource(if (isMonthly) R.string.home_month else R.string.home_week),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-            }
-        }
-        if (monthly) Text(
-            stringResource(
-                R.string.home_chart_year,
-                Calendar.getInstance().get(Calendar.YEAR)
-            ), style = MaterialTheme.typography.labelMedium
-        )
-        if (mail) {
-            Text(labels.getOrElse(selected) { "" }, style = MaterialTheme.typography.labelMedium)
-            Text(
-                "$incomeLabel: ${formatSoles(values.getOrElse(selected) { 0L })}",
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.labelMedium
-            )
-            Text(
-                "$expenseLabel: ${formatSoles(expenses.getOrElse(selected) { 0L })}",
-                color = MaterialTheme.colorScheme.tertiary,
-                style = MaterialTheme.typography.labelMedium
-            )
-        } else {
-            Text(
-                text = "${labels.getOrElse(selected) { "" }} \u00b7 ${
-                    formatSoles(
-                        values.getOrElse(
-                            selected
-                        ) { 0 }, signed = true
-                    )
-                }",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-        }
-        Row(
-            modifier = if (monthly) Modifier.fillMaxWidth()
-                .horizontalScroll(monthScroll) else Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Bottom
-        ) {
-            val maximum =
-                ((values + if (mail) expenses else emptyList()).maxOrNull() ?: 1L).coerceAtLeast(1L)
-            values.forEachIndexed { index, amount ->
-                val label = labels.getOrElse(index) { "" }
-                val expense = expenses.getOrElse(index) { 0L }
-                val description =
-                    if (mail) "$label: $incomeLabel ${formatSoles(amount)}, $expenseLabel ${
-                        formatSoles(expense)
-                    }" else "$label: ${formatSoles(amount)}"
-                Column(
-                    modifier = (if (monthly) Modifier.width(48.dp) else Modifier.weight(1f)).clip(
-                        MaterialTheme.shapes.small
-                    )
-                        .clickable(role = Role.Button) { onIntent(HomeUiIntent.SelectBar(index)) }
-                        .semantics(mergeDescendants = true) {
-                            contentDescription = description
-                            this.selected = selected == index
-                        }
-                        .padding(vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (mail) {
-                        Row(
-                            Modifier.fillMaxWidth().height(120.dp),
-                            horizontalArrangement = Arrangement.spacedBy(3.dp),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Box(
-                                Modifier.weight(1f).height((120 * amount.toFloat() / maximum).dp)
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(MaterialTheme.colorScheme.secondary)
-                            )
-                            Box(
-                                Modifier.weight(1f).height((120 * expense.toFloat() / maximum).dp)
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(MaterialTheme.colorScheme.tertiary)
-                            )
-                        }
-                    } else {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().height(120.dp),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Box(
-                                Modifier.fillMaxWidth(0.8f)
-                                    .height((24 + 96 * abs(amount).toFloat() / maximum).dp)
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh),
-                            )
-                        }
-                    }
-                    Text(
-                        label, style = MaterialTheme.typography.labelSmall,
-                        color = if (selected == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MovementRow(
-    movement: Movement,
-    deleting: Boolean = false,
-    onDelete: (() -> Unit)? = null
-) {
-    val title = movement.title.lineSequence().firstOrNull { it.isNotBlank() }?.trim().orEmpty()
-    PagoCard(Modifier.fillMaxWidth()) {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            InstitutionAvatar(movement.source)
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    title,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = movement.detail,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            if (onDelete != null) {
-                IconButton(onClick = onDelete, enabled = !deleting) {
-                    Icon(
-                        Icons.Outlined.Delete,
-                        contentDescription = stringResource(
-                            R.string.gmail_delete_action,
-                            movement.title
-                        )
-                    )
-                }
-            }
-        }
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(Modifier.weight(1f)) {
-                InstitutionBadge(movement.source)
-            }
-            Text(
-                text = formatSoles(movement.amountCents, signed = true),
-                style = MaterialTheme.typography.titleMedium,
-                color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-            )
-        }
-    }
-}
-
-
-@Preview(name = "Home claro", showBackground = true)
-@Composable
-private fun HomeLightPreview() {
-    PagoControlTheme(false) {
-        HomeScreen(
-            state = previewState(),
-            name = "Carlos",
-            onIntent = {},
-            themeIndex = 1,
-            onThemeSelected = {})
-    }
-}
-
-@Preview(name = "Home oscuro", showBackground = true)
-@Composable
-private fun HomeDarkPreview() {
-    PagoControlTheme(true) {
-        HomeScreen(
-            state = previewState(),
-            name = "Carlos",
-            onIntent = {},
-            themeIndex = 2,
-            onThemeSelected = {})
-    }
-}
-
-private fun previewState() = HomeUiState(
-    content = HomeContent.Ready(
-        Dashboard(
-            balanceCents = 458050,
-            incomeCents = 685000,
-            expenseCents = 226950,
-            incomeCount = 18,
-            expenseCount = 34,
-            weeklyFlow = listOf(21, 28, 17, 35, 24, 42, 14),
-            monthlyFlow = listOf(14, 18, 16, 20),
-            movements = emptyList()
-        ),
-    )
-)

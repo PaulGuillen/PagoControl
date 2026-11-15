@@ -1,7 +1,6 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.home.components
 
 import android.content.Intent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,10 +19,9 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,10 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -62,19 +59,16 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.features.home.R
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiState
+import com.devpaul.pagocontrol.features.home.ui.home.components.model.MonitoredApp
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private data class MonitoredApp(
-    val packageName: String,
-    val label: String,
-    val icon: ImageBitmap? = null
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NotificationControls(
+fun NotificationControls(
     state: HomeUiState,
     onIntent: (HomeUiIntent) -> Unit,
     showApps: Boolean,
@@ -281,24 +275,6 @@ internal fun NotificationControls(
             ) {
                 Text(stringResource(R.string.notifications_done))
             }
-        }
-    }
-}
-
-@Composable
-private fun AppIcon(app: MonitoredApp) {
-    if (app.icon != null) {
-        Image(bitmap = app.icon, contentDescription = null, modifier = Modifier.size(48.dp))
-    } else {
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Apps,
-                contentDescription = null,
-                modifier = Modifier.padding(12.dp).size(24.dp)
-            )
         }
     }
 }

@@ -6,6 +6,9 @@ import com.devpaul.pagocontrol.domain.GmailMonitoringRepository
 import com.devpaul.pagocontrol.domain.HomeGuidePreferences
 import com.devpaul.pagocontrol.domain.HomeRepository
 import com.devpaul.pagocontrol.domain.PaymentNotificationRepository
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeContent
+import com.devpaul.pagocontrol.features.home.ui.home.util.currentChartBar
+import com.devpaul.pagocontrol.features.home.ui.home.util.currentChartDate
 import com.devpaul.pagocontrol.platform.BaseViewModel
 import com.devpaul.pagocontrol.session.AuthRepository
 import kotlinx.coroutines.CancellationException

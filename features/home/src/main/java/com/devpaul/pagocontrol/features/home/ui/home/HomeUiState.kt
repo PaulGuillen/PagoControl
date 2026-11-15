@@ -1,8 +1,9 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
 import com.devpaul.pagocontrol.domain.PaymentNotification
-
-enum class HomeSection(val guideKey: String) { Wallets("wallets"), Mail("mail") }
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeContent
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeSection
+import com.devpaul.pagocontrol.features.home.ui.home.util.currentChartBar
 
 data class HomeUiState(
     val content: HomeContent = HomeContent.Loading,

@@ -1,4 +1,4 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.home.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,13 +30,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.devpaul.pagocontrol.designsystem.PagoCard
-import com.devpaul.pagocontrol.domain.GmailTransactionCandidate
 import com.devpaul.pagocontrol.features.home.R
+import com.devpaul.pagocontrol.features.home.domain.validation.GmailTransactionCandidate
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-internal fun GmailMonitoringCard(
+fun GmailMonitoringCard(
     state: HomeUiState,
     onIntent: (HomeUiIntent) -> Unit,
     access: Boolean,

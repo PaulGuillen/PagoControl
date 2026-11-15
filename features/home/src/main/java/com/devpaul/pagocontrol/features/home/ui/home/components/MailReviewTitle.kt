@@ -1,4 +1,4 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.home.components
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.features.home.R
 
 @Composable
-internal fun MailReviewTitle(pulsing: Boolean) {
+fun MailReviewTitle(pulsing: Boolean) {
     if (pulsing) {
         val transition = rememberInfiniteTransition(label = "newMail")
         val pulse by transition.animateFloat(

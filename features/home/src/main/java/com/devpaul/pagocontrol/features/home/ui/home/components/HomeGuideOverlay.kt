@@ -1,9 +1,9 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.home.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -49,18 +49,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.features.home.R
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiState
+import com.devpaul.pagocontrol.features.home.ui.home.components.model.HomeGuideAction
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeSection
 import kotlin.math.roundToInt
 
-internal data class HomeGuideAction(
-    val bounds: Rect,
-    val label: String,
-    val enabled: Boolean = true,
-    val checked: Boolean? = null,
-    val onClick: () -> Unit,
-)
-
 @Composable
-internal fun HomeGuideOverlay(
+fun HomeGuideOverlay(
     state: HomeUiState,
     target: Rect?,
     onIntent: (HomeUiIntent) -> Unit,

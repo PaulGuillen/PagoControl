@@ -1,4 +1,4 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.home.util
 
 import java.util.Calendar
 import java.util.GregorianCalendar

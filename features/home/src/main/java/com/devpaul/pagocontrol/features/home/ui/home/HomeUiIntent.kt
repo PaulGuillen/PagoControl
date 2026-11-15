@@ -1,5 +1,7 @@
 package com.devpaul.pagocontrol.features.home.ui.home
 
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeSection
+
 sealed interface HomeUiIntent {
     data object RefreshDate : HomeUiIntent
     data object ShowGuide : HomeUiIntent

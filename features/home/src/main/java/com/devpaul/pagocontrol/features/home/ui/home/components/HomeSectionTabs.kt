@@ -1,4 +1,4 @@
-package com.devpaul.pagocontrol.features.home.ui.home
+package com.devpaul.pagocontrol.features.home.ui.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,9 +22,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.features.home.R
+import com.devpaul.pagocontrol.features.home.ui.home.HomeUiIntent
+import com.devpaul.pagocontrol.features.home.ui.home.model.HomeSection
 
 @Composable
-internal fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> Unit) {
+fun HomeSectionTabs(section: HomeSection, onIntent: (HomeUiIntent) -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerHigh
