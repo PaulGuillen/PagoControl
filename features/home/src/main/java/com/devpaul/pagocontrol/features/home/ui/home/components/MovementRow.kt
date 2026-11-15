@@ -1,5 +1,6 @@
 package com.devpaul.pagocontrol.features.home.ui.home.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,8 +35,16 @@ fun MovementRow(
     deleting: Boolean = false,
     onDelete: (() -> Unit)? = null,
 ) {
+    var showNotification by rememberSaveable(movement.id) { mutableStateOf(false) }
+    if (showNotification) {
+        MovementNotificationDialog(movement = movement, onDismiss = { showNotification = false })
+    }
     val title = movement.title.lineSequence().firstOrNull { it.isNotBlank() }?.trim().orEmpty()
-    PagoCard(Modifier.fillMaxWidth()) {
+    PagoCard(Modifier.fillMaxWidth().clickable(
+        role = Role.Button,
+        onClickLabel = stringResource(R.string.movement_notification_open),
+        onClick = { showNotification = true },
+    )) {
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

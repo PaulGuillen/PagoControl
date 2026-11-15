@@ -10,4 +10,6 @@ data class Movement(
     val automatic: Boolean = false,
     val ownTransfer: Boolean = false,
     val packageName: String = "",
+    val notificationTitle: String = title,
+    val notificationText: String = "",
 )

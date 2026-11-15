@@ -283,6 +283,8 @@ class RoomPaymentRepository(
         source = source,
         amountCents = amountCents ?: 0,
         packageName = packageName,
+        notificationTitle = title,
+        notificationText = text,
         automatic = status == "automatic",
         ownTransfer = OwnAccountTransfer.matches(title = title, text = text),
     )

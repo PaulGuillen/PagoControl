@@ -138,4 +138,8 @@
     <string name="home_view_all">Ver todo</string>
     <string name="home_all_payments">Todos los cobros</string>
     <string name="gmail_all_transactions">Todas las transacciones</string>
+    <string name="movement_notification_open">Ver notificación original</string>
+    <string name="movement_notification_title">Notificación original</string>
+    <string name="movement_notification_empty">No hay texto adicional guardado para esta notificación.</string>
+    <string name="movement_notification_close">Cerrar</string>
 </resources>
