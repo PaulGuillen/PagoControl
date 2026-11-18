@@ -10,6 +10,7 @@ import com.devpaul.pagocontrol.features.home.domain.entity.Dashboard
 import com.devpaul.pagocontrol.features.home.domain.entity.DashboardResult
 import com.devpaul.pagocontrol.features.home.domain.entity.Movement
 import com.devpaul.pagocontrol.features.home.domain.entity.PaymentNotification
+import com.devpaul.pagocontrol.features.home.domain.recognition.AutomaticBankWalletPayment
 import com.devpaul.pagocontrol.features.home.domain.recognition.AutomaticBcpExpense
 import com.devpaul.pagocontrol.features.home.domain.recognition.AutomaticGmailPayment
 import com.devpaul.pagocontrol.features.home.domain.recognition.OwnAccountTransfer
@@ -175,11 +176,12 @@ class RoomPaymentRepository(
             )
         ) return
         val automaticPayment = AutomaticYapePayment.recognize(notification)
+        val automaticBankWallet = AutomaticBankWalletPayment.recognize(notification)
         val automaticMail = AutomaticGmailPayment.recognize(notification)
         val ownTransfer =
             OwnAccountTransfer.matches(title = notification.title, text = notification.text)
         val automaticAmount = if (ownTransfer) AutomaticGmailPayment.suggestedAmount(notification)
-        else automaticPayment?.amountCents ?: automaticMail?.amountCents
+        else automaticPayment?.amountCents ?: automaticBankWallet?.amountCents ?: automaticMail?.amountCents
         val recorded = dao.captureIfEnabled(
             NotificationEntity(
                 id = notification.id,
@@ -303,6 +305,7 @@ class RoomPaymentRepository(
         title = AutomaticBcpExpense.recognize(toNotification())?.let { "BCP - ${it.merchant}" }
             ?: if (status == "automatic") {
                 AutomaticYapePayment.recognize(toNotification())?.sender
+                    ?: AutomaticBankWalletPayment.recognize(toNotification())?.sender
                     ?: AutomaticGmailPayment.recognize(toNotification())?.title ?: title
             } else title.ifBlank { source },
         detail = formatter.format(Date(postedAt)),

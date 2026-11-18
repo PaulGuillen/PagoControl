@@ -8,7 +8,7 @@ object WalletTransactionCandidate {
     private val amounts =
         Regex("(?:S/\\.?|PEN)\\s*([0-9]+(?:[.,][0-9]+)*)", RegexOption.IGNORE_CASE)
     private val operations =
-        Regex("\\b(pago|pagos|pagaste|pagado|compra|consumo|transferencia|transferiste|deposito|abono|retiro|recibiste|recibido|recibida|enviaste|enviado|enviada|te envio|yapeaste|yapeo|payment|received|purchase|transfer)\\b")
+        Regex("\\b(cobro|cobros|plin|plinaste|plineaste|pago|pagos|pagaste|pagado|compra|consumo|transferencia|transferiste|deposito|abono|retiro|recibiste|recibido|recibida|enviaste|enviado|enviada|te envio|yapeaste|yapeo|plineado|plineo|plino|payment|received|purchase|transfer)\\b")
     private val excluded =
         Regex("\\b(promocion|promociones|oferta|ofertas|descuento|descuentos|gana|ganate|cashback|sorteo|sorteos|recordatorio|recuerda|pendiente|solicitud|solicita|rechazado|rechazada|fallido|fallida|anulado|anulada|cancelado|cancelada|failed|declined|reminder)\\b")
 
