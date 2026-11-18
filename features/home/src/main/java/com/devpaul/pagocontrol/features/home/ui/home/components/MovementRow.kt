@@ -84,7 +84,7 @@ fun MovementRow(
                     Text(
                         text = formatSoles(movement.amountCents, signed = !movement.ownTransfer),
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (!movement.ownTransfer && movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }

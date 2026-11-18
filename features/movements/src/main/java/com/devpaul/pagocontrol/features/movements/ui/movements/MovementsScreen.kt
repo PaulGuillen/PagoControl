@@ -464,7 +464,11 @@ private fun HistoryRow(movement: HistoryMovement, onClick: () -> Unit) {
                     Text(
                         formatSoles(movement.amountCents, true),
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (movement.amountCents > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                        color = when {
+                            movement.amountCents < 0 -> MaterialTheme.colorScheme.error
+                            labels.fromGmail && movement.amountCents > 0 -> MaterialTheme.colorScheme.secondary
+                            else -> MaterialTheme.colorScheme.onSurface
+                        },
                     )
                 }
             }
