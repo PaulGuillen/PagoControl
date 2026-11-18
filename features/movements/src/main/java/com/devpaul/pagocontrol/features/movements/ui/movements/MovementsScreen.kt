@@ -72,6 +72,7 @@ import com.devpaul.pagocontrol.designsystem.PagoBrand
 import com.devpaul.pagocontrol.designsystem.PagoControlTheme
 import com.devpaul.pagocontrol.designsystem.PagoDock
 import com.devpaul.pagocontrol.designsystem.formatSoles
+import com.devpaul.pagocontrol.designsystem.movementLabels
 import com.devpaul.pagocontrol.features.movements.R
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -429,6 +430,7 @@ private fun BalanceMetric(label: String, amount: Long, color: Color, modifier: M
 
 @Composable
 private fun HistoryRow(movement: HistoryMovement, onClick: () -> Unit) {
+    val labels = movementLabels(movement.title, movement.source, movement.packageName, movement.notificationTitle, movement.notificationText)
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -444,13 +446,13 @@ private fun HistoryRow(movement: HistoryMovement, onClick: () -> Unit) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        movement.title,
+                        labels.title,
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    InstitutionBadge(movement.source)
+                    InstitutionBadge(labels.institution, neutral = labels.fromGmail, packageName = movement.packageName)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(

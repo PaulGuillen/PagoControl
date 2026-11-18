@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.devpaul.pagocontrol.designsystem.InstitutionBadge
 import com.devpaul.pagocontrol.designsystem.PagoCard
 import com.devpaul.pagocontrol.designsystem.formatSoles
+import com.devpaul.pagocontrol.designsystem.movementLabels
 import com.devpaul.pagocontrol.features.home.R
 import com.devpaul.pagocontrol.features.home.domain.entity.Movement
 
@@ -39,7 +40,7 @@ fun MovementRow(
     if (showNotification) {
         MovementNotificationDialog(movement = movement, onDismiss = { showNotification = false })
     }
-    val title = movement.title.lineSequence().firstOrNull { it.isNotBlank() }?.trim().orEmpty()
+    val labels = movementLabels(movement.title, movement.source, movement.packageName, movement.notificationTitle, movement.notificationText)
     PagoCard(Modifier.fillMaxWidth().clickable(
         role = Role.Button,
         onClickLabel = stringResource(R.string.movement_notification_open),
@@ -61,13 +62,13 @@ fun MovementRow(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = title,
+                        text = labels.title,
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    InstitutionBadge(movement.source)
+                    InstitutionBadge(labels.institution, neutral = labels.fromGmail, packageName = movement.packageName)
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),

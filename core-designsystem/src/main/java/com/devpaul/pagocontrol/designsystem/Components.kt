@@ -120,6 +120,7 @@ private fun institutionColor(source: String): Color? = when (source) {
     "BCP" -> Color(0xFF002A8F)
     "Interbank" -> Color(0xFF009B3A)
     "BBVA" -> Color(0xFF004481)
+    "Scotiabank" -> Color(0xFFEC111A)
     else -> null
 }
 
@@ -140,14 +141,25 @@ fun InstitutionAvatar(source: String) {
     }
 }
 
+internal fun institutionBadgeColor(source: String, packageName: String?, neutral: Boolean): Color? {
+    if (neutral) return null
+    val bank = when (packageName) {
+        "pe.com.interbank.mobilebanking" -> "Interbank"
+        "pe.com.scotiabank.blpm.android.client" -> "Scotiabank"
+        "com.bbva.nxt_peru" -> "BBVA"
+        else -> null
+    }
+    return institutionColor(bank ?: source)
+}
+
 @Composable
-fun InstitutionBadge(source: String) {
-    val brandColor = institutionColor(source)
+fun InstitutionBadge(source: String, neutral: Boolean = false, packageName: String? = null) {
+    val brandColor = institutionBadgeColor(source, packageName, neutral)
     Surface(
         shape = CircleShape,
         color = brandColor ?: MaterialTheme.colorScheme.surfaceVariant,
         contentColor = when {
-            source == "Plin" -> Color(0xFF002A35)
+            !neutral && source == "Plin" && brandColor == institutionColor("Plin") -> Color(0xFF002A35)
             brandColor != null -> Color.White
             else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
