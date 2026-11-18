@@ -4,6 +4,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object PaymentDatabaseMigrations {
+    val FROM_2_TO_3: Migration = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE notification_sources ADD COLUMN position INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("UPDATE notification_sources SET position = rowid")
+        }
+    }
+
     val FROM_1_TO_2: Migration = object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("CREATE TABLE payment_notifications_new (id TEXT NOT NULL, packageName TEXT NOT NULL, source TEXT NOT NULL, title TEXT NOT NULL, text TEXT NOT NULL, postedAt INTEGER NOT NULL, suggestedAmountCents INTEGER, amountCents INTEGER, status TEXT NOT NULL, ownerId TEXT NOT NULL, pendingWriteId TEXT, remoteRevision INTEGER NOT NULL, PRIMARY KEY(ownerId, id))")

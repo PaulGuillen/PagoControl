@@ -28,7 +28,7 @@ interface PaymentNotificationDao {
     @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND status IN ('confirmed', 'automatic', 'transfer') AND (packageName = 'com.google.android.gm') = :mail ORDER BY postedAt DESC")
     suspend fun confirmed(mail: Boolean = false, ownerId: String = ""): List<NotificationEntity>
 
-    @Query("SELECT packageName FROM notification_sources WHERE ownerId = :ownerId")
+    @Query("SELECT packageName FROM notification_sources WHERE ownerId = :ownerId ORDER BY position, packageName")
     fun observeSources(ownerId: String = ""): Flow<List<String>>
 
     @Query("SELECT * FROM payment_notifications WHERE ownerId = :ownerId AND packageName = 'com.google.android.gm' AND status = 'pending'")
@@ -69,7 +69,15 @@ interface PaymentNotificationDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun enable(source: NotificationSourceEntity)
+    suspend fun insertSource(source: NotificationSourceEntity)
+
+    @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM notification_sources WHERE ownerId = :ownerId")
+    suspend fun nextSourcePosition(ownerId: String): Long
+
+    @Transaction
+    suspend fun enable(source: NotificationSourceEntity) {
+        insertSource(source.copy(position = nextSourcePosition(source.ownerId)))
+    }
 
     @Query("DELETE FROM notification_sources WHERE ownerId = :ownerId AND packageName = :packageName")
     suspend fun disable(packageName: String, ownerId: String = "")
@@ -163,7 +171,7 @@ interface PaymentNotificationDao {
     @Query("INSERT OR IGNORE INTO payment_notifications (id, packageName, source, title, text, postedAt, suggestedAmountCents, amountCents, status, ownerId, pendingWriteId, remoteRevision) SELECT id, packageName, source, title, text, postedAt, suggestedAmountCents, amountCents, status, :ownerId, pendingWriteId, remoteRevision FROM payment_notifications WHERE ownerId = ''")
     suspend fun copyLegacyMovements(ownerId: String)
 
-    @Query("INSERT OR IGNORE INTO notification_sources (packageName, ownerId) SELECT packageName, :ownerId FROM notification_sources WHERE ownerId = ''")
+    @Query("INSERT OR IGNORE INTO notification_sources (packageName, ownerId, position) SELECT packageName, :ownerId, position FROM notification_sources WHERE ownerId = ''")
     suspend fun copyLegacySources(ownerId: String)
 
     @Query("DELETE FROM payment_notifications WHERE ownerId = ''")

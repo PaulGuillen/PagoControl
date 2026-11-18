@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentNotificationRepository {
     fun observePending(): Flow<List<PaymentNotification>>
 
-    fun observeSources(): Flow<Set<String>>
+    fun observeSources(): Flow<List<String>>
 
     suspend fun setSource(packageName: String, enabled: Boolean)
 

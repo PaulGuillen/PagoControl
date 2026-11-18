@@ -105,9 +105,9 @@ class RoomPaymentRepository(
         }
     }
 
-    override fun observeSources() = forAccount(emptySet<String>()) { uid ->
+    override fun observeSources() = forAccount(emptyList<String>()) { uid ->
         dao.observeSources(ownerId = uid).map { sources ->
-            sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }.toSet()
+            sources.filterNot { it == GmailTransactionCandidate.PACKAGE_NAME }
         }
     }
 

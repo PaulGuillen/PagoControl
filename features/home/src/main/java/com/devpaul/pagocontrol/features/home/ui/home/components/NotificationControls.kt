@@ -126,7 +126,7 @@ fun NotificationControls(
             loading = false
         }
     }
-    val selectedApps = state.notificationSources.sorted().map { packageName ->
+    val selectedApps = state.notificationSources.map { packageName ->
         apps.find { it.packageName == packageName } ?: MonitoredApp(
             packageName = packageName,
             label = packageName.substringAfterLast('.')

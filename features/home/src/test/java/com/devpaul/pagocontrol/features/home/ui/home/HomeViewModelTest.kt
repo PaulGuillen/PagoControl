@@ -230,7 +230,7 @@ class HomeViewModelTest {
 
     private class ControlledNotifications : PaymentNotificationRepository {
         val pending = MutableStateFlow<List<PaymentNotification>>(emptyList())
-        val sources = MutableStateFlow<Set<String>>(emptySet())
+        val sources = MutableStateFlow<List<String>>(emptyList())
         var confirmed: Pair<String, Long>? = null
 
         override fun observePending() = pending
@@ -239,7 +239,7 @@ class HomeViewModelTest {
 
         override suspend fun setSource(packageName: String, enabled: Boolean) {
             sources.value =
-                if (enabled) sources.value + packageName else sources.value - packageName
+                if (enabled) (sources.value + packageName).distinct() else sources.value - packageName
         }
 
         override suspend fun capture(notification: PaymentNotification) {

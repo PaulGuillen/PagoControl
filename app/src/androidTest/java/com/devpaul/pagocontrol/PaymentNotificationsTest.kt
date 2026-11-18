@@ -621,7 +621,7 @@ class PaymentNotificationsTest {
                         database = database,
                         auth = auth,
                         notifier = MovementNotifier {})
-                assertEquals(setOf("test.bank"), repository.observeSources().first())
+                assertEquals(listOf("test.bank"), repository.observeSources().first())
                 val dashboard = (repository.loadDashboard() as DashboardResult.Success).dashboard
                 assertEquals(2000L, dashboard.balanceCents)
                 assertEquals(2500L, dashboard.incomeCents)

@@ -8,7 +8,7 @@ import com.devpaul.pagocontrol.features.home.data.datasource.local.entity.Paymen
 
 @Database(
     entities = [NotificationEntity::class, NotificationSourceEntity::class, PaymentSyncCheckpoint::class],
-    version = 2
+    version = 3
 )
 abstract class PaymentDatabase : RoomDatabase() {
     abstract fun notifications(): PaymentNotificationDao

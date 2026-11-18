@@ -22,5 +22,5 @@ class HomeModule {
         context = context,
         klass = PaymentDatabase::class.java,
         name = "payment_notifications.db",
-    ).addMigrations(PaymentDatabaseMigrations.FROM_1_TO_2).build()
+    ).addMigrations(PaymentDatabaseMigrations.FROM_1_TO_2, PaymentDatabaseMigrations.FROM_2_TO_3).build()
 }

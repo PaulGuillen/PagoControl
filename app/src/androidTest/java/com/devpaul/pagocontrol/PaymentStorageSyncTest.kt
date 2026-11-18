@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.devpaul.pagocontrol.features.home.data.datasource.local.PaymentDatabase
 import com.devpaul.pagocontrol.features.home.data.datasource.local.PaymentDatabaseMigrations
 import com.devpaul.pagocontrol.features.home.data.datasource.local.entity.NotificationEntity
+import com.devpaul.pagocontrol.features.home.data.datasource.local.entity.NotificationSourceEntity
 import java.util.UUID
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -23,6 +24,31 @@ class PaymentStorageSyncTest {
         id = id, packageName = "com.google.android.gm", source = "Gmail", title = "Bank",
         text = "Receipt", postedAt = 1, suggestedAmountCents = 100, ownerId = ownerId,
     )
+
+    @Test
+    fun sourceOrderSurvivesReopeningAndReaddingAppendsToEnd() = runBlocking {
+        val name = "source-order-${UUID.randomUUID()}.db"
+        var database = Room.databaseBuilder(context, PaymentDatabase::class.java, name).build()
+        try {
+            val dao = database.notifications()
+            dao.enable(NotificationSourceEntity("yape", "alice"))
+            dao.enable(NotificationSourceEntity("interbank", "alice"))
+            dao.enable(NotificationSourceEntity("bbva", "alice"))
+            dao.enable(NotificationSourceEntity("yape", "alice"))
+            dao.enable(NotificationSourceEntity("scotiabank", "bob"))
+            assertEquals(listOf("yape", "interbank", "bbva"), dao.observeSources("alice").first())
+            database.close()
+            database = Room.databaseBuilder(context, PaymentDatabase::class.java, name).build()
+            assertEquals(listOf("yape", "interbank", "bbva"), database.notifications().observeSources("alice").first())
+            database.notifications().disable("interbank", "alice")
+            database.notifications().enable(NotificationSourceEntity("interbank", "alice"))
+            assertEquals(listOf("yape", "bbva", "interbank"), database.notifications().observeSources("alice").first())
+            assertEquals(listOf("scotiabank"), database.notifications().observeSources("bob").first())
+        } finally {
+            database.close()
+            context.deleteDatabase(name)
+        }
+    }
 
     @Test
     fun accountQueriesAndMutationsCannotCrossOwners() = runBlocking {
@@ -103,7 +129,7 @@ class PaymentStorageSyncTest {
             old.version = 1
         }
         val database = Room.databaseBuilder(context, PaymentDatabase::class.java, name)
-            .addMigrations(PaymentDatabaseMigrations.FROM_1_TO_2).build()
+            .addMigrations(PaymentDatabaseMigrations.FROM_1_TO_2, PaymentDatabaseMigrations.FROM_2_TO_3).build()
         try {
             val dao = database.notifications()
             dao.claimLegacy("alice")

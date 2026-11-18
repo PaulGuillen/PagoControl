@@ -11,7 +11,7 @@ data class HomeUiState(
     val selectedBar: Int = currentChartBar(monthly = false),
     val signingOut: Boolean = false,
     val pendingNotifications: List<PaymentNotification> = emptyList(),
-    val notificationSources: Set<String> = emptySet(),
+    val notificationSources: List<String> = emptyList(),
     val notificationError: Boolean = false,
     val savingNotification: Boolean = false,
     val section: HomeSection = HomeSection.Wallets,

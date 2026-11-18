@@ -140,7 +140,7 @@ class HomeNotificationAccessUiTest {
         access = true
         state = state.copy(
             guideStep = 1,
-            notificationSources = (1..5).map { "test.wallet.$it" }.toSet()
+            notificationSources = (1..5).map { "test.wallet.$it" }
         )
         renderHome()
         compose.onNodeWithTag("home-guide-action").performTouchInput { click() }
