@@ -2,7 +2,9 @@ package com.devpaul.pagocontrol.features.home.ui.home.components
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +25,8 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -77,6 +81,7 @@ fun NotificationControls(
 ) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
+    var removalPackage by remember { mutableStateOf<String?>(null) }
     var query by rememberSaveable(showApps) { mutableStateOf("") }
     var apps by remember { mutableStateOf<List<MonitoredApp>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
@@ -147,20 +152,40 @@ fun NotificationControls(
         }
         LazyRow(state = appsListState, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(items = selectedApps, key = { it.packageName }) { app ->
-                Column(
-                    modifier = Modifier.width(72.dp)
-                        .clickable(role = Role.Button) { onShowAppsChange(true) }
-                        .padding(vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    AppIcon(app)
-                    Text(
-                        text = app.label,
-                        style = MaterialTheme.typography.labelMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                Box {
+                    Column(
+                        modifier = Modifier.width(72.dp)
+                            .combinedClickable(
+                                role = Role.Button,
+                                onClick = { onShowAppsChange(true) },
+                                onLongClickLabel = stringResource(R.string.notifications_remove_app),
+                                onLongClick = { removalPackage = app.packageName },
+                            )
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        AppIcon(app)
+                        Text(
+                            text = app.label,
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = removalPackage == app.packageName,
+                        onDismissRequest = { removalPackage = null },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.notifications_remove_app)) },
+                            enabled = !state.savingNotification,
+                            onClick = {
+                                removalPackage = null
+                                onIntent(HomeUiIntent.SetNotificationSource(app.packageName, false))
+                            },
+                        )
+                    }
                 }
             }
             item {
