@@ -82,7 +82,7 @@ class MovementsViewModelTest {
         assertEquals(3000L, vm.state.value.balance(MovementChannel.Wallet).income)
     }
 
-    @Test fun recentWindowUsesActualDatesAndCompleteHistorySortsByDateAndTime() {
+    @Test fun recentUsesLatestTransactionDatesAndCompleteHistorySortsByDateAndTime() {
         val reference = LocalDate.of(2026, 11, 15)
         val records = listOf(
             record("older", 100, date = reference.minusDays(3)),
@@ -95,6 +95,38 @@ class MovementsViewModelTest {
         val state = MovementsUiState(month = YearMonth.from(reference), referenceDate = reference, movements = records.map { it.toHistoryMovement() })
         assertEquals(listOf("afternoon", "morning", "yesterday", "boundary"), state.visible.map { it.id })
         assertEquals(listOf("future", "afternoon", "morning", "yesterday", "boundary", "older"), state.copy(showAll = true).visible.map { it.id })
+    }
+
+    @Test fun recentSkipsDaysWithoutTransactionsAndKeepsLatestThreeDates() {
+        val reference = LocalDate.of(2026, 11, 19)
+        val records = listOf(
+            record("oldest", 100, date = reference.withDayOfMonth(3)),
+            record("previous", 100, date = reference.withDayOfMonth(15)),
+            record("today-morning", 100, date = reference, hour = 8),
+            record("third-date", 100, date = reference.withDayOfMonth(8)),
+            record("today-afternoon", 100, date = reference, hour = 16),
+            record("future", 100, date = reference.plusDays(1)),
+        )
+        val state = MovementsUiState(
+            month = YearMonth.from(reference), referenceDate = reference,
+            movements = records.map { it.toHistoryMovement() },
+        )
+        assertEquals(listOf("today-afternoon", "today-morning", "previous", "third-date"), state.visible.map { it.id })
+        assertEquals(6, state.copy(showAll = true).visible.size)
+        assertEquals(600L, state.balance(MovementChannel.Wallet).income)
+    }
+
+    @Test fun recentWorksWithoutTransactionsTodayAndWithFewerThanThreeDates() {
+        val reference = LocalDate.of(2026, 11, 19)
+        val state = MovementsUiState(
+            month = YearMonth.from(reference), referenceDate = reference,
+            movements = listOf(
+                record("first", 100, date = reference.withDayOfMonth(15)),
+                record("second", 100, date = reference.withDayOfMonth(8)),
+            ).map { it.toHistoryMovement() },
+        )
+        assertEquals(listOf("first", "second"), state.visible.map { it.id })
+        assertTrue(state.copy(movements = emptyList()).visible.isEmpty())
     }
 
     @Test fun recentPreviewShowsLatestThreePerDayWithoutLimitingHistoryOrMonthlyBalances() {

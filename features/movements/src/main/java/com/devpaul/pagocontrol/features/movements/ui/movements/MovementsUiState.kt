@@ -33,8 +33,9 @@ data class MovementsUiState(
 
     val recent: List<HistoryMovement>
         get() = filtered.filter {
-            !it.date.isBefore(referenceDate.minusDays(2)) && !it.date.isAfter(referenceDate)
-        }.groupBy { it.date }.values.flatMap { it.take(RECENT_TRANSACTIONS_PER_DAY) }
+            !it.date.isAfter(referenceDate)
+        }.groupBy { it.date }.values.take(RECENT_TRANSACTION_DATES)
+            .flatMap { it.take(RECENT_TRANSACTIONS_PER_DAY) }
 
     val visible: List<HistoryMovement>
         get() = if (showAll) filtered.take(historyLimit) else recent
@@ -52,6 +53,7 @@ data class MovementsUiState(
     }
 
     companion object {
+        const val RECENT_TRANSACTION_DATES = 3
         const val RECENT_TRANSACTIONS_PER_DAY = 3
         const val HISTORY_PAGE_SIZE = 20
     }

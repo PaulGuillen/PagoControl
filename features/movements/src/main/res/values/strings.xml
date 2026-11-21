@@ -15,7 +15,7 @@
     <string name="wallet">Billetera digital</string>
     <string name="gmail">Gmail</string>
     <string name="balance_channel">Balance mensual: %1$s</string>
-    <string name="recent_days">Últimos 3 días</string>
+    <string name="recent_days">Últimas 3 fechas con movimientos</string>
     <string name="view_all">Ver todo</string>
     <string name="all_movements">Todos los movimientos</string>
     <string name="back">Volver a Movimientos</string>
