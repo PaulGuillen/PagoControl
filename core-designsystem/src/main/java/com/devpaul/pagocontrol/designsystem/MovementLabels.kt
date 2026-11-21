@@ -37,7 +37,11 @@ fun movementLabels(
     }.firstOrNull()
     val text = normalized("$notificationTitle\n$notificationText")
     val plin = Regex("\\bplin(?:eado|easte|eo|o|aste)?\\b").containsMatchIn(text)
+    val yape = Regex("\\byape(?:o|aste|ado|ar)?\\b").containsMatchIn(text)
+    val servicePayment = Regex("\\b(?:pago|pagar|pagaste|pagado|yapeo)\\s+(?:(?:de|del|un|el|tu)\\s+)*servicios?\\b|\\bdetalle del servicio\\b")
+        .containsMatchIn(text)
     val institution = when {
+        yape -> "Yape"
         fromGmail -> bank ?: source
         plin -> "Plin"
         else -> source
@@ -59,7 +63,9 @@ fun movementLabels(
         ?: Regex("^(.+?)\\s+te\\s+(?:ha\\s+)?(?:envi[o\\u00f3]|plineado|pline[o\\u00f3])\\b", RegexOption.IGNORE_CASE)
             .find(notificationText.trim())?.groupValues?.get(1)
     val operation = when {
+        servicePayment -> "Pago de servicio"
         plin -> "Pago Plin"
+        yape -> "Pago Yape"
         Regex("\\b(reembolso|devolucion|extorno)\\b").containsMatchIn(text) -> "Devoluci\u00f3n"
         Regex("\\b(retiro|retiraste)\\b").containsMatchIn(text) -> "Retiro"
         Regex("\\b(compra|compraste|consumo)\\b").containsMatchIn(text) -> "Compra"
@@ -75,11 +81,13 @@ fun movementLabels(
     val strippedTitle = if (fromGmail) banklessTitle else banklessTitle.replaceFirst(
         Regex("^\\s*Plin\\s*[-:\\u00b7\\u2013\\u2014]\\s*", RegexOption.IGNORE_CASE), "",
     )
-    val generic = title.equals(notificationTitle, ignoreCase = true) || bankNames.any {
+    val generic = normalized(title.trim()) in setOf("pago", "compra", "transferencia", "movimiento") ||
+        title.equals(notificationTitle, ignoreCase = true) || bankNames.any {
         normalized(title).startsWith(normalized(it)) && strippedTitle == title
     } || Regex("servicio al|notificacion|constancia|confirmacion|alerta").containsMatchIn(normalized(title))
     val label = when {
         merchant != null -> merchant
+        servicePayment -> "Pago de servicio"
         person != null -> if (plin && fromGmail) "Plin \u00b7 ${personName(person)}" else personName(person)
         !generic && strippedTitle.isNotBlank() -> if (fromGmail) strippedTitle else personName(strippedTitle)
         operation != null -> operation

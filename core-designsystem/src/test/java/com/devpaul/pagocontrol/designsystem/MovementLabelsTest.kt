@@ -4,6 +4,23 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class MovementLabelsTest {
+    @Test
+    fun presentsExistingServicePaymentWithYapeBadge() {
+        val labels = movementLabels("Pago", "Gmail", "com.google.android.gm", "YAPE Notificaciones",
+            "Tu yapeo de servicio ha sido confirmado\nHola, PAUL\n¡Tu pago fue realizado!\nMonto pagado\nS/ 282.90\nYapero(a)\nPAUL ANTONY GUILLEN ACUNA\nDetalle del servicio")
+        assertEquals("Pago de servicio", labels.title)
+        assertEquals("Yape", labels.institution)
+        assertEquals(true, labels.fromGmail)
+    }
+
+    @Test
+    fun improvesGenericBankPaymentWithoutAssumingAService() {
+        assertEquals("Pago de servicio", mail("BCP", "Pago de un servicio confirmado\nS/ 84.90", "Pago").title)
+        assertEquals("Compra", mail("BCP", "Compra aprobada S/ 84.90", "Pago").title)
+        assertEquals("Pago", mail("BCP", "Pago realizado S/ 84.90", "Pago").title)
+        assertEquals("EBN*CRUNCHYROLL", mail("BCP", "Compra aprobada", "BCP - EBN*CRUNCHYROLL").title)
+    }
+
     private fun mail(bank: String, text: String, title: String = "$bank Notificaciones") =
         movementLabels(title, "Gmail", "com.google.android.gm", "$bank Notificaciones", text)
 
