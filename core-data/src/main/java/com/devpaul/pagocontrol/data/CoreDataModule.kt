@@ -1,6 +1,8 @@
 package com.devpaul.pagocontrol.data
 
 import android.content.Context
+import com.devpaul.pagocontrol.data.local.DataStoreReportRepository
+import com.devpaul.pagocontrol.domain.ReportRepository
 import com.devpaul.pagocontrol.data.local.DataStoreAppearanceRepository
 import com.devpaul.pagocontrol.data.local.DataStoreProfileRepository
 import com.devpaul.pagocontrol.data.local.DataStoreStartupPreferences
@@ -14,6 +16,9 @@ import org.koin.core.annotation.Single
 @Module
 @ComponentScan
 class CoreDataModule {
+    @Single
+    fun reportRepository(context: Context): ReportRepository = DataStoreReportRepository(context)
+
     @Single
     fun profileRepository(context: Context): ProfileRepository = DataStoreProfileRepository(context)
 
