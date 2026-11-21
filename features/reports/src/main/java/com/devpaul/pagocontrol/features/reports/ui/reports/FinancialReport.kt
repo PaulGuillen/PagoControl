@@ -1,136 +1,112 @@
 package com.devpaul.pagocontrol.features.reports.ui.reports
 
+import com.devpaul.pagocontrol.designsystem.movementLabels
+import com.devpaul.pagocontrol.domain.ExpenseCategory
+import com.devpaul.pagocontrol.domain.RecordedMovement
+import com.devpaul.pagocontrol.domain.ReportSettings
 import com.devpaul.pagocontrol.features.reports.R
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import kotlin.math.abs
 
 enum class ReportPeriod { Month, Quarter, Year, Custom }
-
-internal val demoSubscriptions = listOf(
-    "Netflix" to 4490L,
-    "Spotify" to 2090L,
-    "Google One" to 650L,
-    "Entel" to 7990L,
-    "Claro Hogar" to 13330L
-)
-
 enum class ReportFormat(val extension: String, val mimeType: String) {
     Pdf("pdf", "application/pdf"),
     Excel("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
     Csv("csv", "text/csv"),
 }
-
-data class ReportAmount(val label: Int, val cents: Long)
-data class ReportChannel(val source: String, val label: Int, val cents: Long, val operations: Int)
+fun ExpenseCategory.label(): Int = when (this) {
+    ExpenseCategory.Food -> R.string.reports_category_food
+    ExpenseCategory.Services -> R.string.reports_category_services
+    ExpenseCategory.Shopping -> R.string.reports_category_shopping
+    ExpenseCategory.Subscriptions -> R.string.reports_category_subscriptions
+    ExpenseCategory.Transport -> R.string.reports_category_transport
+    ExpenseCategory.Games -> R.string.reports_category_games
+    else -> R.string.reports_category_other
+}
+data class ReportAmount(val label: Int, val cents: Long, val category: ExpenseCategory? = null)
+data class ReportChannel(val source: String, val cents: Long, val operations: Int, val income: Long = 0, val expense: Long = 0)
+data class ReportIncome(val id: String, val title: String, val cents: Long, val date: LocalDate, val channel: String)
 data class ReportPoint(val number: Int, val income: Long, val expense: Long)
-
+data class ReportSubscription(val name: String, val cents: Long, val payments: Int)
+data class ReportExpense(val id: String, val title: String, val cents: Long, val date: LocalDate, val channel: String, val category: ExpenseCategory, val manual: Boolean, val subscription: String?)
 data class FinancialReport(
-    val firstMonth: Int,
-    val lastMonth: Int,
+    val start: LocalDate,
+    val end: LocalDate,
     val income: Long,
     val expense: Long,
     val incomeCount: Int,
     val expenseCount: Int,
-    val previousNet: Long?,
     val points: List<ReportPoint>,
     val categories: List<ReportAmount>,
     val channels: List<ReportChannel>,
+    val subscriptions: List<ReportSubscription>,
+    val expenses: List<ReportExpense>,
+    val incomes: List<ReportIncome> = emptyList(),
 ) {
+    val firstMonth: Int get() = start.monthValue
+    val lastMonth: Int get() = end.monthValue
     val net: Long get() = income - expense
-    val savingsRate: Double get() = if (income == 0L) 0.0 else net * 100.0 / income
-    val change: Double?
-        get() = previousNet?.takeIf { it != 0L }?.let { (net - it) * 100.0 / abs(it) }
-    val weekly: Boolean get() = firstMonth == lastMonth
+    val weekly: Boolean get() = start.year == end.year && firstMonth == lastMonth
 }
-
 data class ReportExport(val report: FinancialReport, val format: ReportFormat)
 
-internal fun distributeCents(total: Long, weights: List<Long>): List<Long> {
-    val sum = weights.sum()
-    val allocated = weights.dropLast(1).map { total * it / sum }
-    return allocated + (total - allocated.sum())
+private fun reportChannel(value: String): String = when (normalizeReportText(value)) {
+    "gmail" -> "Sin identificar"
+    "bcp" -> "BCP"
+    "bbva" -> "BBVA"
+    "yape" -> "Yape"
+    "plin" -> "Plin"
+    "interbank" -> "Interbank"
+    "efectivo" -> "Efectivo"
+    else -> value.trim()
 }
 
-internal fun demoReport(firstMonth: Int = 11, lastMonth: Int = 11): FinancialReport {
-    require(firstMonth in 1..11 && lastMonth in firstMonth..11)
-    val incomes = listOf(
-        520000L,
-        545000L,
-        560000L,
-        585000L,
-        600000L,
-        565000L,
-        620000L,
-        580000L,
-        590000L,
-        610000L,
-        685000L
-    )
-    val expenses = listOf(
-        240000L,
-        235000L,
-        241000L,
-        252000L,
-        248000L,
-        239000L,
-        260000L,
-        245000L,
-        239000L,
-        222500L,
-        226950L
-    )
-    val months = firstMonth..lastMonth
-    val income = months.sumOf { incomes[it - 1] }
-    val expense = months.sumOf { expenses[it - 1] }
-    val count = months.count()
-    val subscription = demoSubscriptions.sumOf { it.second } * count
-    val otherCategories =
-        distributeCents(expense - subscription, listOf(78000L, 45000L, 41000L, 21000L, 13400L))
-    val categories = listOf(
-        ReportAmount(R.string.reports_category_food, otherCategories[0]),
-        ReportAmount(R.string.reports_category_services, otherCategories[1]),
-        ReportAmount(R.string.reports_category_shopping, otherCategories[2]),
-        ReportAmount(R.string.reports_category_subscriptions, subscription),
-        ReportAmount(R.string.reports_category_transport, otherCategories[3]),
-        ReportAmount(R.string.reports_category_other, otherCategories[4]),
-    )
-    val incomeCount = months.sumOf { (18L * incomes[it - 1] / 685000).toInt() }
-    val expenseCount = months.sumOf { (34L * expenses[it - 1] / 226950).toInt() }
-    val channelAmounts =
-        distributeCents(income + expense, listOf(342000L, 225000L, 189000L, 155950L))
-    val channelCounts =
-        distributeCents((incomeCount + expenseCount).toLong(), listOf(24L, 12L, 10L, 6L))
-    val labels = listOf(
-        R.string.reports_channel_yape,
-        R.string.reports_channel_bcp,
-        R.string.reports_channel_plin,
-        R.string.reports_channel_interbank
-    )
-    val sources = listOf("Yape", "BCP", "Plin", "Interbank")
-    val points = if (count == 1) {
-        val weeklyIncome = distributeCents(income, listOf(175000L, 150000L, 215000L, 145000L))
-        val weeklyExpense = distributeCents(expense, listOf(65000L, 49950L, 62000L, 50000L))
-        (1..4).map { ReportPoint(it, weeklyIncome[it - 1], weeklyExpense[it - 1]) }
-    } else months.map { ReportPoint(it, incomes[it - 1], expenses[it - 1]) }
-    val previousStart = firstMonth - count
-    val previousNet =
-        if (previousStart >= 1) (previousStart until firstMonth).sumOf { incomes[it - 1] - expenses[it - 1] } else null
-    return FinancialReport(
-        firstMonth,
-        lastMonth,
-        income,
-        expense,
-        incomeCount,
-        expenseCount,
-        previousNet,
-        points,
-        categories,
-        sources.mapIndexed { index, source ->
-            ReportChannel(
-                source,
-                labels[index],
-                channelAmounts[index],
-                channelCounts[index].toInt()
-            )
-        },
-    )
+internal fun buildReport(movements: List<RecordedMovement>, settings: ReportSettings, start: LocalDate, end: LocalDate, zone: ZoneId = ZoneId.systemDefault()): FinancialReport {
+    require(!start.isAfter(end))
+    fun inRange(date: LocalDate) = !date.isBefore(start) && !date.isAfter(end)
+    val recorded = movements.distinctBy { it.id }.filter { inRange(Instant.ofEpochMilli(it.postedAt).atZone(zone).toLocalDate()) }
+    val expenses = recorded.filter { it.amountCents < 0 }.map { item ->
+        val labels = movementLabels(item.title, item.source, item.packageName, item.notificationTitle, item.notificationText)
+        val subscription = if (item.packageName == "com.google.android.gm") SubscriptionCatalog.detect("${item.title} ${item.notificationTitle} ${item.notificationText}", settings.rules) else null
+        val category = settings.categories[item.id] ?: when {
+            subscription != null -> ExpenseCategory.Subscriptions
+            labels.title == "Pago de servicio" -> ExpenseCategory.Services
+            else -> ExpenseCategory.Other
+        }
+        ReportExpense(item.id, labels.title, abs(item.amountCents), Instant.ofEpochMilli(item.postedAt).atZone(zone).toLocalDate(), reportChannel(labels.institution), category, false, if (category == ExpenseCategory.Subscriptions) subscription ?: labels.title else null)
+    } + settings.expenses.filter { inRange(LocalDate.parse(it.date)) }.map {
+        ReportExpense(it.id, it.title, it.cents, LocalDate.parse(it.date), reportChannel(it.channel), it.category, true,
+            if (it.category == ExpenseCategory.Subscriptions) SubscriptionCatalog.detect(it.title, settings.rules) ?: it.title else null)
+    }
+    val incomeItems = recorded.filter { it.amountCents > 0 }
+    val income = incomeItems.sumOf { it.amountCents }
+    val expense = expenses.sumOf { it.cents }
+    val incomes = incomeItems.map { item ->
+        val labels = movementLabels(item.title, item.source, item.packageName, item.notificationTitle, item.notificationText)
+        ReportIncome(item.id, labels.title, item.amountCents, Instant.ofEpochMilli(item.postedAt).atZone(zone).toLocalDate(), reportChannel(labels.institution))
+    }.sortedByDescending { it.date }
+    val channelNames = (incomes.map { it.channel } + expenses.map { it.channel }).distinct()
+    val channels = channelNames.map { name ->
+        val incoming = incomes.filter { it.channel == name }
+        val outgoing = expenses.filter { it.channel == name }
+        val incomingTotal = incoming.sumOf { it.cents }
+        val outgoingTotal = outgoing.sumOf { it.cents }
+        ReportChannel(name, incomingTotal + outgoingTotal, incoming.size + outgoing.size, incomingTotal, outgoingTotal)
+    }.sortedByDescending { it.cents }
+    val weekly = start.year == end.year && start.monthValue == end.monthValue
+    val pointCount = if (weekly) (end.dayOfMonth + 6) / 7 else ChronoUnit.MONTHS.between(start.withDayOfMonth(1), end.withDayOfMonth(1)).toInt() + 1
+    fun point(date: LocalDate) = if (weekly) (date.dayOfMonth - 1) / 7 else ChronoUnit.MONTHS.between(start.withDayOfMonth(1), date.withDayOfMonth(1)).toInt()
+    val points = (0 until pointCount).map { index -> ReportPoint(if (weekly) index + 1 else start.plusMonths(index.toLong()).monthValue,
+        incomeItems.filter { point(Instant.ofEpochMilli(it.postedAt).atZone(zone).toLocalDate()) == index }.sumOf { it.amountCents },
+        expenses.filter { point(it.date) == index }.sumOf { it.cents }) }
+    return FinancialReport(start, end, income, expense, incomeItems.size, expenses.size, points,
+        (ExpenseCategory.entries + settings.customCategories + expenses.map { it.category }).distinct().map { category -> ReportAmount(category.label(), expenses.filter { it.category == category }.sumOf { it.cents }, category) },
+        channels, expenses.filter { it.subscription != null }.groupBy { it.subscription!! }.map { (name, items) -> ReportSubscription(name, items.sumOf { it.cents }, items.size) }.sortedByDescending { it.cents },
+        expenses.sortedByDescending { it.date }, incomes)
 }
+
+internal fun FinancialReport.matchesPoint(date: LocalDate, index: Int?): Boolean = index == null ||
+    if (weekly) (date.dayOfMonth - 1) / 7 == index else ChronoUnit.MONTHS.between(start.withDayOfMonth(1), date.withDayOfMonth(1)).toInt() == index
