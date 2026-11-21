@@ -9,7 +9,6 @@ import android.net.Uri
 import com.devpaul.pagocontrol.features.reports.R
 import com.devpaul.pagocontrol.features.reports.ui.reports.ReportExport
 import com.devpaul.pagocontrol.features.reports.ui.reports.ReportFormat
-import com.devpaul.pagocontrol.features.reports.ui.reports.demoSubscriptions
 import java.io.OutputStream
 import java.math.BigDecimal
 import java.util.zip.ZipEntry
@@ -22,29 +21,22 @@ import org.koin.core.annotation.Factory
 class AndroidReportExporter(private val context: Context) : ReportExporter {
     override suspend fun write(uri: String, export: ReportExport) = withContext(Dispatchers.IO) {
         val report = export.report
-        val months = context.resources.getStringArray(R.array.reports_months)
         val rows = listOf(
-            listOf("PagoControl", context.getString(R.string.reports_demo_export)),
+            listOf("PagoControl", context.getString(R.string.reports_data_export)),
             listOf(
                 context.getString(R.string.reports_period_label),
-                "${months[report.firstMonth - 1]} – ${months[report.lastMonth - 1]} 2023"
+                "${report.start} · ${report.end}"
             ),
             listOf(context.getString(R.string.reports_currency), "PEN"),
             listOf(context.getString(R.string.reports_income), decimal(report.income)),
-            listOf(context.getString(R.string.reports_expense), decimal(report.expense)),
+            listOf(context.getString(R.string.reports_expense), decimal(-report.expense)),
             listOf(context.getString(R.string.reports_net_balance), decimal(report.net)),
             listOf(context.getString(R.string.reports_categories), ""),
-        ) + report.categories.map { listOf(context.getString(it.label), decimal(it.cents)) } +
+        ) + report.categories.map { listOf(it.category?.customName ?: context.getString(it.label), decimal(-it.cents)) } +
                 listOf(listOf(context.getString(R.string.reports_channels), "")) +
-                report.channels.map { listOf(context.getString(it.label), decimal(it.cents)) } +
+                report.channels.flatMap { listOf(listOf(it.source + " - " + context.getString(R.string.reports_income), decimal(it.income)), listOf(it.source + " - " + context.getString(R.string.reports_expense), decimal(-it.expense))) } +
                 listOf(listOf(context.getString(R.string.reports_subscriptions), "")) +
-                demoSubscriptions
-                    .map {
-                        listOf(
-                            it.first,
-                            decimal(it.second * (report.lastMonth - report.firstMonth + 1))
-                        )
-                    } +
+                report.subscriptions.map { listOf(it.name, decimal(-it.cents)) } +
                 listOf(listOf(context.getString(R.string.reports_export_note), ""))
         val stream = context.contentResolver.openOutputStream(Uri.parse(uri), "wt")
             ?: error("Cannot open document")
@@ -65,24 +57,26 @@ class AndroidReportExporter(private val context: Context) : ReportExporter {
     private fun writePdf(output: OutputStream, rows: List<List<String>>) {
         val document = PdfDocument()
         try {
-            val page = document.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
-            val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-            paint.color = Color.rgb(244, 197, 66)
-            page.canvas.drawRect(0f, 0f, 595f, 90f, paint)
-            paint.color = Color.rgb(23, 26, 22)
-            paint.textSize = 22f
-            paint.typeface = Typeface.create("sans-serif", Typeface.BOLD)
-            page.canvas.drawText(context.getString(R.string.reports_title), 32f, 54f, paint)
-            paint.textSize = 11f
-            paint.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
-            rows.forEachIndexed { index, row ->
-                val baseline = 120f + index * 23f
-                page.canvas.drawText(row[0], 32f, baseline, paint)
-                paint.textAlign = Paint.Align.RIGHT
-                page.canvas.drawText(row[1], 563f, baseline, paint)
-                paint.textAlign = Paint.Align.LEFT
+            rows.chunked(28).forEachIndexed { pageIndex, pageRows ->
+                val page = document.startPage(PdfDocument.PageInfo.Builder(595, 842, pageIndex + 1).create())
+                val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+                paint.color = Color.rgb(244, 197, 66)
+                page.canvas.drawRect(0f, 0f, 595f, 90f, paint)
+                paint.color = Color.rgb(23, 26, 22)
+                paint.textSize = 22f
+                paint.typeface = Typeface.create("sans-serif", Typeface.BOLD)
+                page.canvas.drawText(context.getString(R.string.reports_title), 32f, 54f, paint)
+                paint.textSize = 11f
+                paint.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+                pageRows.forEachIndexed { index, row ->
+                    val baseline = 120f + index * 23f
+                    page.canvas.drawText(row[0].take(65), 32f, baseline, paint)
+                    paint.textAlign = Paint.Align.RIGHT
+                    page.canvas.drawText(row[1].take(45), 563f, baseline, paint)
+                    paint.textAlign = Paint.Align.LEFT
+                }
+                document.finishPage(page)
             }
-            document.finishPage(page)
             document.writeTo(output)
         } finally {
             document.close()
